@@ -2,6 +2,7 @@
   "expo": {
     "name": "easy-english",
     "slug": "easy-english",
+    "scheme": "easy-english",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,6 +17,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.tanyamukha.easyenglish",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -26,6 +28,14 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "903e251d-6c1c-4745-8c72-b9d8977c97f4"
+      }
+    }
   }
 }
