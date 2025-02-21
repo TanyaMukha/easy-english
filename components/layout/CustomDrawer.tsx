@@ -6,28 +6,16 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { router } from "expo-router";
 import ModalHeader from "./ModalHeader";
 import { IconComponent } from "../ui/IconComponent";
 import { MENU_ITEMS } from "../../constants/menuItems";
-// import { useTranslation } from "react-i18next";
-import { IconFontFamily, IconName } from "../ui/IconComponent";
-
-export interface DrawerMenuItem {
-  id: string;
-  title: string;
-  icon: {
-    family: IconFontFamily;
-    name: IconName<IconFontFamily>;
-  };
-  route?: string;
-  color?: string;
-}
+import { useTranslation } from "react-i18next";
 
 const CustomDrawer: FC<DrawerContentComponentProps> = ({ navigation }) => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
 
   const handleMenuPress = (route: string) => {
     navigation.closeDrawer();
@@ -36,7 +24,7 @@ const CustomDrawer: FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ModalHeader title={"menu.title"} />
+      <ModalHeader title={t("menu.title")} />
 
       <ScrollView
         style={styles.menuContent}
@@ -53,7 +41,7 @@ const CustomDrawer: FC<DrawerContentComponentProps> = ({ navigation }) => {
               name={item.icon.name}
               color={item.color}
             />
-            <Text style={styles.menuText}>{item.title}</Text>
+            <Text style={styles.menuText}>{t(item.title)}</Text>
             <Ionicons
               name="chevron-forward"
               size={20}

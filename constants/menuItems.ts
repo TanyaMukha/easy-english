@@ -1,5 +1,5 @@
-import { DrawerMenuItem } from "../components/layout/CustomDrawer";
 import { IconFontFamily } from "../components/ui/IconComponent";
+import { DrawerMenuItem } from "../types/DrawerMenuItem";
 
 export const MENU_ITEMS: DrawerMenuItem[] = [
   {
@@ -33,16 +33,16 @@ export const MENU_ITEMS: DrawerMenuItem[] = [
     // route: "/learning-irregular-forms",
   },
   {
-    id: "tests",
-    title: "menu.tests",
-    icon: { family: IconFontFamily.FontAwesome, name: "question-circle-o" },
-    // route: "/tests",
-  },
-  {
     id: "grammar",
     title: "menu.grammar",
     icon: { family: IconFontFamily.Ionicons, name: "book-outline" },
-    // route: "/grammar",
+    route: "/grammar",
+  },  
+  {
+    id: "grammar-tests",
+    title: "menu.grammarTests",
+    icon: { family: IconFontFamily.FontAwesome, name: "edit" },
+    // route: "/grammar-tests",
   },
   {
     id: "statistics",
@@ -63,19 +63,19 @@ export const MENU_ITEMS: DrawerMenuItem[] = [
     // route: "/clear",
     color: "red",
   },
-  {
-    id: "feedback",
-    title: "menu.feedback",
-    icon: { family: IconFontFamily.Ionicons, name: "mail-outline" },
-    // route: "/feedback",
-  },
-  {
-    id: "about",
-    title: "menu.about",
-    icon: {
-      family: IconFontFamily.Ionicons,
-      name: "information-circle-outline",
-    },
-    // route: "/about",
-  },
+  // {
+  //   id: "feedback",
+  //   title: "menu.feedback",
+  //   icon: { family: IconFontFamily.Ionicons, name: "mail-outline" },
+  //   // route: "/feedback",
+  // },
+  // {
+  //   id: "about",
+  //   title: "menu.about",
+  //   icon: {
+  //     family: IconFontFamily.Ionicons,
+  //     name: "information-circle-outline",
+  //   },
+  //   // route: "/about",
+  // },
 ];

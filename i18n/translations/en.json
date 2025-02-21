@@ -1,0 +1,653 @@
+{
+    "common": {
+        "settings": "Settings",
+        "back": "Back",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "close": "Close",
+        "success": "Success",
+        "error": "Error"
+    },
+    "menu": {
+        "title": "Menu",
+        "home": "Home",
+        "dictionary": "Dictionary",
+        "units": "Units",
+        "grammarTests": "Grammar tests",
+        "wordLearning": "Word Learning",
+        "irregularForms": "Irregular Forms",
+        "statistics": "Statistics",
+        "profile": "Profile",
+        "settings": "Settings",
+        "premium": "Upgrade to Premium",
+        "feedback": "Send Feedback",
+        "about": "About App",
+        "grammar": "Grammar",
+        "clear": "Clear Data"
+    },
+    "home": {
+        "title": "Home",
+        "greeting": "Welcome back!",
+        "dailyGoal": "Daily Goal",
+        "dayStreak": "Day Streak",
+        "todayProgress": "Today's Progress:",
+        "wordsToLearn": "{{count}} words to learn",
+        "wordsToReview": "Words to Review Today",
+        "noWordsToReview": "No words to review today",
+        "quoteOfDay": "Quote of the Day",
+        "startLearning": "Start Learning",
+        "dictionary": "Dictionary",
+        "bestStreak": "Best: ",
+        "dailyProgress": "Daily Progress",
+        "wordLearning": "Word Learning",
+        "irregularForms": "Irregular Forms",
+        "dialog": {
+            "confirmation": "Confirmation",
+            "confirmNavigation": "Are you sure you want to go to another page?",
+            "cancel": "Cancel",
+            "yes": "Yes"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "language": "Language",
+        "apiSettings": "API Settings",
+        "cambridgeApiKey": "Cambridge Dictionary API Key",
+        "oxfordApiKey": "Oxford Dictionary API Key",
+        "oxfordApiUrl": "Oxford Dictionary API URL",
+        "oxfordAppId": "Oxford Dictionary APP ID",
+        "oxfordAppKey": "Oxford Dictionary APP KEY",
+        "enterApiKey": "Enter your API Key",
+        "enterApiUrl": "Enter your API URL",
+        "enterAppId": "Enter your APP ID",
+        "enterAppKey": "Enter your APP KEY",
+        "general": "General",
+        "autoFetch": "Auto-fetch word data",
+        "pronunciation": "Pronunciation",
+        "achievements": "Achievements",
+        "completed": "Completed",
+        "inProgress": "In Progress",
+        "total": "Total",
+        "dailyGoals": "Daily Goals",
+        "wordLearningGoals": "Word Learning Goals",
+        "irregularFormsGoals": "Irregular Forms Goals",
+        "dailyCount": "Times per day",
+        "clearData": {
+            "warning": "⚠️ Warning",
+            "description": "You are about to delete all application data including your dictionary, learning progress, and settings. This action cannot be undone.",
+            "warningText": "⚠️ Delete All Data",
+            "detailedDescription": "This will permanently erase:\n- All saved words\n- Learning progress\n- Application settings\n- Cache files\n\nThis action cannot be undone!",
+            "button": "Delete All Data",
+            "success": "All data has been successfully cleared",
+            "error": "Failed to clear data"
+        },
+        "wordsAmount": "Words Amount",
+        "newWordsPerLesson": "New words per lesson",
+        "difficultWordsPerLesson": "Difficult words per lesson"
+    },
+    "dictionary": {
+        "title": "Dictionary",
+        "search": "Search words...",
+        "categories": {
+            "allWords": "All Words",
+            "recentlyAdded": "Recently Added",
+            "favorites": "Favorites",
+            "difficult": "Difficult",
+            "learned": "Learned"
+        },
+        "filters": {
+            "title": "Filters",
+            "difficulty": "Difficulty",
+            "partOfSpeech": "Part of Speech",
+            "apply": "Apply Filters",
+            "levels": {
+                "easy": "Easy",
+                "medium": "Medium",
+                "hard": "Hard"
+            }
+        },
+        "export": {
+            "title": "Export Options",
+            "format": "Format:",
+            "includeProgress": "Include Progress Data",
+            "includeExamples": "Include Examples",
+            "onlyFavorites": "Only Favorite Words",
+            "export": "Export",
+            "cancel": "Cancel",
+            "success": "Dictionary exported successfully as {{fileName}}",
+            "error": "Failed to export dictionary",
+            "share": "Share"
+        },
+        "import": {
+            "title": "Import Words",
+            "addAll": "Add All",
+            "updateExisting": "Update Existing",
+            "skipDuplicates": "Skip Duplicates",
+            "button": "Import from JSON",
+            "success": "Import complete",
+            "failed": "Import failed"
+        },
+        "partsOfSpeech": {
+            "noun": "Noun",
+            "verb": "Verb",
+            "adjective": "Adjective",
+            "adverb": "Adverb",
+            "preposition": "Preposition"
+        }
+    },
+    "units": {
+        "title": "Word Lists",
+        "createList": "Create List",
+        "editList": "Edit List",
+        "listName": "List Name",
+        "listDescription": "Description",
+        "deleteConfirmation": "Are you sure you want to delete this list? All words will be removed from the list.",
+        "noLists": "No word lists yet",
+        "noWords": "No words in this list",
+        "wordCount": "Words count: {{count}}",
+        "addWords": "Add Words",
+        "searchWords": "Search words",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "generateNew": "Generate New Words",
+        "selectFromList": "Select from List",
+        "selectSource": "Select Words Source",
+        "import": {
+            "title": "Import Word List",
+            "button": "Import from JSON",
+            "success": "List imported successfully",
+            "failed": "Import failed",
+            "addAll": "Add all words (create duplicates)",
+            "updateExisting": "Update existing words",
+            "skipDuplicates": "Skip existing words",
+            "validation": {
+                "invalidFormat": "Invalid JSON format",
+                "nameRequired": "List name is required",
+                "invalidDescription": "Description must be a string",
+                "wordsRequired": "Words array is required",
+                "invalidWord": "Invalid word format"
+            },
+            "result": "Imported {{success}} of {{total}} lists successfully ({{errors}} errors)"
+        }
+    },
+    "learning": {
+        "titles": {
+            "learningWords": "Words Learning",
+            "learningIrregularForms": "Irregular Forms Practice"
+        },
+        "noDataForTest": "Word list is empty. Please add words to your dictionary",
+        "noWordsForStudy": "No words available for learning",
+        "noWordsForTest": "No words available for test",
+        "testTypes": {
+            "complexLearning": {
+                "title": "Complex Learning",
+                "description": "Learn words and phrases"
+            },
+            "studyWords": {
+                "title": "Study words and phrases",
+                "description": "Learn each word"
+            },
+            "translateFromEn": {
+                "title": "Translate from English",
+                "description": "Choose the correct translation"
+            },
+            "translateToEn": {
+                "title": "Translate to English",
+                "description": "Choose the correct English word"
+            },
+            "checkKnowledgeEn": {
+                "title": "Check knowledge (EN)",
+                "description": "Mark if you know the word"
+            },
+            "checkKnowledgeNative": {
+                "title": "Check knowledge (Native)",
+                "description": "Mark if you know the translation"
+            },
+            "writeTranslation": {
+                "title": "Write translation",
+                "description": "Enter the correct translation"
+            },
+            "irregularVerbsTest": {
+                "title": "Irregular Verbs Practice",
+                "description": "Practice Past Simple and Past Participle forms"
+            },
+            "irregularPluralTest": {
+                "title": "Irregular Plurals Practice",
+                "description": "Practice irregular plural forms of nouns"
+            },
+            "irregularComparisonTest": {
+                "title": "Irregular Comparisons Practice",
+                "description": "Practice irregular forms of adjectives"
+            },
+            "studyIrregularVerbs": {
+                "title": "Study Irregular Verbs",
+                "description": "Learn irregular verb forms step by step"
+            },
+            "studyIrregularPlural": {
+                "title": "Study Irregular Plurals",
+                "description": "Learn irregular plural forms step by step"
+            },
+            "studyIrregularComparison": {
+                "title": "Study Irregular Comparisons",
+                "description": "Learn irregular forms of adjectives step by step"
+            },
+            "comprehensiveLearning": {
+                "title": "Check progress",
+                "description": "Check you progress in learning"
+            }
+        },
+        "placeholders": {
+            "inputWord": "Enter word"
+        },
+        "buttons": {
+            "next": "Next word",
+            "prev": "Previous word",
+            "finish": "Finish",
+            "know": "Know",
+            "dontKnow": "Don't know",
+            "correct": "Correct",
+            "incorrect": "Incorrect",
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard",
+            "check": "Check",
+            "skipTest": "Skip this test"
+        },
+        "input": {
+            "enterTranslation": "Enter translation"
+        },
+        "progress": {
+            "wordsLeft": "{{count}} words left"
+        },
+        "results": {
+            "completed": "Test completed!",
+            "studyCompleted": "Study completed!",
+            "correctAnswers": "Correct answers: {{count}}",
+            "incorrectAnswers": "Incorrect answers: {{count}}",
+            "accuracy": "Accuracy: {{percentage}}%",
+            "difficulty": {
+                "easy": "Easy: {{count}}",
+                "medium": "Medium: {{count}}",
+                "hard": "Hard: {{count}}"
+            }
+        },
+        "completion": {
+            "congratulations": "Congratulations!",
+            "duration": "Duration",
+            "accuracy": "Accuracy",
+            "details": "Session Details",
+            "testsCompleted": "Tests Completed",
+            "correctAnswers": "Correct Answers",
+            "incorrectAnswers": "Incorrect Answers",
+            "finish": "Finish"
+        }
+    },
+    "practice": {
+        "pronunciationPractice": "Pronunciation Practice",
+        "startRecording": "Start Recording",
+        "stopRecording": "Stop Recording",
+        "youSaid": "You said",
+        "accuracy": "Accuracy",
+        "voiceNotAvailable": "Voice recognition is not available on this device",
+        "errorStartingRecognition": "Error starting voice recognition",
+        "errorStoppingRecognition": "Error stopping voice recognition"
+    },
+    "grammarTests": {
+        "title": "Tests",
+        "questionsCount": "{{count}} questions",
+        "create": "Create test",
+        "edit": "Edit test",
+        "delete": "Delete test",
+        "next": "Next question",
+        "finish": "Finish test",
+        "import": {
+            "title": "Import Tests",
+            "button": "Import from JSON",
+            "success": "Tests imported successfully",
+            "failed": "Import failed"
+        }
+    },
+    "statistics": {
+        "title": "Statistics",
+        "cards": {
+            "totalWords": {
+                "title": "Total Words",
+                "description": "in your dictionary"
+            },
+            "wordsLearned": {
+                "title": "Words Learned",
+                "description": "mastered completely"
+            },
+            "toLearn": {
+                "title": "To Learn",
+                "description": "words remaining"
+            }
+        },
+        "difficulty": {
+            "title": "Difficulty Distribution",
+            "levels": {
+                "easy": "Easy",
+                "medium": "Medium",
+                "hard": "Hard"
+            }
+        },
+        "partsOfSpeech": {
+            "title": "Parts of Speech",
+            "types": {
+                "noun": "Noun",
+                "verb": "Verb",
+                "adjective": "Adjective",
+                "adverb": "Adverb",
+                "preposition": "Preposition",
+                "irregular": "Irregular",
+                "phrasal_verb": "Phrasal Verb",
+                "idiom": "Idiom",
+                "abbreviation": "Abbreviation",
+                "phrase": "Phrase",
+                "pronoun": "Pronoun",
+                "conjunction": "Conjunction",
+                "interjection": "Interjection",
+                "slang": "Slang",
+                "fixed_expression": "Fixed Expression"
+            }
+        }
+    },
+    "addWord": {
+        "title": "Add Word",
+        "fields": {
+            "word": {
+                "label": "Word",
+                "placeholder": "Enter word"
+            },
+            "transcription": {
+                "label": "Transcription",
+                "placeholder": "Enter transcription"
+            },
+            "translation": {
+                "label": "Translation",
+                "placeholder": "Enter translation"
+            },
+            "partOfSpeech": {
+                "label": "Part of Speech",
+                "options": {
+                    "noun": "Noun",
+                    "verb": "Verb",
+                    "adjective": "Adjective",
+                    "adverb": "Adverb",
+                    "preposition": "Preposition"
+                }
+            }
+        },
+        "irregular": {
+            "toggle": "Irregular",
+            "verb": {
+                "pastSimple": {
+                    "label": "Past Simple",
+                    "placeholder": "Enter past simple"
+                },
+                "pastSimpleTranscription": {
+                    "label": "Past Simple Transcription",
+                    "placeholder": "Enter past simple transcription"
+                },
+                "pastParticiple": {
+                    "label": "Past Participle",
+                    "placeholder": "Enter past participle"
+                },
+                "pastParticipleTranscription": {
+                    "label": "Past Participle Transcription",
+                    "placeholder": "Enter past participle transcription"
+                }
+            },
+            "noun": {
+                "plural": {
+                    "label": "Plural Form",
+                    "placeholder": "Enter plural form"
+                },
+                "pluralTranscription": {
+                    "label": "Plural Transcription",
+                    "placeholder": "Enter plural transcription"
+                }
+            },
+            "adjective": {
+                "comparative": {
+                    "label": "Comparative",
+                    "placeholder": "Enter comparative form"
+                },
+                "comparativeTranscription": {
+                    "label": "Comparative Transcription",
+                    "placeholder": "Enter comparative transcription"
+                },
+                "superlative": {
+                    "label": "Superlative",
+                    "placeholder": "Enter superlative form"
+                },
+                "superlativeTranscription": {
+                    "label": "Superlative Transcription",
+                    "placeholder": "Enter superlative transcription"
+                }
+            }
+        },
+        "examples": {
+            "title": "Examples",
+            "addButton": "Add Example",
+            "removeButton": "Remove",
+            "fields": {
+                "sentence": {
+                    "label": "Example #{{number}}",
+                    "placeholder": "Enter example sentence"
+                },
+                "translation": {
+                    "placeholder": "Enter translation"
+                }
+            }
+        },
+        "keyboard": {
+            "title": "Phonetic Keyboard",
+            "buttons": {
+                "phonetic": "Phonetic",
+                "english": "English",
+                "shift": "Shift",
+                "backspace": "⌫",
+                "space": "Space"
+            }
+        },
+        "buttons": {
+            "fetchData": "Fetch Data",
+            "import": "Import from JSON",
+            "add": "Add Word"
+        },
+        "errors": {
+            "required": "Please fill in all required fields",
+            "wordFirst": "Please enter a word first",
+            "notFound": "Word not found in dictionary",
+            "unknown": "An unknown error occurred",
+            "import": {
+                "invalidJson": "Invalid JSON format",
+                "readError": "Failed to read the file"
+            }
+        },
+        "success": {
+            "import": "Successfully imported {{count}} word(s)"
+        }
+    },
+    "achievements": {
+        "title": "Achievements",
+        "stats": {
+            "completed": "Completed",
+            "inProgress": "In Progress",
+            "total": "Total"
+        },
+        "sections": {
+            "completed": "Completed",
+            "inProgress": "In Progress"
+        },
+        "status": {
+            "completed": "✓ Completed",
+            "inProgress": "In Progress"
+        },
+        "list": {
+            "vocabularyBuilder": {
+                "title": "Vocabulary Builder",
+                "description": "Learn 100 words"
+            },
+            "dailyLearner": {
+                "title": "Daily Learner",
+                "description": "Study for 7 days in a row"
+            },
+            "masterOfVerbs": {
+                "title": "Master of Verbs",
+                "description": "Learn 50 verbs"
+            },
+            "nonStop": {
+                "title": "Non-Stop",
+                "description": "Learn 10 phrasal verbs in a row without mistakes"
+            },
+            "phraseMaster": {
+                "title": "Phrase Master",
+                "description": "Master 50 different phrasal verbs"
+            },
+            "idiomaticGuru": {
+                "title": "Idiomatic Guru",
+                "description": "Learn 25 idiomatic expressions"
+            },
+            "abbreviationHero": {
+                "title": "Abbreviation Hero",
+                "description": "Learn 20 common abbreviations"
+            },
+            "irregularVerbTamer": {
+                "title": "Irregular Verb Tamer",
+                "description": "Master 20 irregular verbs"
+            },
+            "irregularVerbMaster": {
+                "title": "Irregular Verb Master",
+                "description": "Learn 30 irregular verbs"
+            },
+            "vocabularyVirtuoso": {
+                "title": "Vocabulary Virtuoso",
+                "description": "Learn 500 words"
+            },
+            "streakKeeper": {
+                "title": "Streak Keeper",
+                "description": "Study for 30 days in a row"
+            },
+            "idiomInterpreter": {
+                "title": "Idiom Interpreter",
+                "description": "Learn 50 idiomatic expressions"
+            },
+            "abbreviationAce": {
+                "title": "Abbreviation Ace",
+                "description": "Master 50 common abbreviations"
+            }
+        }
+    },
+    "irregularVerbs": {
+        "title": "Irregular Verbs Practice",
+        "pastSimple": "Past Simple",
+        "pastParticiple": "Past Participle",
+        "enterPastSimple": "Enter Past Simple form",
+        "enterPastParticiple": "Enter Past Participle form",
+        "noWords": "No irregular verbs available",
+        "buttons:": {
+            "check": "Check Answer",
+            "next": "Next Word",
+            "finish": "Finish Test"
+        },
+        "results": {
+            "title": "Test Results",
+            "correct": "Correct answers: {{count}}",
+            "total": "Total words: {{count}}",
+            "accuracy": "Accuracy: {{percentage}}%"
+        },
+        "study": {
+            "completed": "Study completed!",
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard",
+            "easyCount": "Easy: {{count}}",
+            "mediumCount": "Medium: {{count}}",
+            "hardCount": "Hard: {{count}}"
+        }
+    },
+    "irregularPlural": {
+        "pluralForm": "Plural Form",
+        "enterPlural": "Enter plural form",
+        "buttons:": {
+            "check": "Check Answer",
+            "next": "Next Word",
+            "finish": "Finish Test"
+        },
+        "study": {
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard",
+            "completed": "Study Completed!",
+            "easyCount": "{{count}} words were easy",
+            "mediumCount": "{{count}} words were medium",
+            "hardCount": "{{count}} words were hard"
+        }
+    },
+    "irregularComparison": {
+        "comparative": "Comparative Form",
+        "superlative": "Superlative Form",
+        "enterComparative": "Enter comparative form (e.g., better)",
+        "enterSuperlative": "Enter superlative form (e.g., best)",
+        "buttons:": {
+            "check": "Check Answer",
+            "next": "Next Word",
+            "finish": "Finish Test"
+        },
+        "study": {
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard",
+            "completed": "Study Completed!",
+            "easyCount": "{{count}} words were easy",
+            "mediumCount": "{{count}} words were medium",
+            "hardCount": "{{count}} words were hard"
+        }
+    },
+    "feedback": {
+        "title": "Send Feedback",
+        "description": "Help us improve our app by sharing your thoughts, suggestions, or reporting issues.",
+        "emailLabel": "Your Email (optional)",
+        "emailPlaceholder": "Enter your email for response",
+        "messageLabel": "Your Message",
+        "messagePlaceholder": "Type your feedback here...",
+        "submitButton": "Send Feedback",
+        "error": {
+            "title": "Error",
+            "emptyMessage": "Please enter your feedback message",
+            "sendFailed": "Failed to send feedback. Please try again."
+        },
+        "success": {
+            "title": "Thank You",
+            "message": "Your feedback has been sent successfully. We appreciate your help in improving the app!"
+        }
+    },
+    "about": {
+        "title": "About App",
+        "description": {
+            "title": "About Easy English",
+            "content": "Easy English is your personal language learning assistant. Our app helps you learn English effectively through various interactive exercises, comprehensive grammar guides, and personalized learning paths."
+        },
+        "features": {
+            "title": "Key Features",
+            "dictionary": "Personal dictionary with pronunciation",
+            "learning": "Interactive learning exercises",
+            "grammar": "Comprehensive grammar guides",
+            "statistics": "Progress tracking and statistics"
+        },
+        "contact": {
+            "title": "Contact Us"
+        },
+        "rateApp": "Rate App",
+        "rights": "All rights reserved."
+    },
+    "grammar": {
+        "title": "Grammar"
+    }
+}
