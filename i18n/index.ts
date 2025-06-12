@@ -1,9 +1,9 @@
-import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { getLocales } from "expo-localization";
+import i18n from "i18next";
+
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Импорт переводов
 import en from "./translations/en.json";
 import uk from "./translations/uk.json";
 
@@ -27,8 +27,8 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
   react: {
-    useSuspense: false // Важно!
-  }
+    useSuspense: false, // Важно!
+  },
 });
 
 // Загрузка сохраненного языка

@@ -4,8 +4,9 @@ import { useColorScheme } from "react-native";
 import { Drawer } from "expo-router/drawer";
 
 import CustomDrawerNavigator from "../../components/layout/CustomDrawerNavigator";
+import BackButton from "../../components/layout/BackButton";
 
-export default function GrammarLayout() {
+export default function GrammarTestsLayout() {
   const { t } = useTranslation();
 
   const colorScheme = useColorScheme();
@@ -15,13 +16,14 @@ export default function GrammarLayout() {
       <Drawer.Screen
         name="index"
         options={{
-          title: t("grammar.title"),
+          title: t("grammarTests.title"),
         }}
       />
       <Drawer.Screen
-        name="content"
+        name="custom-test"
         options={{
-          title: t("grammar.content"),
+          title: t("tests.title"),
+          headerLeft: () => <BackButton route="/grammar-tests" />,
         }}
       />
     </CustomDrawerNavigator>

@@ -1,7 +1,8 @@
-import { Drawer } from "expo-router/drawer";
 import { useColorScheme } from "react-native";
-import Colors from "../../constants/Colors";
+import { Drawer } from "expo-router/drawer";
+
 import CustomDrawer from "./CustomDrawer";
+import Colors from "../../constants/Colors";
 
 const CustomDrawerNavigator = ({ children }: { children: React.ReactNode }) => {
   const colorScheme = useColorScheme();

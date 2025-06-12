@@ -1,18 +1,19 @@
 import React, { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { router } from "expo-router";
+
 import ModalHeader from "./ModalHeader";
 import { IconComponent } from "../ui/IconComponent";
 import { MENU_ITEMS } from "../../constants/menuItems";
-import { useTranslation } from "react-i18next";
 
 const CustomDrawer: FC<DrawerContentComponentProps> = ({ navigation }) => {
   const { t } = useTranslation();

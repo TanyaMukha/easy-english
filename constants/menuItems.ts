@@ -37,12 +37,12 @@ export const MENU_ITEMS: DrawerMenuItem[] = [
     title: "menu.grammar",
     icon: { family: IconFontFamily.Ionicons, name: "book-outline" },
     route: "/grammar",
-  },  
+  },
   {
     id: "grammar-tests",
     title: "menu.grammarTests",
     icon: { family: IconFontFamily.FontAwesome, name: "edit" },
-    // route: "/grammar-tests",
+    route: "/grammar-tests",
   },
   {
     id: "statistics",

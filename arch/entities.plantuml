@@ -1,0 +1,87 @@
+@startuml entities
+enum PartOfSpeech {
+  NOUN = "noun",
+  VERB = "verb",
+  ADJECTIVE = "adjective",
+  ADVERB = "adverb",
+  PREPOSITION = "preposition",
+  PHARSE = "phrase",
+  PHRASAL_VERB = "phrasal_verb",
+  IDIOM = "idiom",
+  PRONOUN = "pronoun",
+  CONJUNCTION = "conjunction",
+  INTERJECTION = "interjection",
+  SLANG = "slang",
+  ABBREVIATION = "abbreviation",
+  FIXEDEXPRESSION = "fixed_expression",
+  IRREGULAR = "irregular",
+}
+
+interface IrregularVerb {
+  pastSimple: string;
+  pastSimpleTranscription: string;
+  pastParticiple: string;
+  pastParticipleTranscription: string;
+}
+
+interface IrregularPlural {
+  plural: string;
+  pluralTranscription: string;
+}
+
+interface IrregularComparison {
+  comparative: string;
+  comparativeTranscription: string;
+  superlative: string;
+  superlativeTranscription: string;
+}
+
+interface Example {
+  sentence: string;
+  translation: string;
+}
+
+interface LearningHistory {
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  easiness: number;
+}
+
+interface LightWord {
+  id: number;
+  word: string;
+  transcription: string;
+  translation: string;
+  partOfSpeech: PartOfSpeech;
+  irregular?: boolean;
+  irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
+  examples: Example[];
+  language?: string;
+  learningHistory: LearningHistory;
+}
+
+interface WordCheckTestHistory {
+  similarity: number;
+  numberOfHintsUsed: number;
+  recallQuality: number;
+}
+
+interface Word extends LightWord {
+  id: number;
+  word: string;
+  transcription: string;
+  translation: string;
+  irregular?: boolean;
+  irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
+  audio?: Blob | null;
+  audio2?: Blob | null;
+  audio3?: Blob | null;
+  partOfSpeech: PartOfSpeech;
+  examples: Example[];
+  language?: string;
+  learningHistory: LearningHistory;
+  checkTestHistory?: WordCheckTestHistory;
+  isFavorite?: boolean;
+}
+
+@enduml

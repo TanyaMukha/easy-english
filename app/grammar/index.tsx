@@ -1,37 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { GRAMMAR_SECTIONS } from "../../constants/grammarSections";
 
-const GrammarNavigationScreen = () => {
+import { GRAMMAR_TOPICS } from "../../mock/mockGrammarTopics";
+import { GrammarTopicModel } from "../../interfaces/models/GrammarTopicModel";
+import { GrammarTopicService } from "../../services/GrammarTopicService";
+
+const GrammarTopicsNavigationScreen = () => {
+  const [loading, setLoading] = useState(true);
+  const [mainTopics, setMainTopics] = useState<GrammarTopicModel[]>([]);
+
+  // Загрузка основных тем (без topicId) при монтировании компонента
+  useEffect(() => {
+    const loadTopics = async () => {
+      try {
+        setLoading(true);
+        // Получаем только основные темы (где topicId === null)
+        // const topics = await GrammarTopicService.getTopicsByTopicId(null);
+        const topics = GRAMMAR_TOPICS.filter((topic) => topic.topicId === null);
+        setMainTopics(topics);
+      } catch (error) {
+        console.error("Error loading grammar topics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTopics();
+  }, []);
+
+  // Функция для навигации к контенту с передачей topicId
+  const navigateToContent = (topicId: number) => {
+    router.push({
+      pathname: "/grammar/content",
+      params: { topicId: topicId.toString() },
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {GRAMMAR_SECTIONS.map((section) => (
+        {mainTopics.map((section, index) => (
           <TouchableOpacity
             key={section.id}
             style={styles.sectionButton}
-            onPress={() =>
-              section.route
-                ? router.push(section.route as any)
-                : router.push("/page-not-found")
-            }
+            onPress={() => navigateToContent(section.id as unknown as number)}
           >
             <View
-              style={[
-                styles.iconContainer,
-                { backgroundColor: section.color ?? "#2196F3" },
-              ]}
+              style={[styles.iconContainer, { backgroundColor: "#2196F3" }]}
             >
-              <Feather name={section.icon ?? "book"} size={24} color="#fff" />
+              <Feather name="book" size={24} color="#fff" />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -110,4 +136,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GrammarNavigationScreen;
+export default GrammarTopicsNavigationScreen;

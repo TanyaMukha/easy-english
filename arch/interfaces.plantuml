@@ -1,0 +1,94 @@
+@startuml interfaces
+
+' Прямоугольные линии
+skinparam linetype ortho   
+' skinparam linetype polyline ' Ломаные линии
+
+' skinparam classFontSize 12
+' skinparam classFontName Arial
+' skinparam classArrowColor Red
+' skinparam classArrowFontColor Blue
+' skinparam classArrowFontSize 12
+
+skinparam interface {
+  HeaderFontStyle normal
+  HeaderFontColor #2688d4
+}
+
+enum PartOfSpeech {
+  NOUN = "noun",
+  VERB = "verb",
+  ADJECTIVE = "adjective",
+  ADVERB = "adverb",
+  PREPOSITION = "preposition",
+  PHARSE = "phrase",
+  PHRASAL_VERB = "phrasal_verb",
+  IDIOM = "idiom",
+  PRONOUN = "pronoun",
+  CONJUNCTION = "conjunction",
+  INTERJECTION = "interjection",
+  SLANG = "slang",
+  ABBREVIATION = "abbreviation",
+  FIXEDEXPRESSION = "fixed_expression",
+  --
+  IRREGULAR = "irregular",
+}
+
+interface IrregularVerb {
+  pastSimple: string;
+  pastSimpleTranscription: string;
+  pastParticiple: string;
+  pastParticipleTranscription: string;
+}
+
+interface IrregularPlural {
+  plural: string;
+  pluralTranscription: string;
+}
+
+interface IrregularComparison {
+  comparative: string;
+  comparativeTranscription: string;
+  superlative: string;
+  superlativeTranscription: string;
+}
+
+interface Example {
+  sentence: string;
+  translation: string;
+}
+
+interface LearningHistory {
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  easiness: number;
+}
+
+interface LightWord {
+  id: number;
+  word: string;
+  transcription: string;
+  translation: string;
+  partOfSpeech: PartOfSpeech;
+  irregular?: boolean;
+  irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
+  examples: Example[];
+  language?: string;
+  learningHistory: LearningHistory;
+}
+
+interface Word extends LightWord {
+  audio?: Blob | null;
+  audio2?: Blob | null;
+  audio3?: Blob | null;
+}
+
+' Определение связей
+LightWord "1" *-- "0..*" Example : has >
+LightWord "1" o-- "1" LearningHistory : has >
+LightWord "1" o-- "0..1" IrregularVerb : may have >
+LightWord "1" o-- "0..1" IrregularPlural : may have >
+LightWord "1" o-- "0..1" IrregularComparison : may have >
+LightWord "1" o-- "1" PartOfSpeech : has >
+
+@enduml

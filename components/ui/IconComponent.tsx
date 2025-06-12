@@ -1,5 +1,5 @@
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { ComponentProps } from "react";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
 export enum IconFontFamily {
   Ionicons = "Ionicons",
