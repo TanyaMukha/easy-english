@@ -1,49 +1,63 @@
 {
   "expo": {
-    "name": "easy-english",
+    "name": "Easy English",
     "slug": "easy-english",
-    "scheme": "easy-english",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0F0F23"
+      "backgroundColor": "#000000"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.easyenglish.app"
     },
     "android": {
-      "package": "com.tanyamukha.easyenglish",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0F0F23"
-      }
+        "backgroundColor": "#000000"
+      },
+      "package": "com.easyenglish.app"
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "name": "Easy English - Вивчення англійської",
+      "shortName": "Easy English",
+      "lang": "uk",
+      "scope": "/",
+      "themeColor": "#000000",
+      "backgroundColor": "#000000",
+      "display": "standalone",
+      "orientation": "portrait-primary",
+      "startUrl": "/",
+      "preferRelatedApplications": false,
+      "bundler": "metro",
+      "output": "static",
+      "build": {
+        "babel": {
+          "include": ["@expo/vector-icons"]
+        }
+      }
     },
     "plugins": [
       "expo-router",
-      "expo-localization"
-    ],
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "903e251d-6c1c-4745-8c72-b9d8977c97f4"
-      }
-    },
-    "assets": [
-      "assets/images/*"
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "scheme": "easy-english"
   }
 }

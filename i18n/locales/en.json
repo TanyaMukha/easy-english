@@ -1,0 +1,58 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Try Again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "done": "Done",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "app": {
+    "name": "Easy English",
+    "tagline": "English learning for Ukrainians"
+  },
+  "navigation": {
+    "home": "Home",
+    "cards": "Cards",
+    "practice": "Practice",
+    "progress": "Progress",
+    "settings": "Settings"
+  },
+  "partOfSpeech": {
+    "noun": "Noun",
+    "verb": "Verb",
+    "adjective": "Adjective",
+    "adverb": "Adverb",
+    "preposition": "Preposition",
+    "phrase": "Phrase",
+    "phrasal_verb": "Phrasal Verb",
+    "idiom": "Idiom",
+    "pronoun": "Pronoun",
+    "conjunction": "Conjunction",
+    "interjection": "Interjection",
+    "slang": "Slang",
+    "abbreviation": "Abbreviation",
+    "fixed_expression": "Fixed Expression",
+    "irregular": "Irregular Form"
+  },
+  "errors": {
+    "network": "Network error. Please check your internet connection.",
+    "database": "Database error. Try restarting the app.",
+    "unknown": "An unknown error occurred. Please try again later."
+  },
+  "loading": {
+    "app": "Starting Easy English...",
+    "data": "Loading your data...",
+    "cards": "Loading cards...",
+    "sync": "Syncing..."
+  }
+}
