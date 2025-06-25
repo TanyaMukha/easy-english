@@ -242,6 +242,10 @@ export const importDatabase = async (): Promise<boolean> => {
     }
 
     const selectedFile = result.assets[0];
+    if (!selectedFile) {
+      Alert.alert("Ошибка", "Файл не выбран");
+      return false;
+    }
     const importPath = selectedFile.uri;
 
     // Проверяем, что файл существует

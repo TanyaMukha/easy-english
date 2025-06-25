@@ -1,5 +1,4 @@
 import { Dictionary } from "../data/DataModels";
-import { Utils } from "../data/DataUtils";
 
 // Mock database simulation - replace with actual SQLite operations
 let mockDictionaries: Dictionary[] = [
@@ -119,7 +118,7 @@ export class DictionaryService {
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error,
+          error: validation.error ?? "Invalid request data",
         };
       }
 
@@ -178,7 +177,7 @@ export class DictionaryService {
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error,
+          error: validation.error ?? "Invalid request data",
         };
       }
 
@@ -211,8 +210,10 @@ export class DictionaryService {
 
       // Update dictionary
       const updatedDictionary: Dictionary = {
-        ...mockDictionaries[dictionaryIndex],
-        ...(request.title && { title: request.title.trim() }),
+        id: mockDictionaries[dictionaryIndex]!.id,
+        guid: mockDictionaries[dictionaryIndex]!.guid,
+        createdAt: mockDictionaries[dictionaryIndex]!.createdAt,
+        title: request.title ? request.title.trim() : mockDictionaries[dictionaryIndex]!.title,
         updatedAt: new Date().toISOString(),
       };
 
@@ -294,7 +295,7 @@ export class DictionaryService {
         success: true,
         data: {
           wordCount,
-          lastStudied: dictionary.updatedAt ?? undefined,
+          ...(dictionary.updatedAt ? { lastStudied: dictionary.updatedAt } : {}),
           averageProgress: wordCount > 0 ? Math.floor(Math.random() * 100) : 0,
         },
       };

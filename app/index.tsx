@@ -1,17 +1,16 @@
-import React from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { router } from "expo-router";
 
-import DailyWordsSection from "../components/DailyWordsSection";
-import ErrorState from "../components/ErrorState";
-import HomeHeader from "../components/HomeHeader";
-import LearningGoals from "../components/LearningGoals";
-import LoadingState from "../components/LoadingState";
-import MotivationalQuote from "../components/MotivationalQuote";
-import ProgressChart from "../components/ProgressChart";
-import QuickShortcutsSection from "../components/QuickShortcutsSection";
-import QuickStatsCard from "../components/QuickStatsCard";
-import WordCollectionsSection from "../components/WordCollectionsSection";
+import { QuickStatsCard } from "../components/cards";
+import {
+  DailyWordsSection,
+  LearningGoals,
+  MotivationalQuote,
+  ProgressChart,
+  QuickShortcutsSection,
+  WordCollectionsSection,
+} from "../components/sections";
+import { ErrorState, HomeHeader, LoadingState } from "../components/ui";
 import { WordWithExamples } from "../data/DataModels";
 import { useHomeData } from "../hooks/useHomeData";
 import { useWords } from "../hooks/useWords";

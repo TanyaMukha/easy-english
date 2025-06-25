@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
-import ErrorState from "../../../components/ErrorState";
-import LoadingState from "../../../components/LoadingState";
-import ScreenHeader from "../../../components/ScreenHeader";
-import UpdatedWordForm from "../../../components/UpdatedWordForm";
+import { UpdatedWordForm } from "../../../components/forms";
+import { ErrorState, LoadingState, ScreenHeader } from "../../../components/ui";
 import { WordWithExamples } from "../../../data/DataModels";
 import { WordService } from "../../../services/WordService";
 import { GlobalStyles } from "../../../styles/GlobalStyles";
@@ -46,17 +44,17 @@ export default function EditWordScreen() {
       // Convert WordWithExamples to UpdateWordRequest format
       const updateRequest = {
         word: wordData.word,
-        transcription: wordData.transcription,
-        translation: wordData.translation,
-        explanation: wordData.explanation,
-        definition: wordData.definition,
+        transcription: wordData.transcription ?? "",
+        translation: wordData.translation ?? "",
+        explanation: wordData.explanation ?? "",
+        definition: wordData.definition ?? "",
         partOfSpeech: wordData.partOfSpeech,
         language: wordData.language,
         level: wordData.level,
         isIrregular: wordData.isIrregular,
-        examples: wordData.examples?.map(ex => ({
+        examples: wordData.examples?.map((ex) => ({
           sentence: ex.sentence,
-          translation: ex.translation,
+          translation: ex.translation ?? "",
         })),
       };
 
@@ -119,10 +117,8 @@ export default function EditWordScreen() {
         onBackPress={handleBackPress}
       />
 
-      {loading && (
-        <LoadingState message="Loading word..." />
-      )}
-      
+      {loading && <LoadingState message="Loading word..." />}
+
       {!loading && (error || !word) && (
         <ErrorState
           title="Failed to load word"

@@ -234,7 +234,7 @@ export const useWordForm = ({
       // Convert to API format
       const validExamples = cleanExamples.map((ex) => ({
         sentence: ex.sentence,
-        translation: ex.translation || undefined,
+        translation: ex.translation ?? "",
       }));
 
       if (isEditMode && word) {

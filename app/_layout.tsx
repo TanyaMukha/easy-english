@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Platform, StatusBar } from 'react-native';
-import { Slot } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../i18n/config';
-import { SharedStyles } from '../styles/SharedStyles';
-import { LoadingState } from '../components/LoadingState';
-import { ErrorState } from '../components/ErrorState';
+import { useEffect, useState } from "react";
+import { I18nextProvider } from "react-i18next";
+import { Platform, StatusBar } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Slot } from "expo-router";
+
+import ErrorState from "../components/ui/feedback/ErrorState";
+import LoadingState from "../components/ui/feedback/LoadingState";
+import i18n from "../i18n/config";
+import { SharedStyles } from "../styles/SharedStyles";
 
 /**
  * Root layout component that wraps the entire application
@@ -25,17 +26,19 @@ export default function RootLayout() {
     try {
       // Initialize i18n
       await i18n.init();
-      
+
       // Add any other initialization logic here
       // e.g., database setup, user authentication check, etc.
-      
+
       // Simulate brief loading time for better UX
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setIsAppReady(true);
     } catch (error) {
-      console.error('Failed to initialize app:', error);
-      setInitError(error instanceof Error ? error.message : 'Unknown error occurred');
+      console.error("Failed to initialize app:", error);
+      setInitError(
+        error instanceof Error ? error.message : "Unknown error occurred",
+      );
     }
   };
 
@@ -52,18 +55,18 @@ export default function RootLayout() {
           title="Failed to start application"
           message={initError}
           onRetry={handleRetry}
-          retryText="Restart App"
+          // retryText="Restart App"
         />
       )}
-      
+
       {!initError && !isAppReady && (
         <LoadingState message="Starting Easy English..." />
       )}
-      
+
       {!initError && isAppReady && (
         <GestureHandlerRootView style={SharedStyles.container}>
           <I18nextProvider i18n={i18n}>
-            {Platform.OS !== 'web' && (
+            {Platform.OS !== "web" && (
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="transparent"

@@ -1,13 +1,10 @@
 // app/words/[wordId].tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 
-import ErrorState from "../../components/ErrorState";
-import LoadingState from "../../components/LoadingState";
-// Components
-import ScreenHeader from "../../components/ScreenHeader";
+import { ErrorState, LoadingState, ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
 import { WordService } from "../../services/WordService";
 import {
@@ -142,7 +139,7 @@ export default function WordDetailsScreen() {
       {/* Header */}
       <ScreenHeader
         title={word?.word || "Word Details"}
-        subtitle={word?.translation}
+        subtitle={word?.translation ?? ""}
         showBackButton={true}
         onBackPress={() => router.back()}
         rightIcon="create"

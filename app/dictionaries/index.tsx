@@ -1,19 +1,21 @@
-import React from 'react';
-import { View, FlatList, RefreshControl } from 'react-native';
-import { router } from 'expo-router';
-import { GlobalStyles, Colors, Spacing } from '../../styles/GlobalStyles';
-import { Dictionary } from '../../data/DataModels';
+import { FlatList, RefreshControl, View } from "react-native";
+import { router } from "expo-router";
 
-import { useDictionaries } from '../../hooks/useDictionaries';
-
-import ScreenHeader from '../../components/ScreenHeader';
-import DictionaryCard from '../../components/DictionaryCard';
-import SearchBar from '../../components/SearchBar';
-import LoadingState from '../../components/LoadingState';
-import ErrorState from '../../components/ErrorState';
-import EmptyState from '../../components/EmptyState';
-import EditDictionaryModal from '../../components/EditDictionaryModal';
-import DictionaryActionsModal from '../../components/DictionaryActionsModal';
+import { DictionaryCard } from "../../components/cards";
+import {
+  DictionaryActionsModal,
+  EditDictionaryModal,
+} from "../../components/modals";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  ScreenHeader,
+  SearchBar,
+} from "../../components/ui";
+import { Dictionary } from "../../data/DataModels";
+import { useDictionaries } from "../../hooks/useDictionaries";
+import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
 
 export default function DictionariesScreen() {
   const {
@@ -38,11 +40,12 @@ export default function DictionariesScreen() {
   } = useDictionaries();
 
   const handleDictionaryPress = (dictionary: Dictionary) => {
+    console.log("Navigate to dictionary:", dictionary);
     router.push(`/dictionaries/${dictionary.id}`);
   };
 
   const handleCreatePress = () => {
-    router.push('/dictionaries/create');
+    router.push("/dictionaries/create");
   };
 
   const handleBackPress = () => {
@@ -69,8 +72,8 @@ export default function DictionariesScreen() {
   };
 
   const renderDictionary = ({ item }: { item: Dictionary }) => (
-    <DictionaryCard 
-      dictionary={item} 
+    <DictionaryCard
+      dictionary={item}
       onPress={handleDictionaryPress}
       onMenuPress={handleMenuPress}
       showMenu={true}
@@ -91,9 +94,7 @@ export default function DictionariesScreen() {
         onRightPressAccessibilityLabel="Create new dictionary"
       />
 
-      {loading && (
-        <LoadingState message="Loading dictionaries..." />
-      )}
+      {loading && <LoadingState message="Loading dictionaries..." />}
 
       {!loading && error && (
         <ErrorState
@@ -105,7 +106,9 @@ export default function DictionariesScreen() {
 
       {!loading && !error && (
         <View style={GlobalStyles.flex1}>
-          <View style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}>
+          <View
+            style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}
+          >
             <SearchBar
               value={searchQuery}
               onChangeText={setSearchQuery}

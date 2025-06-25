@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Alert, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
-import ScreenHeader from "../../components/ScreenHeader";
-import UpdatedWordForm from "../../components/UpdatedWordForm";
+import { UpdatedWordForm } from "../../components/forms";
+import { ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
 import { WordService } from "../../services/WordService";
 import { GlobalStyles } from "../../styles/GlobalStyles";
@@ -21,8 +21,8 @@ export default function CreateWordScreen() {
       // Convert WordWithExamples to CreateWordRequest format
       const createRequest = {
         word: wordData.word,
-        transcription: wordData.transcription,
-        translation: wordData.translation || '',
+        transcription: wordData.transcription ?? "",
+        translation: wordData.translation || "",
         explanation: wordData.explanation,
         definition: wordData.definition,
         partOfSpeech: wordData.partOfSpeech,
@@ -30,9 +30,9 @@ export default function CreateWordScreen() {
         level: wordData.level,
         isIrregular: wordData.isIrregular,
         dictionaryId: targetDictionaryId,
-        examples: wordData.examples?.map(ex => ({
+        examples: wordData.examples?.map((ex) => ({
           sentence: ex.sentence,
-          translation: ex.translation,
+          translation: ex.translation ?? "",
         })),
       };
 
@@ -47,7 +47,9 @@ export default function CreateWordScreen() {
               text: "Add Another",
               style: "default",
               onPress: () => {
-                router.replace(`/words/create?dictionaryId=${targetDictionaryId}`);
+                router.replace(
+                  `/words/create?dictionaryId=${targetDictionaryId}`,
+                );
               },
             },
             {

@@ -1,23 +1,21 @@
-// app/words/index.tsx
-import React from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
-import { router } from 'expo-router';
-import { GlobalStyles, Colors, Spacing } from '../../styles/GlobalStyles';
-import { WordWithExamples } from '../../data/DataModels';
+import { FlatList, RefreshControl, View } from "react-native";
+import { router } from "expo-router";
 
-// Custom hooks
-import { useWords } from '../../hooks/useWords';
-
+import WordCard from "../../components/cards/WordCard";
+import { FilterModal, WordActionsModal } from "../../components/modals";
 // Components
-import ScreenHeader from '../../components/ScreenHeader';
-import WordCard from '../../components/WordCard';
-import SearchBar from '../../components/SearchBar';
-import LoadingState from '../../components/LoadingState';
-import ErrorState from '../../components/ErrorState';
-import EmptyState from '../../components/EmptyState';
-import FilterModal from '../../components/FilterModal';
-import FloatingActionButton from '../../components/FloatingActionButton';
-import WordActionsModal from '../../components/WordActionsModal';
+import {
+  EmptyState,
+  ErrorState,
+  FloatingActionButton,
+  LoadingState,
+  ScreenHeader,
+  SearchBar,
+} from "../../components/ui";
+import { WordWithExamples } from "../../data/DataModels";
+// Custom hooks
+import { useWords } from "../../hooks/useWords";
+import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
 
 /**
  * All Words Screen with full CRUD support
@@ -48,34 +46,34 @@ export default function WordsScreen() {
   } = useWords();
 
   const handleWordPress = (word: WordWithExamples) => {
-    console.log('Navigate to word details:', word.id);
+    console.log("Navigate to word details:", word.id);
     router.push(`/words/${word.id}`);
   };
 
   const handleCreatePress = () => {
-    console.log('Navigate to create word');
-    router.push('/words/create');
+    console.log("Navigate to create word");
+    router.push("/words/create");
   };
 
   const handleEditWord = (word: WordWithExamples) => {
-    console.log('Navigate to edit word:', word.id);
+    console.log("Navigate to edit word:", word.id);
     router.push(`/words/edit/${word.id}`);
   };
 
   const handleDeleteWord = async (word: WordWithExamples) => {
     const success = await deleteWord(word.id!);
     if (success) {
-      console.log('Word deleted successfully');
+      console.log("Word deleted successfully");
     }
   };
 
   const handleViewStats = (word: WordWithExamples) => {
-    console.log('View stats for word:', word.id);
+    console.log("View stats for word:", word.id);
     // TODO: Navigate to word statistics screen
   };
 
   const handlePractice = (word: WordWithExamples) => {
-    console.log('Practice word:', word.id);
+    console.log("Practice word:", word.id);
     // TODO: Navigate to practice screen with this word
   };
 
@@ -125,7 +123,7 @@ export default function WordsScreen() {
 
       {loading && filteredWords.length === 0 ? (
         <LoadingState message="Loading words..." />
-      ) : (!loading && error && filteredWords.length === 0 ? (
+      ) : !loading && error && filteredWords.length === 0 ? (
         <ErrorState
           title="Failed to load words"
           message={error}
@@ -134,7 +132,9 @@ export default function WordsScreen() {
       ) : (
         <View style={GlobalStyles.flex1}>
           {/* Search Bar */}
-          <View style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}>
+          <View
+            style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}
+          >
             <SearchBar
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -191,7 +191,7 @@ export default function WordsScreen() {
             </>
           )}
         </View>
-      ))}
+      )}
 
       {/* Filter Modal */}
       <FilterModal

@@ -149,31 +149,31 @@ let nextExampleId = 4;
 
 export interface CreateWordRequest {
   word: string;
-  transcription?: string;
-  translation?: string;
-  explanation?: string;
-  definition?: string;
+  transcription?: string | undefined;
+  translation?: string | undefined;
+  explanation?: string | undefined;
+  definition?: string | undefined;
   partOfSpeech: PartOfSpeech;
   language: LanguageCode;
   level: Level;
-  isIrregular?: boolean;
+  isIrregular?: boolean | undefined;
   dictionaryId: number;
-  examples?: Omit<Example, 'id' | 'guid' | 'wordId' | 'createdAt' | 'updatedAt'>[];
-  tagIds?: number[];
+  examples?: Omit<Example, 'id' | 'guid' | 'wordId' | 'createdAt' | 'updatedAt'>[] | undefined;
+  tagIds?: number[] | undefined;
 }
 
 export interface UpdateWordRequest {
-  word?: string;
-  transcription?: string;
-  translation?: string;
-  explanation?: string;
-  definition?: string;
-  partOfSpeech?: PartOfSpeech;
-  language?: LanguageCode;
-  level?: Level;
-  isIrregular?: boolean;
-  examples?: Omit<Example, 'id' | 'guid' | 'wordId' | 'createdAt' | 'updatedAt'>[];
-  tagIds?: number[];
+  word?: string | undefined;
+  transcription?: string | undefined;
+  translation?: string | undefined;
+  explanation?: string | undefined;
+  definition?: string | undefined;
+  partOfSpeech?: PartOfSpeech | undefined;
+  language?: LanguageCode | undefined;
+  level?: Level | undefined;
+  isIrregular?: boolean | undefined;
+  examples?: Omit<Example, 'id' | 'guid' | 'wordId' | 'createdAt' | 'updatedAt'>[] | undefined;
+  tagIds?: number[] | undefined;
 }
 
 export interface WordResponse {
@@ -363,7 +363,7 @@ export class WordService {
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error,
+          error: validation.error ?? "Invalid request",
         };
       }
 
@@ -415,7 +415,7 @@ export class WordService {
           id: nextExampleId++,
           guid: `example-${Date.now()}-${Math.random()}`,
           sentence: ex.sentence,
-          translation: ex.translation,
+          translation: ex.translation ?? "",
           wordId: newWordId,
           createdAt: now,
           updatedAt: now,
@@ -451,7 +451,7 @@ export class WordService {
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error,
+          error: validation.error ?? "Invalid request",
         };
       }
 
@@ -467,6 +467,13 @@ export class WordService {
       }
 
       const existingWord = mockWords[wordIndex];
+
+      if (!existingWord) {
+        return {
+          success: false,
+          error: 'Word not found',
+        };
+      }
 
       // Check for duplicate words if word or part of speech is being changed
       if (request.word || request.partOfSpeech) {
@@ -491,7 +498,7 @@ export class WordService {
       // Update word
       const updatedWord: Word = {
         ...existingWord,
-        ...(request.word && { word: request.word.trim() }),
+        word: request.word !== undefined ? request.word.trim() : existingWord.word,
         ...(request.transcription !== undefined && { transcription: request.transcription?.trim() || undefined }),
         ...(request.translation !== undefined && { translation: request.translation?.trim() || undefined }),
         ...(request.explanation !== undefined && { explanation: request.explanation?.trim() || undefined }),
@@ -517,7 +524,7 @@ export class WordService {
             id: nextExampleId++,
             guid: `example-${Date.now()}-${Math.random()}`,
             sentence: ex.sentence,
-            translation: ex.translation,
+            translation: ex.translation ?? "",
             wordId: id,
             createdAt: now,
             updatedAt: now,
@@ -616,6 +623,12 @@ export class WordService {
       }
 
       const word = mockWords[wordIndex];
+      if (!word) {
+        return {
+          success: false,
+          error: 'Word not found',
+        };
+      }
       const newReviewCount = (word.reviewCount || 0) + 1;
       const currentRate = word.rate || 0;
 
@@ -835,7 +848,7 @@ export class WordService {
       } else {
         return {
           success: false,
-          error: response.error,
+          error: response.error ?? 'Unknown error',
         };
       }
     } catch (error) {
@@ -883,7 +896,7 @@ export class WordService {
             dictionaryId: wordData.dictionaryId,
             examples: wordData.examples?.map(ex => ({
               sentence: ex.sentence,
-              translation: ex.translation,
+              translation: ex.translation ?? "",
             })),
           };
 

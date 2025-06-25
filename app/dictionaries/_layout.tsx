@@ -1,4 +1,3 @@
-import React from 'react';
 import { Stack } from 'expo-router';
 import { Colors } from '../../styles/GlobalStyles';
 
@@ -26,10 +25,9 @@ export default function DictionariesLayout() {
         }}
       />
       <Stack.Screen 
-        name="create" 
+        name="(manage)" 
         options={{
-          title: 'Create Dictionary',
-          presentation: 'modal',
+          title: 'Manage Dictionaries',
         }}
       />
     </Stack>

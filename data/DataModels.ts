@@ -82,15 +82,15 @@ export interface Dictionary extends BaseEntity {
 
 export interface Word extends BaseEntity, Progress {
   word: string;
-  transcription?: string;
-  translation?: string;
-  explanation?: string;
-  definition?: string;
+  transcription?: string | undefined;
+  translation?: string | undefined;
+  explanation?: string | undefined;
+  definition?: string | undefined;
   partOfSpeech: PartOfSpeech;
   language: LanguageCode;
   level: Level;
   isIrregular: boolean;
-  audio?: Uint8Array; // BLOB data
+  audio?: Uint8Array | undefined; // BLOB data
   dictionaryId: number;
 }
 
@@ -397,15 +397,15 @@ export interface UpdateWordData extends Partial<CreateWordData> {
 }
 
 export interface WordFilters {
-  dictionaryId?: number;
-  search?: string;
-  partOfSpeech?: PartOfSpeech[];
-  level?: Level[];
-  language?: LanguageCode;
-  isIrregular?: boolean;
-  tagIds?: number[];
-  sortBy?: 'word' | 'createdAt' | 'reviewCount' | 'rate';
-  sortOrder?: 'asc' | 'desc';
+  dictionaryId?: number | undefined;
+  search?: string | undefined;
+  partOfSpeech?: PartOfSpeech[] | undefined;
+  level?: Level[] | undefined;
+  language?: LanguageCode | undefined;
+  isIrregular?: boolean | undefined;
+  tagIds?: number[] | undefined;
+  sortBy?: 'word' | 'createdAt' | 'reviewCount' | 'rate' | undefined;
+  sortOrder?: 'asc' | 'desc' | undefined;
 }
 
 export interface WordListResponse {
