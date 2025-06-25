@@ -1,42 +1,50 @@
 import React from "react";
-import { useColorScheme } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Drawer } from "expo-router/drawer";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { Colors } from "../styles/GlobalStyles";
 
+// Import reflection metadata for better type support
 import "reflect-metadata";
 
-import CustomDrawerNavigator from "../components/layout/CustomDrawerNavigator";
-
-import "../i18n";
-
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <SafeAreaProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <CustomDrawerNavigator>
-          <Drawer.Screen
-            name="index"
-            options={{
-              title: "Home",
-            }}
-          />
-          <Drawer.Screen
-            name="page-not-found"
-            options={{
-              title: "Not Found",
-            }}
-          />
-          <Drawer.Screen
-            name="grammar"
-            options={{
-              headerShown: false,
-            }}
-          />
-        </CustomDrawerNavigator>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
+    <>
+      <StatusBar style="light" backgroundColor={Colors.background} />
+      <Stack
+        screenOptions={{
+          headerShown: false, // Hide default headers since we have custom ones
+          contentStyle: {
+            backgroundColor: Colors.background,
+          },
+          animation: "slide_from_right",
+        }}
+      >
+        {/* Define all main routes explicitly */}
+        <Stack.Screen
+          name="index"
+          options={{
+            title: "Home",
+          }}
+        />
+        <Stack.Screen
+          name="dictionaries"
+          options={{
+            title: "Dictionaries",
+          }}
+        />
+        <Stack.Screen
+          name="words"
+          options={{
+            title: "Words",
+          }}
+        />
+        <Stack.Screen
+          name="+not-found"
+          options={{
+            title: "Not Found",
+          }}
+        />
+      </Stack>
+    </>
   );
 }

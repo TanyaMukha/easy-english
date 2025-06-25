@@ -70,83 +70,175 @@ title Database Diagram
 ' Определение таблиц базы данных
 table(dictionaries) {
     PK(id): INT AUTO_INCREMENT
-    column(title): TEXT NOT NULL
     column(guid): TEXT NOT NULL
+    column(title): TEXT NOT NULL
+    column(createdAt): TEXT NULL
+    column(updatedAt): TEXT NULL
 }
 
 table(words) {
     PK(id): INT AUTO_INCREMENT
-    column(words): TEXT NOT NULL
+    column(guid): TEXT NOT NULL
+    column(word): TEXT NOT NULL
     column(transcription): TEXT
-    column(translation): TEXT NOT NULL
-    column(part_of_speech): TEXT NOT NULL
+    column(translation): TEXT
+    column(explanation): TEXT
+    column(definition): TEXT
+    column(partOfSpeech): TEXT NOT NULL
     column(language): TEXT NOT NULL DEFAULT 'en'
     column(level): TEXT NOT NULL DEFAULT 'A1'
-    column(explanation): TEXT
-    column(is_irregular): BOOLEAN
-    column(irregular_forms): TEXT
-    column(examples): TEXT
-    column(last_review_date): TIMESTAMP
-    column(review_count): INT
-    column(easiness): INT
+    column(isIrregular): BOOLEAN
     column(audio): BLOB
-    column(audio2): BLOB
-    column(audio3): BLOB
+    column(lastReviewDate): TIMESTAMP
+    column(reviewCount): INT
+    column(rate): INT
+    column(createdAt): TEXT NULL
+    column(updatedAt): TEXT NULL
     --
-    FK(dictionary_id): INT
+    FK(dictionaryId): INT
+}
+
+table(sets) {
+    PK(id): INT AUTO_INCREMENT
+    column(guid): TEXT NOT NULL
+    column(title): TEXT NOT NULL
+    column(description): TEXT
+    column(lastReviewDate): TIMESTAMP
+    column(reviewCount): INT
+    column(createdAt): TEXT NULL
+    column(updatedAt): TEXT NULL    
+}
+
+table(set_words) {
+  FPK(setId): INT NOT NULL
+  FPK(wordId): INT NOT NULL
+}
+
+table(tags) {
+  PK(id): INT AUTO_INCREMENT
+  column(title): TEXT NOT NULL
+  column(createdAt): TEXT NULL
+  column(updatedAt): TEXT NULL
+}
+
+table(word_tags) {
+  FPK(wordId): INT NOT NULL
+  FPK(tagId): INT NOT NULL
+}
+
+table(irregular_forms) {
+  FPK(fistFormId): INT NOT NULL
+  FPK(secondFormId): INT NOT NULL
+  FPK(thirdFormId): INT
+}
+
+table(examples) {
+  PK(id): INT AUTO_INCREMENT
+  column(sentence): TEXT NOT NULL
+  column(translation): TEXT
+  --
+  FK(wordId): INT
+}
+
+table(study_cards) {
+  PK(id): INT AUTO_INCREMENT
+  column(guid): TEXT NOT NULL
+  column(title): TEXT NOT NULL
+  column(description): TEXT
+  column(dialogue): TEXT
+  column(lastReviewDate): TIMESTAMP
+  column(reviewCount): INT
+  column(rate): INT
+  column(createdAt): TEXT NULL
+  column(updatedAt): TEXT NULL
+  --
+  FK(unitId): INT
+}
+
+table(study_card_items) {
+  FPK(cardId): INT NOT NULL
+  FPK(wordId): INT NOT NULL
+}
+
+table(test_cards) {
+  PK(id): INT AUTO_INCREMENT
+  column(guid): TEXT NOT NULL
+  column(testType): TEXT
+  column(title): TEXT NOT NULL
+  column(description): TEXT
+  column(text): TEXT
+  column(mask): TEXT
+  column(options): TEXT
+  column(correctAnswers): TEXT
+  column(lastReviewDate): TIMESTAMP
+  column(reviewCount): INT
+  column(rate): INT
+  column(createdAt): TEXT NULL
+  column(updatedAt): TEXT NULL
+  --
+  FK(testId): INT
 }
 
 table(units) {
     PK(id): INT AUTO_INCREMENT
+    column(guid): TEXT NOT NULL
     column(title): TEXT NOT NULL
     column(description): TEXT
-    column(guid): TEXT NOT NULL
-}
-
-table(unit_words) {
-    FPK(unit_id): INT NOT NULL
-    FPK(word_id): INT NOT NULL
+    column(lastReviewDate): TIMESTAMP
+    column(reviewCount): INT
+    column(createdAt): TEXT NULL
+    column(updatedAt): TEXT NULL
 }
 
 table(grammar_tests) {
     PK(id): INT AUTO_INCREMENT
-    column(title): TEXT NOT NULL
-    column(mask): TEXT
-    column(last_review_date): TIMESTAMP
-    column(review_count): INT
     column(guid): TEXT NOT NULL
-}
-
-table(grammar_test_questions) {
-    PK(id): INT AUTO_INCREMENT
-    column(sentence): TEXT NOT NULL
-    column(translation): TEXT NOT NULL
-    column(answers): TEXT NOT NULL
-    column(correct_answer): TEXT NOT NULL
-    --
-    FK(test_id): INT
+    column(title): TEXT NOT NULL
+    column(description): TEXT
+    column(lastReviewDate): TIMESTAMP
+    column(reviewCount): INT
+    column(createdAt): TEXT NULL
+    column(updatedAt): TEXT NULL
 }
 
 table(grammar_topics) {
     PK(id): INT AUTO_INCREMENT
+    column(guid): TEXT NOT NULL
     column(title): TEXT NOT NULL
     column(description): TEXT
     column(content): TEXT NOT NULL
-    column(guid): TEXT NOT NULL
+    column(language): TEXT NOT NULL DEFAULT 'en'
+    column(lastReviewDate): TIMESTAMP
+    column(reviewCount): INT
+    column(createdAt): TEXT NULL
+    column(updatedAt): TEXT NULL
     --
-    FK(topic_id): INT
+    FK(topicId): INT
 }
 
 table(grammar_topic_tests) {
-    FPK(topic_id): INT NOT NULL
-    FPK(test_id): INT NOT NULL
+    FPK(topicId): INT NOT NULL
+    FPK(testId): INT NOT NULL
 }
 
 ' Определение связей между таблицами
 dictionaries ||--o{ words
-units ||--o{ unit_words
-unit_words }o--|| words
-grammar_tests ||--o{ grammar_test_questions
+
+units ||--o{ study_cards
+
+words ||--o{ examples
+word_tags ||--o{ tags
+word_tags ||--o{ words
+
+study_card_items ||--o{ study_cards
+study_card_items ||--o{ words
+
+irregular_forms ||--o{ words
+
+set_words ||--o{ words
+set_words ||--o{ sets
+
+grammar_tests ||--o{ test_cards
 grammar_topic_tests ||--o{ grammar_tests
 grammar_topic_tests ||--o{ grammar_topics
 grammar_topics ||--o{ grammar_topics : parent > child

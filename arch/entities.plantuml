@@ -17,26 +17,38 @@ enum PartOfSpeech {
   IRREGULAR = "irregular",
 }
 
-interface IrregularVerb {
-  pastSimple: string;
-  pastSimpleTranscription: string;
-  pastParticiple: string;
-  pastParticipleTranscription: string;
+interface Dictionary extends HowLongWas {
+  id: number;
+  guid: string;
+  title: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
-interface IrregularPlural {
-  plural: string;
-  pluralTranscription: string;
+interface OneIrregularForm {
+  secondFormId: number;
+  secondFormGuid: string;
+  secondFormWord: string;
+  secondFormTranscription: string;
+  secondFormTranslation: string;
 }
 
-interface IrregularComparison {
-  comparative: string;
-  comparativeTranscription: string;
-  superlative: string;
-  superlativeTranscription: string;
+interface TwoIrregularForms {
+  secondFormId: number;
+  secondFormGuid: string;
+  secondFormWord: string;
+  secondFormTranscription: string;
+  secondFormTranslation: string;
+  thirdFormId: number;
+  thirdFormGuid: string;
+  thirdFormWord: string;
+  thirdFormTranscription: string;
+  thirdFormTranslation: string;
 }
 
 interface Example {
+  id: number;
+  guid: string;
   sentence: string;
   translation: string;
 }
@@ -44,44 +56,56 @@ interface Example {
 interface LearningHistory {
   lastReviewDate: Date | null;
   reviewCount: number;
-  easiness: number;
 }
 
-interface LightWord {
+interface HowLongWas {
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface LightWord extends LearningHistory {
   id: number;
+  guid: string;
   word: string;
-  transcription: string;
-  translation: string;
+  transcription?: string;
+  translation?: string;
   partOfSpeech: PartOfSpeech;
-  irregular?: boolean;
-  irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
-  examples: Example[];
+  isIrregular?: boolean;
   language?: string;
-  learningHistory: LearningHistory;
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  rate: number;
 }
 
-interface WordCheckTestHistory {
-  similarity: number;
-  numberOfHintsUsed: number;
-  recallQuality: number;
-}
-
-interface Word extends LightWord {
+interface Word extends LightWord, HowLongWas {
   id: number;
+  guid: string;
   word: string;
-  transcription: string;
-  translation: string;
-  irregular?: boolean;
-  irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
+  transcription?: string;
+  translation?: string;
+  explanation?: string;
+  definition?: string;
+  partOfSpeech: PartOfSpeech;
+  isIrregular?: boolean;
+  language?: string;
+  level?: string;
   audio?: Blob | null;
-  audio2?: Blob | null;
-  audio3?: Blob | null;
-  partOfSpeech: PartOfSpeech;
-  examples: Example[];
-  language?: string;
-  learningHistory: LearningHistory;
-  checkTestHistory?: WordCheckTestHistory;
-  isFavorite?: boolean;
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  rate: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface WordSet extends LearningHistory, HowLongWas {
+  id: number;
+  guid: string;
+  title: string;
+  description: string;
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 @enduml

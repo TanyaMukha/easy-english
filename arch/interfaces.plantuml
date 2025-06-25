@@ -34,26 +34,32 @@ enum PartOfSpeech {
   IRREGULAR = "irregular",
 }
 
+interface WordMinimumInfo {
+  id: number;
+  guid: string;
+  word: string;
+  transcription: string;
+  translation: string;
+  audio?: Blob;
+}
+
 interface IrregularVerb {
-  pastSimple: string;
-  pastSimpleTranscription: string;
-  pastParticiple: string;
-  pastParticipleTranscription: string;
+  pastSimple: WordMinimumInfo;
+  pastParticiple: WordMinimumInfo;
 }
 
 interface IrregularPlural {
-  plural: string;
-  pluralTranscription: string;
+  plural: WordMinimumInfo;
 }
 
 interface IrregularComparison {
-  comparative: string;
-  comparativeTranscription: string;
-  superlative: string;
-  superlativeTranscription: string;
+  comparative: WordMinimumInfo;
+  superlative: WordMinimumInfo;
 }
 
 interface Example {
+  id: number;
+  guid: string;
   sentence: string;
   translation: string;
 }
@@ -61,34 +67,38 @@ interface Example {
 interface LearningHistory {
   lastReviewDate: Date | null;
   reviewCount: number;
-  easiness: number;
+  rate?: number;
 }
 
-interface LightWord {
+interface Word extends LearningHistory {
   id: number;
   word: string;
-  transcription: string;
-  translation: string;
+  transcription?: string;
+  translation?: string;
+  explanation?: string;
+  definition?: string;
+  audio?: Blob | null;
   partOfSpeech: PartOfSpeech;
   irregular?: boolean;
   irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
   examples: Example[];
   language?: string;
-  learningHistory: LearningHistory;
-}
-
-interface Word extends LightWord {
-  audio?: Blob | null;
-  audio2?: Blob | null;
-  audio3?: Blob | null;
+  level?: string;
 }
 
 ' Определение связей
-LightWord "1" *-- "0..*" Example : has >
-LightWord "1" o-- "1" LearningHistory : has >
-LightWord "1" o-- "0..1" IrregularVerb : may have >
-LightWord "1" o-- "0..1" IrregularPlural : may have >
-LightWord "1" o-- "0..1" IrregularComparison : may have >
-LightWord "1" o-- "1" PartOfSpeech : has >
+Word "1" *-- "0..*" Example : has >
+Word "1" o-- "0..1" IrregularVerb : may have >
+Word "1" o-- "0..1" IrregularPlural : may have >
+Word "1" o-- "0..1" IrregularComparison : may have >
+Word "1" o-- "1" PartOfSpeech : has >
+
+IrregularVerb "1" -- "1" WordMinimumInfo : has
+IrregularVerb "1" -- "1" WordMinimumInfo : has
+
+IrregularPlural "1" -- "1" WordMinimumInfo : has
+
+IrregularComparison "1" -- "1" WordMinimumInfo : has
+IrregularComparison "1" -- "1" WordMinimumInfo : has
 
 @enduml
