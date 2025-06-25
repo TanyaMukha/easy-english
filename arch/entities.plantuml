@@ -1,0 +1,111 @@
+@startuml entities
+enum PartOfSpeech {
+  NOUN = "noun",
+  VERB = "verb",
+  ADJECTIVE = "adjective",
+  ADVERB = "adverb",
+  PREPOSITION = "preposition",
+  PHARSE = "phrase",
+  PHRASAL_VERB = "phrasal_verb",
+  IDIOM = "idiom",
+  PRONOUN = "pronoun",
+  CONJUNCTION = "conjunction",
+  INTERJECTION = "interjection",
+  SLANG = "slang",
+  ABBREVIATION = "abbreviation",
+  FIXEDEXPRESSION = "fixed_expression",
+  IRREGULAR = "irregular",
+}
+
+interface Dictionary extends HowLongWas {
+  id: number;
+  guid: string;
+  title: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface OneIrregularForm {
+  secondFormId: number;
+  secondFormGuid: string;
+  secondFormWord: string;
+  secondFormTranscription: string;
+  secondFormTranslation: string;
+}
+
+interface TwoIrregularForms {
+  secondFormId: number;
+  secondFormGuid: string;
+  secondFormWord: string;
+  secondFormTranscription: string;
+  secondFormTranslation: string;
+  thirdFormId: number;
+  thirdFormGuid: string;
+  thirdFormWord: string;
+  thirdFormTranscription: string;
+  thirdFormTranslation: string;
+}
+
+interface Example {
+  id: number;
+  guid: string;
+  sentence: string;
+  translation: string;
+}
+
+interface LearningHistory {
+  lastReviewDate: Date | null;
+  reviewCount: number;
+}
+
+interface HowLongWas {
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface LightWord extends LearningHistory {
+  id: number;
+  guid: string;
+  word: string;
+  transcription?: string;
+  translation?: string;
+  partOfSpeech: PartOfSpeech;
+  isIrregular?: boolean;
+  language?: string;
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  rate: number;
+}
+
+interface Word extends LightWord, HowLongWas {
+  id: number;
+  guid: string;
+  word: string;
+  transcription?: string;
+  translation?: string;
+  explanation?: string;
+  definition?: string;
+  partOfSpeech: PartOfSpeech;
+  isIrregular?: boolean;
+  language?: string;
+  level?: string;
+  audio?: Blob | null;
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  rate: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface WordSet extends LearningHistory, HowLongWas {
+  id: number;
+  guid: string;
+  title: string;
+  description: string;
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+@enduml

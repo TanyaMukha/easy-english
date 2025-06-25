@@ -1,0 +1,104 @@
+@startuml interfaces
+
+' Прямоугольные линии
+skinparam linetype ortho   
+' skinparam linetype polyline ' Ломаные линии
+
+' skinparam classFontSize 12
+' skinparam classFontName Arial
+' skinparam classArrowColor Red
+' skinparam classArrowFontColor Blue
+' skinparam classArrowFontSize 12
+
+skinparam interface {
+  HeaderFontStyle normal
+  HeaderFontColor #2688d4
+}
+
+enum PartOfSpeech {
+  NOUN = "noun",
+  VERB = "verb",
+  ADJECTIVE = "adjective",
+  ADVERB = "adverb",
+  PREPOSITION = "preposition",
+  PHARSE = "phrase",
+  PHRASAL_VERB = "phrasal_verb",
+  IDIOM = "idiom",
+  PRONOUN = "pronoun",
+  CONJUNCTION = "conjunction",
+  INTERJECTION = "interjection",
+  SLANG = "slang",
+  ABBREVIATION = "abbreviation",
+  FIXEDEXPRESSION = "fixed_expression",
+  --
+  IRREGULAR = "irregular",
+}
+
+interface WordMinimumInfo {
+  id: number;
+  guid: string;
+  word: string;
+  transcription: string;
+  translation: string;
+  audio?: Blob;
+}
+
+interface IrregularVerb {
+  pastSimple: WordMinimumInfo;
+  pastParticiple: WordMinimumInfo;
+}
+
+interface IrregularPlural {
+  plural: WordMinimumInfo;
+}
+
+interface IrregularComparison {
+  comparative: WordMinimumInfo;
+  superlative: WordMinimumInfo;
+}
+
+interface Example {
+  id: number;
+  guid: string;
+  sentence: string;
+  translation: string;
+}
+
+interface LearningHistory {
+  lastReviewDate: Date | null;
+  reviewCount: number;
+  rate?: number;
+}
+
+interface Word extends LearningHistory {
+  id: number;
+  word: string;
+  transcription?: string;
+  translation?: string;
+  explanation?: string;
+  definition?: string;
+  audio?: Blob | null;
+  partOfSpeech: PartOfSpeech;
+  irregular?: boolean;
+  irregularForms?: IrregularVerb | IrregularPlural | IrregularComparison | null;
+  examples: Example[];
+  language?: string;
+  level?: string;
+}
+
+' Определение связей
+Word "1" *-- "0..*" Example : has >
+Word "1" o-- "0..1" IrregularVerb : may have >
+Word "1" o-- "0..1" IrregularPlural : may have >
+Word "1" o-- "0..1" IrregularComparison : may have >
+Word "1" o-- "1" PartOfSpeech : has >
+
+IrregularVerb "1" -- "1" WordMinimumInfo : has
+IrregularVerb "1" -- "1" WordMinimumInfo : has
+
+IrregularPlural "1" -- "1" WordMinimumInfo : has
+
+IrregularComparison "1" -- "1" WordMinimumInfo : has
+IrregularComparison "1" -- "1" WordMinimumInfo : has
+
+@enduml

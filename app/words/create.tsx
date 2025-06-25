@@ -1,0 +1,104 @@
+import React, { useState } from "react";
+import { Alert, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+
+import ScreenHeader from "../../components/ScreenHeader";
+import UpdatedWordForm from "../../components/UpdatedWordForm";
+import { WordWithExamples } from "../../data/DataModels";
+import { WordService } from "../../services/WordService";
+import { GlobalStyles } from "../../styles/GlobalStyles";
+
+export default function CreateWordScreen() {
+  const { dictionaryId } = useLocalSearchParams<{ dictionaryId?: string }>();
+  const [loading, setLoading] = useState(false);
+
+  const targetDictionaryId = dictionaryId ? parseInt(dictionaryId, 10) : 1;
+
+  const handleSave = async (wordData: WordWithExamples) => {
+    setLoading(true);
+
+    try {
+      // Convert WordWithExamples to CreateWordRequest format
+      const createRequest = {
+        word: wordData.word,
+        transcription: wordData.transcription,
+        translation: wordData.translation || '',
+        explanation: wordData.explanation,
+        definition: wordData.definition,
+        partOfSpeech: wordData.partOfSpeech,
+        language: wordData.language,
+        level: wordData.level,
+        isIrregular: wordData.isIrregular,
+        dictionaryId: targetDictionaryId,
+        examples: wordData.examples?.map(ex => ({
+          sentence: ex.sentence,
+          translation: ex.translation,
+        })),
+      };
+
+      const response = await WordService.create(createRequest);
+
+      if (response.success && response.data) {
+        Alert.alert(
+          "Success",
+          `Word "${response.data.word}" has been created successfully!`,
+          [
+            {
+              text: "Add Another",
+              style: "default",
+              onPress: () => {
+                router.replace(`/words/create?dictionaryId=${targetDictionaryId}`);
+              },
+            },
+            {
+              text: "View Word",
+              style: "default",
+              onPress: () => {
+                router.replace(`/words/${response.data!.id}`);
+              },
+            },
+            {
+              text: "Done",
+              style: "cancel",
+              onPress: () => {
+                router.back();
+              },
+            },
+          ],
+        );
+      } else {
+        Alert.alert("Error", response.error || "Failed to create word");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to create word. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    router.back();
+  };
+
+  const handleBackPress = () => {
+    router.back();
+  };
+
+  return (
+    <View style={GlobalStyles.container}>
+      <ScreenHeader
+        title="Add New Word"
+        subtitle="Build your vocabulary"
+        showBackButton={true}
+        onBackPress={handleBackPress}
+      />
+
+      <UpdatedWordForm
+        dictionaryId={targetDictionaryId}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        loading={loading}
+      />
+    </View>
+  );
+}
