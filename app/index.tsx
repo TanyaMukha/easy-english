@@ -12,10 +12,10 @@ import ProgressChart from "../components/ProgressChart";
 import QuickShortcutsSection from "../components/QuickShortcutsSection";
 import QuickStatsCard from "../components/QuickStatsCard";
 import WordCollectionsSection from "../components/WordCollectionsSection";
+import { WordWithExamples } from "../data/DataModels";
 import { useHomeData } from "../hooks/useHomeData";
 import { useWords } from "../hooks/useWords";
 import { Colors, GlobalStyles, Spacing } from "../styles/GlobalStyles";
-import { WordWithExamples } from "../data/DataModels";
 
 export default function HomeScreen() {
   const {
@@ -186,14 +186,12 @@ export default function HomeScreen() {
 
   return (
     <View style={GlobalStyles.container}>
-      {loading && (
-        <LoadingState message="Loading your learning data..." />
-      )}
-      
+      {loading && <LoadingState message="Loading your learning data..." />}
+
       {!loading && (error || !userStats) && (
         <ErrorState
           title="Failed to load data"
-          message={error || undefined}
+          message={error ?? ""}
           onRetry={loadData}
         />
       )}

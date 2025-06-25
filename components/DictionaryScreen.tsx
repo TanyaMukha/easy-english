@@ -1,19 +1,19 @@
 import React from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 
-import EmptyState from "../components/EmptyState";
 import ErrorState from "./ErrorState";
-import FilterModal from "../components/FilterModal";
 import FloatingActionButton from "./FloatingActionButton";
-import { Colors, GlobalStyles, Spacing } from "../styles/GlobalStyles";
 import LoadingState from "./LoadingState";
+import WordCard from "./WordCard";
+import EmptyState from "../components/EmptyState";
+import FilterModal from "../components/FilterModal";
 // Components
 import ScreenHeader from "../components/ScreenHeader";
 import SearchBar from "../components/SearchBar";
-import WordCard from "./WordCard";
 import { WordWithExamples } from "../data/DataModels";
 // Custom hooks
 import { useDictionary } from "../hooks/useDictionary";
+import { Colors, GlobalStyles, Spacing } from "../styles/GlobalStyles";
 
 interface DictionaryScreenProps {
   navigation?: any;

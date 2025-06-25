@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover" />
+    
+    <!-- SEO -->
+    <title>Easy English - Вивчення англійської мови для українців</title>
+    <meta name="description" content="Додаток для вивчення англійської мови спеціально розроблений для українців. Картки, тести, вивчення слів." />
+    <meta name="keywords" content="англійська мова, вивчення, українці, картки, словник" />
+    
+    <!-- PWA -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Easy English" />
+    
+    <!-- Preconnect to improve loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <style>
+        /* Reset and base styles for better web compatibility */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        #root {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Improve text rendering */
+        input, textarea, button {
+            font-family: inherit;
+        }
+        
+        /* Disable text selection on UI elements */
+        button, .button {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1c1c1e;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #48484a;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #636366;
+        }
+        
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #2c2c2e;
+            border-top: 3px solid #007AFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Hide loading when app is ready */
+        .app-loaded .loading {
+            display: none;
+        }
+        
+        /* Responsive design helpers */
+        @media (min-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            #root {
+                max-width: 1200px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            }
+        }
+        
+        /* Fix for React Native Web focus states */
+        :focus {
+            outline: 2px solid #007AFF;
+            outline-offset: 2px;
+        }
+        
+        /* Improve button and input styling */
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Better touch targets for mobile */
+        @media (max-width: 767px) {
+            button, input, textarea, select {
+                min-height: 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <noscript>
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px;">
+            <div>
+                <h1>Easy English</h1>
+                <p>Для роботи додатку необхідно увімкнути JavaScript у вашому браузері.</p>
+                <p>Please enable JavaScript in your browser to run this application.</p>
+            </div>
+        </div>
+    </noscript>
+    
+    <!-- Loading indicator -->
+    <div class="loading">
+        <div>
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 20px; color: #8e8e93;">Loading Easy English...</p>
+        </div>
+    </div>
+    
+    <!-- App root -->
+    <div id="root"></div>
+    
+    <!-- Hide loading when app starts -->
+    <script>
+        // Hide loading indicator when React app mounts
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                document.body.classList.add('app-loaded');
+            }, 100);
+        });
+        
+        // Service worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

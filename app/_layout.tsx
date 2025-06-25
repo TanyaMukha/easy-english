@@ -1,50 +1,79 @@
-import React from "react";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { Colors } from "../styles/GlobalStyles";
+import React, { useEffect, useState } from 'react';
+import { Platform, StatusBar } from 'react-native';
+import { Slot } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../i18n/config';
+import { SharedStyles } from '../styles/SharedStyles';
+import { LoadingState } from '../components/LoadingState';
+import { ErrorState } from '../components/ErrorState';
 
-// Import reflection metadata for better type support
-import "reflect-metadata";
-
+/**
+ * Root layout component that wraps the entire application
+ * Handles initialization, providers, and platform-specific setup
+ */
 export default function RootLayout() {
+  const [isAppReady, setIsAppReady] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    initializeApp();
+  }, []);
+
+  const initializeApp = async () => {
+    try {
+      // Initialize i18n
+      await i18n.init();
+      
+      // Add any other initialization logic here
+      // e.g., database setup, user authentication check, etc.
+      
+      // Simulate brief loading time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setIsAppReady(true);
+    } catch (error) {
+      console.error('Failed to initialize app:', error);
+      setInitError(error instanceof Error ? error.message : 'Unknown error occurred');
+    }
+  };
+
+  const handleRetry = () => {
+    setInitError(null);
+    setIsAppReady(false);
+    initializeApp();
+  };
+
   return (
-    <>
-      <StatusBar style="light" backgroundColor={Colors.background} />
-      <Stack
-        screenOptions={{
-          headerShown: false, // Hide default headers since we have custom ones
-          contentStyle: {
-            backgroundColor: Colors.background,
-          },
-          animation: "slide_from_right",
-        }}
-      >
-        {/* Define all main routes explicitly */}
-        <Stack.Screen
-          name="index"
-          options={{
-            title: "Home",
-          }}
+    <SafeAreaProvider style={SharedStyles.safeArea}>
+      {initError && (
+        <ErrorState
+          title="Failed to start application"
+          message={initError}
+          onRetry={handleRetry}
+          retryText="Restart App"
         />
-        <Stack.Screen
-          name="dictionaries"
-          options={{
-            title: "Dictionaries",
-          }}
-        />
-        <Stack.Screen
-          name="words"
-          options={{
-            title: "Words",
-          }}
-        />
-        <Stack.Screen
-          name="+not-found"
-          options={{
-            title: "Not Found",
-          }}
-        />
-      </Stack>
-    </>
+      )}
+      
+      {!initError && !isAppReady && (
+        <LoadingState message="Starting Easy English..." />
+      )}
+      
+      {!initError && isAppReady && (
+        <GestureHandlerRootView style={SharedStyles.container}>
+          <I18nextProvider i18n={i18n}>
+            {Platform.OS !== 'web' && (
+              <StatusBar
+                barStyle="light-content"
+                backgroundColor="transparent"
+                translucent
+              />
+            )}
+            <Slot />
+          </I18nextProvider>
+        </GestureHandlerRootView>
+      )}
+    </SafeAreaProvider>
   );
 }
