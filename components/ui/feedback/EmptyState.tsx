@@ -1,91 +1,156 @@
+// components/ui/feedback/EmptyState.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../../../styles/GlobalStyles';
+
+import {
+  Colors,
+  SharedStyles,
+  Spacing,
+  Typography,
+  BorderRadius,
+} from '../../../styles/SharedStyles';
 
 interface EmptyStateProps {
   title: string;
-  message: string;
-  icon?: string;
-  buttonText?: string;
-  onButtonPress?: () => void;
-  showButton?: boolean;
+  message?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+  actionText?: string;
+  onAction?: () => void;
+  secondaryActionText?: string;
+  onSecondaryAction?: () => void;
 }
 
 /**
- * Single Responsibility: Display empty state with optional action
- * Open/Closed: Can be extended with different empty state styles
- * Interface Segregation: Only requires empty state data
+ * Empty State Component
+ * Single Responsibility: Display empty state with optional actions
+ * Open/Closed: Can be extended with different empty state layouts
  */
 const EmptyState: React.FC<EmptyStateProps> = ({
   title,
   message,
-  icon = 'folder-open-outline',
-  buttonText,
-  onButtonPress,
-  showButton = true,
+  icon = 'document-outline',
+  actionText,
+  onAction,
+  secondaryActionText,
+  onSecondaryAction,
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         {/* Icon */}
         <View style={styles.iconContainer}>
-          <Ionicons name={icon as any} size={DeviceUtils.getValue(48, 56)} color={Colors.textTertiary} />
+          <Ionicons
+            name={icon}
+            size={64}
+            color={Colors.textTertiary}
+          />
         </View>
 
         {/* Title */}
-        <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary, styles.title]}>
+        <Text style={styles.title}>
           {title}
         </Text>
 
         {/* Message */}
-        <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary, styles.message]}>
-          {message}
-        </Text>
+        {message && (
+          <Text style={styles.message}>
+            {message}
+          </Text>
+        )}
 
-        {/* Action Button */}
-        {showButton && buttonText && onButtonPress && (
-          <TouchableOpacity
-            style={[GlobalStyles.button, GlobalStyles.buttonPrimary, styles.button]}
-            onPress={onButtonPress}
-            activeOpacity={0.8}
-          >
-            <Text style={[GlobalStyles.buttonText]}>
-              {buttonText}
-            </Text>
-          </TouchableOpacity>
+        {/* Actions */}
+        {(actionText || secondaryActionText) && (
+          <View style={styles.actionsContainer}>
+            {actionText && onAction && (
+              <TouchableOpacity
+                style={[SharedStyles.button, styles.primaryAction]}
+                onPress={onAction}
+                activeOpacity={0.8}
+              >
+                <Text style={[SharedStyles.buttonText, styles.primaryActionText]}>
+                  {actionText}
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {secondaryActionText && onSecondaryAction && (
+              <TouchableOpacity
+                style={[SharedStyles.buttonSecondary, styles.secondaryAction]}
+                onPress={onSecondaryAction}
+                activeOpacity={0.8}
+              >
+                <Text style={[SharedStyles.buttonSecondaryText, styles.secondaryActionText]}>
+                  {secondaryActionText}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
       </View>
     </View>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    paddingHorizontal: Spacing.xl,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
   },
+  
   content: {
-    alignItems: 'center' as const,
-    maxWidth: DeviceUtils.getValue(280, 320),
+    alignItems: 'center',
+    maxWidth: 320,
   },
+  
   iconContainer: {
-    marginBottom: Spacing.lg,
-  },
-  title: {
-    textAlign: 'center' as const,
-    marginBottom: Spacing.md,
-  },
-  message: {
-    textAlign: 'center' as const,
-    lineHeight: 22,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: Colors.backgroundSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: Spacing.xl,
   },
-  button: {
-    minWidth: DeviceUtils.getValue(140, 160),
+  
+  title: {
+    fontSize: Typography.fontSize['2xl'],
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text,
+    textAlign: 'center',
+    marginBottom: Spacing.md,
   },
-};
+  
+  message: {
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: Typography.fontSize.base * Typography.lineHeight.relaxed,
+    marginBottom: Spacing.xl,
+  },
+  
+  actionsContainer: {
+    width: '100%',
+    gap: Spacing.md,
+  },
+  
+  primaryAction: {
+    width: '100%',
+  },
+  
+  primaryActionText: {
+    // Uses SharedStyles.buttonText
+  },
+  
+  secondaryAction: {
+    width: '100%',
+  },
+  
+  secondaryActionText: {
+    // Uses SharedStyles.buttonSecondaryText
+  },
+});
 
 export default EmptyState;

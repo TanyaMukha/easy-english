@@ -15,7 +15,7 @@ import {
 } from "../../components/ui";
 import { Dictionary } from "../../data/DataModels";
 import { useDictionaries } from "../../hooks/useDictionaries";
-import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
+import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 export default function DictionariesScreen() {
   const {
@@ -83,7 +83,7 @@ export default function DictionariesScreen() {
   const renderSeparator = () => <View style={{ height: Spacing.md }} />;
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       <ScreenHeader
         title="Dictionaries"
         subtitle="Your word collections"
@@ -105,9 +105,9 @@ export default function DictionariesScreen() {
       )}
 
       {!loading && !error && (
-        <View style={GlobalStyles.flex1}>
+        <View style={SharedStyles.flex1}>
           <View
-            style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}
+            style={[SharedStyles.paddingHorizontalLg, styles.searchContainer]}
           >
             <SearchBar
               value={searchQuery}

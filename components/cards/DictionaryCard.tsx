@@ -8,9 +8,9 @@ import { Utils } from "../../data/DataUtils";
 import {
   Colors,
   DeviceUtils,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 interface DictionaryCardProps {
   dictionary: Dictionary;
@@ -51,7 +51,7 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[GlobalStyles.card, styles.container]}
+      style={[SharedStyles.card, styles.container]}
       onPress={handlePress}
       activeOpacity={0.7}
     >
@@ -62,12 +62,12 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
 
         <View style={styles.headerContent}>
           <Text
-            style={[GlobalStyles.h4, GlobalStyles.textPrimary]}
+            style={[SharedStyles.h4, SharedStyles.textPrimary]}
             numberOfLines={2}
           >
             {dictionary.title}
           </Text>
-          <Text style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary]}>
+          <Text style={[SharedStyles.bodySmall, SharedStyles.textTertiary]}>
             Created{" "}
             {Utils.DateUtils.formatDate(
               dictionary.createdAt || new Date().toISOString(),
@@ -93,10 +93,10 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
       <View style={styles.content}>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary]}>
+            <Text style={[SharedStyles.h5, SharedStyles.textPrimary]}>
               {wordCount}
             </Text>
-            <Text style={[GlobalStyles.caption, GlobalStyles.textSecondary]}>
+            <Text style={[SharedStyles.caption, SharedStyles.textSecondary]}>
               words
             </Text>
           </View>
@@ -104,10 +104,10 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
           <View style={styles.statDivider} />
 
           <View style={styles.statItem}>
-            <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+            <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
               Last studied
             </Text>
-            <Text style={[GlobalStyles.bodySmall, GlobalStyles.textPrimary]}>
+            <Text style={[SharedStyles.bodySmall, SharedStyles.textPrimary]}>
               {lastStudied}
             </Text>
           </View>
@@ -117,7 +117,7 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
       <View style={styles.footer}>
         {isRecentlyUpdated && (
           <View style={styles.badge}>
-            <Text style={[GlobalStyles.caption, styles.badgeText]}>
+            <Text style={[SharedStyles.caption, styles.badgeText]}>
               Recently updated
             </Text>
           </View>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils, getLevelColor } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils, getLevelColor } from '../../styles/SharedStyles';
 import { WordWithExamples } from '../../data/DataModels';
 import { Utils } from '../../data/DataUtils';
 
@@ -55,7 +55,7 @@ const WordCard: React.FC<WordCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[GlobalStyles.card, styles.container]}
+      style={[SharedStyles.card, styles.container]}
       onPress={handlePress}
       activeOpacity={0.7}
     >
@@ -63,32 +63,32 @@ const WordCard: React.FC<WordCardProps> = ({
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.wordRow}>
-            <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary]} numberOfLines={1}>
+            <Text style={[SharedStyles.h4, SharedStyles.textPrimary]} numberOfLines={1}>
               {word.word}
             </Text>
             <View style={[styles.levelBadge, { backgroundColor: getLevelColor(word.level) }]}>
-              <Text style={[GlobalStyles.caption, styles.levelText]}>
+              <Text style={[SharedStyles.caption, styles.levelText]}>
                 {word.level}
               </Text>
             </View>
           </View>
 
           {word.transcription && (
-            <Text style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary, styles.transcription]}>
+            <Text style={[SharedStyles.bodySmall, SharedStyles.textTertiary, styles.transcription]}>
               [{word.transcription}]
             </Text>
           )}
 
           <View style={styles.metaRow}>
             <View style={[styles.partOfSpeechBadge, { backgroundColor: getPartOfSpeechColor(word.partOfSpeech) + '20' }]}>
-              <Text style={[GlobalStyles.caption, { color: getPartOfSpeechColor(word.partOfSpeech) }]}>
+              <Text style={[SharedStyles.caption, { color: getPartOfSpeechColor(word.partOfSpeech) }]}>
                 {word.partOfSpeech}
               </Text>
             </View>
             
             {word.isIrregular && (
               <View style={[styles.irregularBadge]}>
-                <Text style={[GlobalStyles.caption, styles.irregularText]}>
+                <Text style={[SharedStyles.caption, styles.irregularText]}>
                   irregular
                 </Text>
               </View>
@@ -109,7 +109,7 @@ const WordCard: React.FC<WordCardProps> = ({
 
       {/* Translation */}
       {word.translation && (
-        <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary, styles.translation]}>
+        <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary, styles.translation]}>
           {word.translation}
         </Text>
       )}
@@ -117,11 +117,11 @@ const WordCard: React.FC<WordCardProps> = ({
       {/* Example */}
       {showExamples && firstExample && (
         <View style={styles.exampleContainer}>
-          <Text style={[GlobalStyles.bodySmall, styles.exampleText]} numberOfLines={2}>
+          <Text style={[SharedStyles.bodySmall, styles.exampleText]} numberOfLines={2}>
             {Utils.TextProcessor.stripMarkdown(firstExample.sentence)}
           </Text>
           {firstExample.translation && (
-            <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary]} numberOfLines={1}>
+            <Text style={[SharedStyles.caption, SharedStyles.textTertiary]} numberOfLines={1}>
               {firstExample.translation}
             </Text>
           )}
@@ -132,17 +132,17 @@ const WordCard: React.FC<WordCardProps> = ({
       {showProgress && word.reviewCount > 0 && (
         <View style={styles.progressContainer}>
           <View style={styles.progressInfo}>
-            <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary]}>
+            <Text style={[SharedStyles.caption, SharedStyles.textTertiary]}>
               Progress • {word.reviewCount} reviews
             </Text>
-            <Text style={[GlobalStyles.caption, GlobalStyles.textSecondary]}>
+            <Text style={[SharedStyles.caption, SharedStyles.textSecondary]}>
               {Math.round(progressPercentage)}%
             </Text>
           </View>
-          <View style={GlobalStyles.progressBarContainer}>
+          <View style={SharedStyles.progressBarContainer}>
             <View 
               style={[
-                GlobalStyles.progressBarFill, 
+                SharedStyles.progressBarFill, 
                 { width: `${progressPercentage}%` }
               ]} 
             />
@@ -155,13 +155,13 @@ const WordCard: React.FC<WordCardProps> = ({
         <View style={styles.tagsContainer}>
           {word.tags.slice(0, 2).map((tag, index) => (
             <View key={tag.id} style={styles.tag}>
-              <Text style={[GlobalStyles.caption, styles.tagText]}>
+              <Text style={[SharedStyles.caption, styles.tagText]}>
                 {tag.title}
               </Text>
             </View>
           ))}
           {word.tags.length > 2 && (
-            <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary]}>
+            <Text style={[SharedStyles.caption, SharedStyles.textTertiary]}>
               +{word.tags.length - 2} more
             </Text>
           )}

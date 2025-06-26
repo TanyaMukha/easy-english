@@ -14,7 +14,7 @@ import { ErrorState, HomeHeader, LoadingState } from "../components/ui";
 import { WordWithExamples } from "../data/DataModels";
 import { useHomeData } from "../hooks/useHomeData";
 import { useWords } from "../hooks/useWords";
-import { Colors, GlobalStyles, Spacing } from "../styles/GlobalStyles";
+import { Colors, SharedStyles, Spacing } from "../styles/SharedStyles";
 
 export default function HomeScreen() {
   const {
@@ -184,7 +184,7 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {loading && <LoadingState message="Loading your learning data..." />}
 
       {!loading && (error || !userStats) && (
@@ -197,7 +197,7 @@ export default function HomeScreen() {
 
       {!loading && !error && userStats && (
         <ScrollView
-          style={GlobalStyles.flex1}
+          style={SharedStyles.flex1}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
             <RefreshControl
@@ -209,8 +209,8 @@ export default function HomeScreen() {
         >
           <HomeHeader onProfilePress={handleProfilePress} />
 
-          <View style={[GlobalStyles.paddingHorizontalLg, styles.statsSection]}>
-            <View style={GlobalStyles.flexRow}>
+          <View style={[SharedStyles.paddingHorizontalLg, styles.statsSection]}>
+            <View style={SharedStyles.flexRow}>
               <QuickStatsCard
                 title="Words learned"
                 value={userStats.wordsLearned}
@@ -227,7 +227,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <View style={GlobalStyles.paddingHorizontalLg}>
+          <View style={SharedStyles.paddingHorizontalLg}>
             <LearningGoals
               currentStreak={userStats.currentStreak}
               dailyGoal={20}
@@ -246,11 +246,11 @@ export default function HomeScreen() {
             onSeeAllPress={navigateToAllCollections}
           />
 
-          <View style={GlobalStyles.paddingHorizontalLg}>
+          <View style={SharedStyles.paddingHorizontalLg}>
             <MotivationalQuote quote={quoteOfDay} />
           </View>
 
-          <View style={GlobalStyles.paddingHorizontalLg}>
+          <View style={SharedStyles.paddingHorizontalLg}>
             <ProgressChart dailyProgress={userStats.dailyProgress} />
           </View>
 

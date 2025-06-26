@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
-import { GlobalStyles, Colors } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors } from '../../styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
 
 // Components
@@ -37,7 +37,7 @@ const EditDictionaryModal: React.FC<EditDictionaryModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onCancel}
     >
-      <View style={[GlobalStyles.container, { backgroundColor: Colors.background }]}>
+      <View style={[SharedStyles.container, { backgroundColor: Colors.background }]}>
         {/* Header */}
         <ScreenHeader
           title="Edit Dictionary"

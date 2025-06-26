@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../styles/SharedStyles';
 
 interface QuickStatsCardProps {
   title: string;
@@ -22,14 +22,14 @@ const QuickStatsCard: React.FC<QuickStatsCardProps> = ({
   color = Colors.primary,
 }) => {
   return (
-    <View style={[GlobalStyles.card, styles.container]}>
-      <View style={[GlobalStyles.flexRow, { alignItems: 'center' }]}>
+    <View style={[SharedStyles.card, styles.container]}>
+      <View style={[SharedStyles.flexRow, { alignItems: 'center' }]}>
         <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
           <Ionicons name={icon as any} size={24} color={color} />
         </View>
         <View style={styles.contentContainer}>
-          <Text style={[GlobalStyles.h3, { color }]}>{value}</Text>
-          <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.h3, { color }]}>{value}</Text>
+          <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
             {title}
           </Text>
         </View>

@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { DictionaryForm } from "../../components/forms";
 import { ScreenHeader } from "../../components/ui";
 import { Dictionary } from "../../data/DataModels";
-import { GlobalStyles } from "../../styles/GlobalStyles";
+import { SharedStyles } from "../../styles/SharedStyles";
 
 /**
  * Screen for creating new dictionaries
@@ -39,7 +39,7 @@ export default function CreateDictionaryScreen() {
   };
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title="New Dictionary"

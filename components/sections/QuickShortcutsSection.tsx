@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { GlobalStyles, Colors, Spacing } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
 import QuickActionButton from '../ui/buttons/QuickActionButton';
 
 interface ShortcutItem {
@@ -26,8 +26,8 @@ const QuickShortcutsSection: React.FC<QuickShortcutsSectionProps> = ({
   shortcuts
 }) => {
   return (
-    <View style={[GlobalStyles.paddingHorizontalLg, styles.container]}>
-      <Text style={[GlobalStyles.h3, GlobalStyles.textPrimary, styles.title]}>
+    <View style={[SharedStyles.paddingHorizontalLg, styles.container]}>
+      <Text style={[SharedStyles.h3, SharedStyles.textPrimary, styles.title]}>
         {title}
       </Text>
       

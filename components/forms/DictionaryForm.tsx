@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, Typography } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, Typography } from '../../styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
 import { DictionaryService, CreateDictionaryRequest, UpdateDictionaryRequest } from '../../services/DictionaryService';
 
@@ -111,14 +111,14 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
   const hasChanges = title !== (dictionary?.title || '');
 
   return (
-    <ScrollView style={GlobalStyles.container} contentContainerStyle={styles.container}>
+    <ScrollView style={SharedStyles.container} contentContainerStyle={styles.container}>
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[GlobalStyles.h2, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.h2, SharedStyles.textPrimary]}>
             {isEditMode ? 'Edit Dictionary' : 'Create Dictionary'}
           </Text>
-          <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}>
             {isEditMode 
               ? 'Update your dictionary information'
               : 'Create a new dictionary to organize your vocabulary'
@@ -130,12 +130,12 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
         <View style={styles.form}>
           {/* Title Field */}
           <View style={styles.fieldContainer}>
-            <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textPrimary, styles.label]}>
+            <Text style={[SharedStyles.bodyMedium, SharedStyles.textPrimary, styles.label]}>
               Dictionary Title *
             </Text>
             <TextInput
               style={[
-                GlobalStyles.input,
+                SharedStyles.input,
                 errors.title && styles.inputError
               ]}
               value={title}
@@ -156,11 +156,11 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
               editable={!loading && !isSubmitting}
             />
             {errors.title && (
-              <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+              <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                 {errors.title}
               </Text>
             )}
-            <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary, styles.helperText]}>
+            <Text style={[SharedStyles.caption, SharedStyles.textTertiary, styles.helperText]}>
               {title.length}/100 characters
             </Text>
           </View>
@@ -172,19 +172,19 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
         {/* Preview Section */}
         {title.trim() && (
           <View style={styles.preview}>
-            <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textPrimary, styles.previewLabel]}>
+            <Text style={[SharedStyles.bodyMedium, SharedStyles.textPrimary, styles.previewLabel]}>
               Preview
             </Text>
-            <View style={[GlobalStyles.card, styles.previewCard]}>
+            <View style={[SharedStyles.card, styles.previewCard]}>
               <View style={styles.previewHeader}>
                 <View style={styles.previewIcon}>
                   <Ionicons name="book" size={24} color={Colors.primary} />
                 </View>
                 <View style={styles.previewContent}>
-                  <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary]} numberOfLines={2}>
+                  <Text style={[SharedStyles.h4, SharedStyles.textPrimary]} numberOfLines={2}>
                     {title.trim()}
                   </Text>
-                  <Text style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary]}>
+                  <Text style={[SharedStyles.bodySmall, SharedStyles.textTertiary]}>
                     {isEditMode ? 'Updated' : 'Created'} just now
                   </Text>
                 </View>
@@ -197,22 +197,22 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
       {/* Action Buttons */}
       <View style={styles.actions}>
         <TouchableOpacity
-          style={[GlobalStyles.button, GlobalStyles.buttonOutline, styles.cancelButton]}
+          style={[SharedStyles.button, SharedStyles.buttonOutline, styles.cancelButton]}
           onPress={handleCancel}
           disabled={loading || isSubmitting}
           activeOpacity={0.7}
         >
-          <Text style={[GlobalStyles.buttonText, { color: Colors.textSecondary }]}>
+          <Text style={[SharedStyles.buttonText, { color: Colors.textSecondary }]}>
             Cancel
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[
-            GlobalStyles.button,
-            GlobalStyles.buttonPrimary,
+            SharedStyles.button,
+            SharedStyles.buttonPrimary,
             styles.saveButton,
-            (!isFormValid || !hasChanges || isSubmitting) && GlobalStyles.buttonDisabled
+            (!isFormValid || !hasChanges || isSubmitting) && SharedStyles.buttonDisabled
           ]}
           onPress={handleSave}
           disabled={!isFormValid || !hasChanges || loading || isSubmitting}
@@ -220,12 +220,12 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
         >
           {isSubmitting ? (
             <View style={styles.loadingContainer}>
-              <Text style={[GlobalStyles.buttonText, { marginRight: Spacing.sm }]}>
+              <Text style={[SharedStyles.buttonText, { marginRight: Spacing.sm }]}>
                 {isEditMode ? 'Updating...' : 'Creating...'}
               </Text>
             </View>
           ) : (
-            <Text style={GlobalStyles.buttonText}>
+            <Text style={SharedStyles.buttonText}>
               {isEditMode ? 'Update Dictionary' : 'Create Dictionary'}
             </Text>
           )}

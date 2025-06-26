@@ -7,9 +7,9 @@ import {
   Colors,
   DeviceUtils,
   getLevelColor,
-  GlobalStyles,
   Spacing,
-} from "../../styles/GlobalStyles";
+  SharedStyles,
+} from "../../styles/SharedStyles";
 
 interface DailyWordCardProps {
   word: WordWithExamples;
@@ -30,19 +30,19 @@ const DailyWordCard: React.FC<DailyWordCardProps> = ({ word, onPress }) => {
 
   return (
     <TouchableOpacity
-      style={[GlobalStyles.card, styles.container]}
+      style={[SharedStyles.card, styles.container]}
       onPress={handlePress}
     >
       <View style={styles.header}>
         <View style={styles.wordInfo}>
-          <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.h4, SharedStyles.textPrimary]}>
             {word.word}
           </Text>
           {word.transcription && (
             <Text
               style={[
-                GlobalStyles.bodySmall,
-                GlobalStyles.textTertiary,
+                SharedStyles.bodySmall,
+                SharedStyles.textTertiary,
                 styles.transcription,
               ]}
             >
@@ -51,8 +51,8 @@ const DailyWordCard: React.FC<DailyWordCardProps> = ({ word, onPress }) => {
           )}
           <Text
             style={[
-              GlobalStyles.bodyMedium,
-              GlobalStyles.textSecondary,
+              SharedStyles.bodyMedium,
+              SharedStyles.textSecondary,
               styles.translation,
             ]}
           >
@@ -65,7 +65,7 @@ const DailyWordCard: React.FC<DailyWordCardProps> = ({ word, onPress }) => {
             { backgroundColor: getLevelColor(word.level) },
           ]}
         >
-          <Text style={[GlobalStyles.bodySmall, styles.levelText]}>
+          <Text style={[SharedStyles.bodySmall, styles.levelText]}>
             {word.level}
           </Text>
         </View>
@@ -73,7 +73,7 @@ const DailyWordCard: React.FC<DailyWordCardProps> = ({ word, onPress }) => {
 
       {firstExample && (
         <View style={styles.exampleContainer}>
-          <Text style={[GlobalStyles.bodySmall, styles.exampleText]}>
+          <Text style={[SharedStyles.bodySmall, styles.exampleText]}>
             {Utils.TextProcessor.stripMarkdown(firstExample.sentence)}
           </Text>
         </View>

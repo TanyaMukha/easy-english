@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { WordWithExamples } from "../../data/DataModels";
 import { WordService } from "../../services/WordService";
-import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
+import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 interface WordActionsModalProps {
   visible: boolean;
@@ -212,10 +212,10 @@ const WordActionsModal: React.FC<WordActionsModalProps> = ({
         <Ionicons name={action.icon as any} size={24} color={action.color} />
       </View>
       <View style={styles.actionContent}>
-        <Text style={[GlobalStyles.bodyLarge, GlobalStyles.textPrimary]}>
+        <Text style={[SharedStyles.bodyLarge, SharedStyles.textPrimary]}>
           {action.title}
         </Text>
-        <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+        <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
           {action.subtitle}
         </Text>
       </View>
@@ -237,20 +237,20 @@ const WordActionsModal: React.FC<WordActionsModalProps> = ({
             <View style={styles.headerContent}>
               <View style={styles.wordInfo}>
                 <Text
-                  style={[GlobalStyles.h4, GlobalStyles.textPrimary]}
+                  style={[SharedStyles.h4, SharedStyles.textPrimary]}
                   numberOfLines={2}
                 >
                   {word.word}
                 </Text>
                 {word.transcription && (
                   <Text
-                    style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary]}
+                    style={[SharedStyles.bodySmall, SharedStyles.textTertiary]}
                   >
                     [{word.transcription}]
                   </Text>
                 )}
                 <Text
-                  style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}
+                  style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}
                   numberOfLines={2}
                 >
                   {word.translation}
@@ -269,7 +269,7 @@ const WordActionsModal: React.FC<WordActionsModalProps> = ({
                 >
                   <Text
                     style={[
-                      GlobalStyles.bodySmall,
+                      SharedStyles.bodySmall,
                       {
                         color: getProgressColor(word.rate || 0),
                         fontWeight: "600",
@@ -279,7 +279,7 @@ const WordActionsModal: React.FC<WordActionsModalProps> = ({
                     {word.rate || 0}/5
                   </Text>
                 </View>
-                <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary]}>
+                <Text style={[SharedStyles.caption, SharedStyles.textTertiary]}>
                   {word.reviewCount || 0} reviews
                 </Text>
               </View>

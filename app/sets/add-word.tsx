@@ -24,10 +24,10 @@ import { SetService } from "../../services/SetService";
 import {
   BorderRadius,
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 /**
  * Add Words to Set Screen
@@ -238,7 +238,7 @@ export default function AddWordsToSetScreen() {
   };
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title="Add Words to Set"

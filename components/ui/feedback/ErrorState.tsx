@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { GlobalStyles, Spacing } from '../../../styles/GlobalStyles';
+import { SharedStyles, Spacing } from '../../../styles/SharedStyles';
 
 interface ErrorStateProps {
   title?: string;
@@ -21,21 +21,21 @@ const ErrorState: React.FC<ErrorStateProps> = ({
   onRetry
 }) => {
   return (
-    <View style={GlobalStyles.screenCentered}>
-      <Text style={[GlobalStyles.h3, GlobalStyles.textError]}>
+    <View style={SharedStyles.screenCentered}>
+      <Text style={[SharedStyles.h3, SharedStyles.textError]}>
         {title}
       </Text>
       {message && (
-        <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary, styles.message]}>
+        <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary, styles.message]}>
           {message}
         </Text>
       )}
       <TouchableOpacity 
-        style={[GlobalStyles.button, GlobalStyles.buttonPrimary, styles.button]}
+        style={[SharedStyles.button, SharedStyles.buttonPrimary, styles.button]}
         onPress={onRetry}
         activeOpacity={0.8}
       >
-        <Text style={GlobalStyles.buttonText}>
+        <Text style={SharedStyles.buttonText}>
           {buttonText}
         </Text>
       </TouchableOpacity>

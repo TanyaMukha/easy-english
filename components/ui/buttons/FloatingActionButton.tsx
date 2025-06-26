@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, Shadows, DeviceUtils } from '../../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, Shadows, DeviceUtils } from '../../../styles/SharedStyles';
 
 interface FloatingActionButtonProps {
   icon: string;

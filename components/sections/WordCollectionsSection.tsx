@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../styles/SharedStyles';
 
 interface CollectionItem {
   id: string;
@@ -33,7 +33,7 @@ const WordCollectionsSection: React.FC<WordCollectionsSectionProps> = ({
 }) => {
   const renderCollection = ({ item }: { item: CollectionItem }) => (
     <TouchableOpacity 
-      style={[GlobalStyles.card, styles.collectionCard]} 
+      style={[SharedStyles.card, styles.collectionCard]} 
       onPress={item.onPress}
       activeOpacity={0.7}
     >
@@ -42,17 +42,17 @@ const WordCollectionsSection: React.FC<WordCollectionsSectionProps> = ({
           <Ionicons name={item.icon as any} size={24} color={item.color} />
         </View>
         <View style={styles.countBadge}>
-          <Text style={[GlobalStyles.caption, styles.countText]}>
+          <Text style={[SharedStyles.caption, styles.countText]}>
             {item.count}
           </Text>
         </View>
       </View>
       
       <View style={styles.cardContent}>
-        <Text style={[GlobalStyles.bodyLarge, GlobalStyles.textPrimary, styles.cardTitle]} numberOfLines={2}>
+        <Text style={[SharedStyles.bodyLarge, SharedStyles.textPrimary, styles.cardTitle]} numberOfLines={2}>
           {item.title}
         </Text>
-        <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]} numberOfLines={1}>
+        <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]} numberOfLines={1}>
           {item.subtitle}
         </Text>
       </View>
@@ -67,12 +67,12 @@ const WordCollectionsSection: React.FC<WordCollectionsSectionProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={[GlobalStyles.flexRow, GlobalStyles.paddingHorizontalLg, styles.header]}>
-        <Text style={[GlobalStyles.h3, GlobalStyles.textPrimary]}>
+      <View style={[SharedStyles.flexRow, SharedStyles.paddingHorizontalLg, styles.header]}>
+        <Text style={[SharedStyles.h3, SharedStyles.textPrimary]}>
           {title}
         </Text>
         <TouchableOpacity onPress={onSeeAllPress} activeOpacity={0.7}>
-          <Text style={[GlobalStyles.bodyMedium, styles.seeAllText]}>
+          <Text style={[SharedStyles.bodyMedium, styles.seeAllText]}>
             {seeAllText}
           </Text>
         </TouchableOpacity>

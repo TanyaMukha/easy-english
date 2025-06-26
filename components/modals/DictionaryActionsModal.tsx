@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
 import { DictionaryService } from '../../services/DictionaryService';
 
@@ -160,10 +160,10 @@ const DictionaryActionsModal: React.FC<DictionaryActionsModalProps> = ({
         <Ionicons name={action.icon as any} size={24} color={action.color} />
       </View>
       <View style={styles.actionContent}>
-        <Text style={[GlobalStyles.bodyLarge, GlobalStyles.textPrimary]}>
+        <Text style={[SharedStyles.bodyLarge, SharedStyles.textPrimary]}>
           {action.title}
         </Text>
-        <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+        <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
           {action.subtitle}
         </Text>
       </View>
@@ -183,10 +183,10 @@ const DictionaryActionsModal: React.FC<DictionaryActionsModalProps> = ({
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerContent}>
-              <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary]} numberOfLines={2}>
+              <Text style={[SharedStyles.h4, SharedStyles.textPrimary]} numberOfLines={2}>
                 {dictionary.title}
               </Text>
-              <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+              <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
                 Dictionary actions
               </Text>
             </View>

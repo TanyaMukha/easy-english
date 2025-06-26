@@ -13,7 +13,7 @@ import {
 } from "../../components/ui";
 import { Set } from "../../data/DataModels";
 import { useSets } from "../../hooks/useSets";
-import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
+import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 /**
  * All Sets Screen with full CRUD support
@@ -152,7 +152,7 @@ export default function SetsScreen() {
   };
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title="Word Sets"

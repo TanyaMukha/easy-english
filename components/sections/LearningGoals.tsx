@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
 
 interface LearningGoalsProps {
   currentStreak: number;
@@ -24,25 +24,25 @@ const LearningGoals: React.FC<LearningGoalsProps> = ({
   const progressPercentage = Math.min((todayProgress / dailyGoal) * 100, 100);
 
   return (
-    <View style={[GlobalStyles.card, styles.container]}>
-      <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary, styles.title]}>
+    <View style={[SharedStyles.card, styles.container]}>
+      <Text style={[SharedStyles.h4, SharedStyles.textPrimary, styles.title]}>
         {title}
       </Text>
       
       {/* Daily Goal Progress */}
       <View style={styles.goalSection}>
         <View style={styles.goalHeader}>
-          <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}>
             Daily Goal
           </Text>
-          <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.bodyMedium, SharedStyles.textPrimary]}>
             {todayProgress}/{dailyGoal} words
           </Text>
         </View>
-        <View style={GlobalStyles.progressBarContainer}>
+        <View style={SharedStyles.progressBarContainer}>
           <View 
             style={[
-              GlobalStyles.progressBarFill, 
+              SharedStyles.progressBarFill, 
               { width: `${progressPercentage}%` }
             ]} 
           />
@@ -53,10 +53,10 @@ const LearningGoals: React.FC<LearningGoalsProps> = ({
       <View style={styles.streakContainer}>
         <Ionicons name="flame" size={24} color={Colors.warning} />
         <View style={styles.streakInfo}>
-          <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.h5, SharedStyles.textPrimary]}>
             {currentStreak} days
           </Text>
-          <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
             Current streak
           </Text>
         </View>

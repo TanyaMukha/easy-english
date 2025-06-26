@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../styles/SharedStyles';
 import { DailyProgress } from '../../data/DataModels';
 
 interface ProgressChartProps {
@@ -50,8 +50,8 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
   const maxWords = Math.max(...daysData.map(day => day.wordsStudied), 1);
 
   return (
-    <View style={[GlobalStyles.card, styles.container]}>
-      <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary, styles.title]}>
+    <View style={[SharedStyles.card, styles.container]}>
+      <Text style={[SharedStyles.h4, SharedStyles.textPrimary, styles.title]}>
         {title}
       </Text>
       
@@ -73,15 +73,15 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
                 ]} 
               />
               <Text style={[
-                GlobalStyles.caption, 
-                isToday ? GlobalStyles.textPrimary : GlobalStyles.textTertiary, 
+                SharedStyles.caption, 
+                isToday ? SharedStyles.textPrimary : SharedStyles.textTertiary, 
                 styles.dayLabel
               ]}>
                 {day.dayName}
               </Text>
               <Text style={[
-                GlobalStyles.caption, 
-                day.wordsStudied > 0 ? GlobalStyles.textSecondary : GlobalStyles.textMuted,
+                SharedStyles.caption, 
+                day.wordsStudied > 0 ? SharedStyles.textSecondary : SharedStyles.textMuted,
                 { fontWeight: isToday ? '600' : '400' }
               ]}>
                 {day.wordsStudied}
@@ -95,13 +95,13 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: Colors.primary }]} />
-          <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary]}>
+          <Text style={[SharedStyles.caption, SharedStyles.textTertiary]}>
             Words studied
           </Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: Colors.backgroundTertiary, opacity: 0.3 }]} />
-          <Text style={[GlobalStyles.caption, GlobalStyles.textTertiary]}>
+          <Text style={[SharedStyles.caption, SharedStyles.textTertiary]}>
             No activity
           </Text>
         </View>

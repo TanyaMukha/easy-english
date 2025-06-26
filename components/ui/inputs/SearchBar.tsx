@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, Typography } from '../../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, Typography } from '../../../styles/SharedStyles';
 
 interface SearchBarProps {
   value: string;
@@ -45,7 +45,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         <Ionicons name="search" size={20} color={Colors.textTertiary} style={styles.searchIcon} />
         
         <TextInput
-          style={[GlobalStyles.bodyMedium, styles.input]}
+          style={[SharedStyles.bodyMedium, styles.input]}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}

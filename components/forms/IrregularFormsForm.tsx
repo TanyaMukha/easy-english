@@ -6,10 +6,10 @@ import { PartOfSpeech } from "../../data/DataModels";
 import {
   BorderRadius,
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 interface IrregularForms {
   // For verbs: base, past, pastParticiple
@@ -57,14 +57,14 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
 
   const renderVerbForms = () => (
     <View style={styles.container}>
-      <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.title]}>
+      <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.title]}>
         Irregular Verb Forms
       </Text>
 
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Base Form</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.base || ""}
           onChangeText={(text) => updateForm("base", text)}
           placeholder="e.g., go"
@@ -77,7 +77,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Past Simple</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.past || ""}
           onChangeText={(text) => updateForm("past", text)}
           placeholder="e.g., went"
@@ -90,7 +90,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Past Participle</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.pastParticiple || ""}
           onChangeText={(text) => updateForm("pastParticiple", text)}
           placeholder="e.g., gone"
@@ -104,14 +104,14 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
 
   const renderNounForms = () => (
     <View style={styles.container}>
-      <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.title]}>
+      <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.title]}>
         Irregular Noun Forms
       </Text>
 
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Singular</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.singular || ""}
           onChangeText={(text) => updateForm("singular", text)}
           placeholder="e.g., child"
@@ -124,7 +124,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Plural</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.plural || ""}
           onChangeText={(text) => updateForm("plural", text)}
           placeholder="e.g., children"
@@ -138,14 +138,14 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
 
   const renderAdjectiveForms = () => (
     <View style={styles.container}>
-      <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.title]}>
+      <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.title]}>
         Irregular Adjective Forms
       </Text>
 
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Positive</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.positive || ""}
           onChangeText={(text) => updateForm("positive", text)}
           placeholder="e.g., good"
@@ -158,7 +158,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Comparative</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.comparative || ""}
           onChangeText={(text) => updateForm("comparative", text)}
           placeholder="e.g., better"
@@ -171,7 +171,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Superlative</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.superlative || ""}
           onChangeText={(text) => updateForm("superlative", text)}
           placeholder="e.g., best"
@@ -185,14 +185,14 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
 
   const renderAdverbForms = () => (
     <View style={styles.container}>
-      <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.title]}>
+      <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.title]}>
         Irregular Adverb Forms
       </Text>
 
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Positive</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.positive || ""}
           onChangeText={(text) => updateForm("positive", text)}
           placeholder="e.g., well"
@@ -205,7 +205,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Comparative</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.comparative || ""}
           onChangeText={(text) => updateForm("comparative", text)}
           placeholder="e.g., better"
@@ -218,7 +218,7 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Superlative</Text>
         <TextInput
-          style={[GlobalStyles.input, styles.input]}
+          style={[SharedStyles.input, styles.input]}
           value={irregularForms?.superlative || ""}
           onChangeText={(text) => updateForm("superlative", text)}
           placeholder="e.g., best"
@@ -250,8 +250,8 @@ const IrregularFormsForm: React.FC<IrregularFormsFormProps> = ({
         <View style={styles.container}>
           <Text
             style={[
-              GlobalStyles.bodyMedium,
-              GlobalStyles.textSecondary,
+              SharedStyles.bodyMedium,
+              SharedStyles.textSecondary,
               styles.noFormsText,
             ]}
           >

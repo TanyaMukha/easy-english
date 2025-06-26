@@ -13,7 +13,7 @@ import {
 } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
 import { MockDataService } from "../../data/MockData";
-import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
+import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 export default function DictionaryScreen() {
   const { dictionaryId } = useLocalSearchParams<{ dictionaryId: string }>();
@@ -91,7 +91,7 @@ export default function DictionaryScreen() {
   const renderSeparator = () => <View style={{ height: Spacing.md }} />;
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       <ScreenHeader
         title={dictionary?.title || "Dictionary"}
         subtitle={`${words.length} words`}
@@ -113,9 +113,9 @@ export default function DictionaryScreen() {
       )}
 
       {!loading && !error && dictionary && (
-        <View style={GlobalStyles.flex1}>
+        <View style={SharedStyles.flex1}>
           <View
-            style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}
+            style={[SharedStyles.paddingHorizontalLg, styles.searchContainer]}
           >
             <SearchBar
               value={searchQuery}

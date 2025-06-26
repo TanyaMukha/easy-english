@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { GlobalStyles, Colors, Spacing } from '../../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing } from '../../../styles/SharedStyles';
 
 interface LoadingStateProps {
   message?: string;
@@ -19,9 +19,9 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   color = Colors.primary
 }) => {
   return (
-    <View style={GlobalStyles.loadingContainer}>
+    <View style={SharedStyles.loadingContainer}>
       <ActivityIndicator size={size} color={color} />
-      <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary, styles.message]}>
+      <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary, styles.message]}>
         {message}
       </Text>
     </View>

@@ -19,10 +19,10 @@ import { SetService } from "../../services/SetService";
 import {
   BorderRadius,
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 /**
  * Create Set Screen
@@ -112,7 +112,7 @@ export default function CreateSetScreen() {
   const canSave = title.trim() && !isSubmitting;
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title="Create Set"

@@ -25,10 +25,10 @@ import { MockDataService } from "../../data/MockData";
 import { SetService } from "../../services/SetService";
 import {
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 /**
  * Set Details Screen - shows words in a specific set
@@ -283,7 +283,7 @@ export default function SetDetailsScreen() {
   };
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title={set?.title || "Set"}

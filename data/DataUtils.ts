@@ -1,101 +1,95 @@
+// data/DataUtils.ts
 import {
-  Word,
   WordWithExamples,
   StudyFlashcard,
   TestFlashcard,
+  StudyCardType,
+  TestCardType,
   FlashcardWord,
-  FlashcardSentence,
+  FlashcardProgress,
   PartOfSpeech,
   Level,
   LanguageCode,
-  StudyCardType,
-  TestCardType,
-  UserStatistics,
   DailyProgress,
-} from './DataModels';
+} from "./DataModels";
 
-// Error types and constants
+// Error handling utilities
 export enum ErrorCodes {
-  NETWORK_ERROR = 'NETWORK_ERROR',
-  DATABASE_ERROR = 'DATABASE_ERROR',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  NOT_FOUND = 'NOT_FOUND',
-  UNAUTHORIZED = 'UNAUTHORIZED',
-  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
-  STORAGE_FULL = 'STORAGE_FULL',
-  AUDIO_LOAD_ERROR = 'AUDIO_LOAD_ERROR',
-  SYNC_ERROR = 'SYNC_ERROR',
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  NETWORK_ERROR = "NETWORK_ERROR",
+  DATABASE_ERROR = "DATABASE_ERROR",
+  NOT_FOUND = "NOT_FOUND",
+  PERMISSION_DENIED = "PERMISSION_DENIED",
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
 export class AppError extends Error {
-  public code: ErrorCodes;
-  public details?: any;
+  code: ErrorCodes;
+  details?: any;
 
-  constructor(code: ErrorCodes, message: string, details?: any) {
+  constructor(message: string, code: ErrorCodes = ErrorCodes.UNKNOWN_ERROR, details?: any) {
     super(message);
-    this.name = 'AppError';
+    this.name = "AppError";
     this.code = code;
     this.details = details;
   }
 }
 
-// Result wrapper for async operations
 export class Result<T> {
-  public success: boolean;
-  public data?: T;
-  public error?: AppError;
+  constructor(
+    public readonly success: boolean,
+    public readonly data?: T,
+    public readonly error?: string,
+    public readonly errorCode?: ErrorCodes
+  ) {}
 
-  private constructor(success: boolean, data?: T, error?: AppError) {
-    this.success = success;
-    this.data = data;
-    this.error = error;
+  static success<T>(data: T): Result<T> {
+    return new Result(true, data);
   }
 
-  static ok<T>(data: T): Result<T> {
-    return new Result<T>(true, data);
-  }
-
-  static fail<T>(error: AppError): Result<T> {
-    return new Result<T>(false, undefined, error);
-  }
-
-  static failWithMessage<T>(code: ErrorCodes, message: string, details?: any): Result<T> {
-    return Result.fail<T>(new AppError(code, message, details));
+  static failure<T>(error: string, code?: ErrorCodes): Result<T> {
+    return new Result(false, undefined, error, code);
   }
 }
 
-// Data transformation utilities
+// Data mapping utilities
 export class DataMapper {
-  // Convert Word to FlashcardWord
+  // Convert word to flashcard format
   static wordToFlashcardWord(word: WordWithExamples): FlashcardWord {
     return {
       word: word.word,
+      translation: word.translation || "",
       transcription: word.transcription,
-      translate: word.translation,
-      definition: word.definition,
       explanation: word.explanation,
-      lang: word.language,
-      examples: word.examples.map(example => ({
-        sentence: example.sentence,
-        translate: example.translation,
+      definition: word.definition,
+      examples: word.examples.map((ex) => ({
+        sentence: ex.sentence,
+        translation: ex.translation || "",
       })),
+      progress: {
+        lastReviewDate: word.lastReviewDate,
+        nextReviewDate: word.nextReviewDate,
+        reviewCount: word.reviewCount,
+        rate: word.rate,
+      },
     };
   }
 
-  // Convert WordWithExamples to StudyFlashcard
+  // Convert word to study flashcard
   static wordToStudyFlashcard(
-    word: WordWithExamples, 
-    viewAs: StudyCardType = StudyCardType.SINGLE_WORD
+    word: WordWithExamples,
+    cardType: StudyCardType = StudyCardType.SINGLE_WORD
   ): StudyFlashcard {
     return {
       type: "study-card",
-      viewAs,
-      guid: word.guid,
-      title: `Learn: ${word.word}`,
-      description: word.explanation || word.definition,
+      viewAs: cardType,
+      guid: `study-${word.guid}`,
+      title: "Vocabulary Study",
+      description: `Learning: ${word.word}`,
       items: [this.wordToFlashcardWord(word)],
       progress: {
-        lastReviewed: word.lastReviewDate ?? undefined,
+        lastReviewDate: word.lastReviewDate,
+        nextReviewDate: word.nextReviewDate ? new Date(word.nextReviewDate) : undefined,
         reviewCount: word.reviewCount,
         rate: word.rate,
       },
@@ -173,7 +167,7 @@ export class DataMapper {
 
 // Validation utilities
 export class DataValidator {
-  static isValidWord(word: Partial<Word>): boolean {
+  static isValidWord(word: Partial<WordWithExamples>): boolean {
     return !!(
       word.word &&
       word.word.trim().length > 0 &&
@@ -204,6 +198,88 @@ export class DataValidator {
 
   static isValidPartOfSpeech(pos: string): pos is PartOfSpeech {
     return Object.values(PartOfSpeech).includes(pos as PartOfSpeech);
+  }
+}
+
+// Text processing utilities
+export class TextProcessor {
+  // Remove markdown formatting for plain text display
+  static stripMarkdown(text: string): string {
+    if (!text) return '';
+    
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+      .replace(/\*(.*?)\*/g, '$1')     // Remove italic
+      .replace(/__(.*?)__/g, '$1')     // Remove underline
+      .replace(/`(.*?)`/g, '$1')       // Remove code
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Remove links
+  }
+
+  // Highlight word in sentence
+  static highlightWordInSentence(sentence: string, word: string): string {
+    const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+    return sentence.replace(regex, '**$1**');
+  }
+
+  // Extract word from sentence (remove markdown)
+  static extractWordFromSentence(sentence: string): string | null {
+    const match = sentence.match(/\*\*(.*?)\*\*/);
+    return match ? match[1] : null;
+  }
+
+  // Generate audio filename for word
+  static generateAudioFilename(word: string, language: LanguageCode): string {
+    return `${word.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${language}.mp3`;
+  }
+
+  // Truncate text with ellipsis
+  static truncateText(text: string, maxLength: number): string {
+    if (!text || text.length <= maxLength) return text;
+    return text.substring(0, maxLength - 3) + '...';
+  }
+}
+
+// Date utilities
+export class DateUtils {
+  static formatDate(date: string | Date): string {
+    const d = new Date(date);
+    return d.toLocaleDateString('uk-UA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  static formatTime(date: string | Date): string {
+    const d = new Date(date);
+    return d.toLocaleTimeString('uk-UA', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  static isToday(date: string | Date): boolean {
+    const d = new Date(date);
+    const today = new Date();
+    return d.toDateString() === today.toDateString();
+  }
+
+  static isYesterday(date: string | Date): boolean {
+    const d = new Date(date);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return d.toDateString() === yesterday.toDateString();
+  }
+
+  static daysAgo(date: string | Date): number {
+    const d = new Date(date);
+    const today = new Date();
+    const diffTime = today.getTime() - d.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  static getDateString(date: Date = new Date()): string {
+    return date.toISOString().split('T')[0];
   }
 }
 
@@ -238,7 +314,7 @@ export class DataSorter {
 
   static filterWordsByPartOfSpeech(
     words: WordWithExamples[], 
-    partsOfSpeech: PartOfSpeech
+    partsOfSpeech: PartOfSpeech[]
   ): WordWithExamples[] {
     return words.filter(word => partsOfSpeech.includes(word.partOfSpeech));
   }
@@ -251,7 +327,7 @@ export class DataSorter {
     return words.filter(word => word.rate <= maxRate && word.reviewCount > 0);
   }
 }
-  
+
 // Statistics calculation utilities
 export class StatsCalculator {
   static calculateAverageRate(words: WordWithExamples[]): number {
@@ -350,86 +426,6 @@ export class StatsCalculator {
   }
 }
 
-// Text processing utilities
-export class TextProcessor {
-  // Remove markdown formatting for plain text display
-  static stripMarkdown(text: string): string {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-      .replace(/\*(.*?)\*/g, '$1')     // Remove italic
-      .replace(/__(.*?)__/g, '$1')     // Remove underline
-      .replace(/`(.*?)`/g, '$1')       // Remove code
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Remove links
-  }
-
-  // Highlight word in sentence
-  static highlightWordInSentence(sentence: string, word: string): string {
-    const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-    return sentence.replace(regex, '**$1**');
-  }
-
-  // Extract word from sentence (remove markdown)
-  static extractWordFromSentence(sentence: string): string | null {
-    const match = sentence.match(/\*\*(.*?)\*\*/);
-    return match ? match[1] : null;
-  }
-
-  // Generate audio filename for word
-  static generateAudioFilename(word: string, language: LanguageCode): string {
-    return `${word.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${language}.mp3`;
-  }
-
-  // Truncate text with ellipsis
-  static truncateText(text: string, maxLength: number): string {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength - 3) + '...';
-  }
-}
-
-// Date utilities
-export class DateUtils {
-  static formatDate(date: string | Date): string {
-    const d = new Date(date);
-    return d.toLocaleDateString('uk-UA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }
-
-  static formatTime(date: string | Date): string {
-    const d = new Date(date);
-    return d.toLocaleTimeString('uk-UA', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
-
-  static isToday(date: string | Date): boolean {
-    const d = new Date(date);
-    const today = new Date();
-    return d.toDateString() === today.toDateString();
-  }
-
-  static isYesterday(date: string | Date): boolean {
-    const d = new Date(date);
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return d.toDateString() === yesterday.toDateString();
-  }
-
-  static daysAgo(date: string | Date): number {
-    const d = new Date(date);
-    const today = new Date();
-    const diffTime = today.getTime() - d.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  static getDateString(date: Date = new Date()): string {
-    return date.toISOString().split('T')[0];
-  }
-}
-
 // Random utilities for learning algorithms
 export class RandomUtils {
   // Shuffle array
@@ -450,6 +446,9 @@ export class RandomUtils {
 
   // Weighted random selection (words with lower rates are more likely to be selected)
   static getWeightedRandomWords(words: WordWithExamples[], count: number): WordWithExamples[] {
+    if (words.length === 0) return [];
+    if (count >= words.length) return [...words];
+
     const weights = words.map(word => {
       // Higher weight for words with lower rates (need more practice)
       const baseWeight = 6 - word.rate; // Rate 0 = weight 6, Rate 5 = weight 1
@@ -480,7 +479,7 @@ export class RandomUtils {
   }
 }
 
-// Export all utilities
+// Export all utilities grouped together
 export const Utils = {
   DataMapper,
   DataValidator,

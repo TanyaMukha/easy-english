@@ -1,123 +1,159 @@
+// components/ui/navigation/ScreenHeader.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../../../styles/GlobalStyles';
+import { router } from 'expo-router';
+
+import {
+  Colors,
+  SharedStyles,
+  Spacing,
+  Typography,
+  DeviceUtils,
+} from '../../../styles/SharedStyles';
 
 interface ScreenHeaderProps {
   title: string;
   subtitle?: string;
-  showBackButton?: boolean;
+  showBack?: boolean;
   onBackPress?: () => void;
-  rightIcon?: string;
-  onRightPress?: () => void;
-  onRightPressAccessibilityLabel?: string;
+  rightComponent?: React.ReactNode;
+  leftComponent?: React.ReactNode;
   backgroundColor?: string;
+  centerTitle?: boolean;
 }
 
 /**
- * Single Responsibility: Display screen header with navigation and actions
- * Open/Closed: Can be extended with additional header elements
- * Interface Segregation: Only requires header-specific props
+ * Screen Header Component
+ * Single Responsibility: Provide consistent header layout for screens
+ * Open/Closed: Can be extended with additional header features
  */
 const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   title,
   subtitle,
-  showBackButton = false,
+  showBack = true,
   onBackPress,
-  rightIcon,
-  onRightPress,
-  onRightPressAccessibilityLabel,
+  rightComponent,
+  leftComponent,
   backgroundColor = Colors.background,
+  centerTitle = false,
 }) => {
+  const handleBackPress = () => {
+    if (onBackPress) {
+      onBackPress();
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.content}>
-        {/* Left Side - Back Button */}
-        <View style={styles.leftSection}>
-          {showBackButton && (
+        {/* Left Side */}
+        <View style={styles.leftContainer}>
+          {leftComponent ? (
+            leftComponent
+          ) : showBack ? (
             <TouchableOpacity
               style={styles.backButton}
-              onPress={onBackPress}
+              onPress={handleBackPress}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessible={true}
               accessibilityLabel="Go back"
+              accessibilityRole="button"
             >
-              <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={Colors.text}
+              />
             </TouchableOpacity>
+          ) : (
+            <View style={styles.placeholder} />
           )}
         </View>
 
-        {/* Center - Title and Subtitle */}
-        <View style={styles.centerSection}>
-          <Text style={[GlobalStyles.h3, GlobalStyles.textPrimary, styles.title]} numberOfLines={1}>
+        {/* Center */}
+        <View style={[styles.centerContainer, centerTitle && styles.centered]}>
+          <Text style={styles.title} numberOfLines={1}>
             {title}
           </Text>
           {subtitle && (
-            <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary, styles.subtitle]} numberOfLines={1}>
+            <Text style={styles.subtitle} numberOfLines={1}>
               {subtitle}
             </Text>
           )}
         </View>
 
-        {/* Right Side - Action Button */}
-        <View style={styles.rightSection}>
-          {rightIcon && onRightPress && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={onRightPress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              accessibilityLabel={onRightPressAccessibilityLabel}
-            >
-              <Ionicons name={rightIcon as any} size={24} color={Colors.primary} />
-            </TouchableOpacity>
-          )}
+        {/* Right Side */}
+        <View style={styles.rightContainer}>
+          {rightComponent || <View style={styles.placeholder} />}
         </View>
       </View>
     </View>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    paddingTop: DeviceUtils.isIOS ? 50 : 20,
-    paddingBottom: Spacing.md,
+    paddingTop: DeviceUtils.isTablet ? Spacing.lg : Spacing.md,
+    paddingBottom: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
+  
   content: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    paddingHorizontal: Spacing.lg,
-    minHeight: DeviceUtils.getValue(44, 48),
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    minHeight: 48,
   },
-  leftSection: {
-    width: 44,
-    justifyContent: 'center' as const,
-    alignItems: 'flex-start' as const,
+  
+  leftContainer: {
+    width: 48,
+    alignItems: 'flex-start',
   },
-  centerSection: {
+  
+  centerContainer: {
     flex: 1,
-    alignItems: 'center' as const,
     paddingHorizontal: Spacing.sm,
   },
-  rightSection: {
-    width: 44,
-    justifyContent: 'center' as const,
-    alignItems: 'flex-end' as const,
+  
+  centered: {
+    alignItems: 'center',
   },
+  
+  rightContainer: {
+    width: 48,
+    alignItems: 'flex-end',
+  },
+  
   backButton: {
-    padding: Spacing.xs,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  actionButton: {
-    padding: Spacing.xs,
-  },
+  
   title: {
-    textAlign: 'center' as const,
-    fontWeight: '600' as const,
+    fontSize: Typography.fontSize.xl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text,
+    textAlign: 'left',
   },
+  
   subtitle: {
-    textAlign: 'center' as const,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
     marginTop: 2,
+    textAlign: 'left',
   },
-};
+  
+  placeholder: {
+    width: 40,
+    height: 40,
+  },
+});
 
 export default ScreenHeader;

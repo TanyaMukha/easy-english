@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { GlobalStyles, Colors, Spacing } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
 
 interface Quote {
   text: string;
@@ -22,16 +22,16 @@ const MotivationalQuote: React.FC<MotivationalQuoteProps> = ({
   title = 'Quote of the Day'
 }) => {
   return (
-    <View style={[GlobalStyles.card, styles.container]}>
-      <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary, styles.title]}>
+    <View style={[SharedStyles.card, styles.container]}>
+      <Text style={[SharedStyles.h4, SharedStyles.textPrimary, styles.title]}>
         {title}
       </Text>
       
-      <Text style={[GlobalStyles.bodyMedium, styles.quoteText]}>
+      <Text style={[SharedStyles.bodyMedium, styles.quoteText]}>
         "{quote.text}"
       </Text>
       
-      <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary, styles.translation]}>
+      <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary, styles.translation]}>
         {quote.translation}
       </Text>
     </View>

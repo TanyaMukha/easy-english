@@ -22,10 +22,10 @@ import {
 import { useWordForm } from "../../hooks/useWordForm";
 import {
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 interface WordFormProps {
   word?: WordWithExamples;
@@ -84,20 +84,20 @@ const WordForm: React.FC<WordFormProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={GlobalStyles.flex1}
+      style={SharedStyles.flex1}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
-        style={GlobalStyles.container}
+        style={SharedStyles.container}
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={[GlobalStyles.h2, GlobalStyles.textPrimary]}>
+            <Text style={[SharedStyles.h2, SharedStyles.textPrimary]}>
               {isEditMode ? "Edit Word" : "Add New Word"}
             </Text>
-            <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}>
+            <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}>
               {isEditMode
                 ? "Update word information and examples"
                 : "Add a new word to your vocabulary"}
@@ -107,8 +107,8 @@ const WordForm: React.FC<WordFormProps> = ({
           <View style={styles.section}>
             <Text
               style={[
-                GlobalStyles.h4,
-                GlobalStyles.textPrimary,
+                SharedStyles.h4,
+                SharedStyles.textPrimary,
                 styles.sectionTitle,
               ]}
             >
@@ -118,15 +118,15 @@ const WordForm: React.FC<WordFormProps> = ({
             <View style={styles.fieldContainer}>
               <Text
                 style={[
-                  GlobalStyles.bodyMedium,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.bodyMedium,
+                  SharedStyles.textPrimary,
                   styles.label,
                 ]}
               >
                 Word *
               </Text>
               <TextInput
-                style={[GlobalStyles.input, errors.word && styles.inputError]}
+                style={[SharedStyles.input, errors.word && styles.inputError]}
                 value={formData.word}
                 onChangeText={(text) => updateFormData("word", text)}
                 placeholder="Enter the word..."
@@ -137,7 +137,7 @@ const WordForm: React.FC<WordFormProps> = ({
                 editable={!loading && !isSubmitting}
               />
               {errors.word && (
-                <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                   {errors.word}
                 </Text>
               )}
@@ -146,8 +146,8 @@ const WordForm: React.FC<WordFormProps> = ({
             <View style={styles.fieldContainer}>
               <Text
                 style={[
-                  GlobalStyles.bodyMedium,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.bodyMedium,
+                  SharedStyles.textPrimary,
                   styles.label,
                 ]}
               >
@@ -155,7 +155,7 @@ const WordForm: React.FC<WordFormProps> = ({
               </Text>
               <TextInput
                 style={[
-                  GlobalStyles.input,
+                  SharedStyles.input,
                   errors.translation && styles.inputError,
                 ]}
                 value={formData.translation}
@@ -166,7 +166,7 @@ const WordForm: React.FC<WordFormProps> = ({
                 editable={!loading && !isSubmitting}
               />
               {errors.translation && (
-                <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                   {errors.translation}
                 </Text>
               )}
@@ -175,8 +175,8 @@ const WordForm: React.FC<WordFormProps> = ({
             <View style={styles.fieldContainer}>
               <Text
                 style={[
-                  GlobalStyles.bodyMedium,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.bodyMedium,
+                  SharedStyles.textPrimary,
                   styles.label,
                 ]}
               >
@@ -184,7 +184,7 @@ const WordForm: React.FC<WordFormProps> = ({
               </Text>
               <TextInput
                 style={[
-                  GlobalStyles.input,
+                  SharedStyles.input,
                   errors.transcription && styles.inputError,
                 ]}
                 value={formData.transcription}
@@ -197,7 +197,7 @@ const WordForm: React.FC<WordFormProps> = ({
                 editable={!loading && !isSubmitting}
               />
               {errors.transcription && (
-                <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                   {errors.transcription}
                 </Text>
               )}
@@ -206,14 +206,14 @@ const WordForm: React.FC<WordFormProps> = ({
             <View style={styles.fieldContainer}>
               <Text
                 style={[
-                  GlobalStyles.bodyMedium,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.bodyMedium,
+                  SharedStyles.textPrimary,
                   styles.label,
                 ]}
               >
                 Part of Speech *
               </Text>
-              <View style={[GlobalStyles.input, styles.pickerContainer]}>
+              <View style={[SharedStyles.input, styles.pickerContainer]}>
                 <Picker
                   selectedValue={formData.partOfSpeech}
                   onValueChange={(value) =>
@@ -238,14 +238,14 @@ const WordForm: React.FC<WordFormProps> = ({
               <View style={[styles.fieldContainer, { flex: 1 }]}>
                 <Text
                   style={[
-                    GlobalStyles.bodyMedium,
-                    GlobalStyles.textPrimary,
+                    SharedStyles.bodyMedium,
+                    SharedStyles.textPrimary,
                     styles.label,
                   ]}
                 >
                   Level
                 </Text>
-                <View style={[GlobalStyles.input, styles.pickerContainer]}>
+                <View style={[SharedStyles.input, styles.pickerContainer]}>
                   <Picker
                     selectedValue={formData.level}
                     onValueChange={(value) => updateFormData("level", value)}
@@ -269,14 +269,14 @@ const WordForm: React.FC<WordFormProps> = ({
               <View style={[styles.fieldContainer, { flex: 1 }]}>
                 <Text
                   style={[
-                    GlobalStyles.bodyMedium,
-                    GlobalStyles.textPrimary,
+                    SharedStyles.bodyMedium,
+                    SharedStyles.textPrimary,
                     styles.label,
                   ]}
                 >
                   Language
                 </Text>
-                <View style={[GlobalStyles.input, styles.pickerContainer]}>
+                <View style={[SharedStyles.input, styles.pickerContainer]}>
                   <Picker
                     selectedValue={formData.language}
                     onValueChange={(value) => updateFormData("language", value)}
@@ -307,12 +307,12 @@ const WordForm: React.FC<WordFormProps> = ({
               <View style={styles.toggleContent}>
                 <View>
                   <Text
-                    style={[GlobalStyles.bodyMedium, GlobalStyles.textPrimary]}
+                    style={[SharedStyles.bodyMedium, SharedStyles.textPrimary]}
                   >
                     Irregular Word
                   </Text>
                   <Text
-                    style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}
+                    style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}
                   >
                     Mark if this word has irregular forms
                   </Text>
@@ -339,7 +339,7 @@ const WordForm: React.FC<WordFormProps> = ({
             onPress={() => setShowAdvanced(!showAdvanced)}
             activeOpacity={0.7}
           >
-            <Text style={[GlobalStyles.bodyMedium, { color: Colors.primary }]}>
+            <Text style={[SharedStyles.bodyMedium, { color: Colors.primary }]}>
               {showAdvanced ? "Hide" : "Show"} Advanced Fields
             </Text>
             <Ionicons
@@ -353,8 +353,8 @@ const WordForm: React.FC<WordFormProps> = ({
             <View style={styles.section}>
               <Text
                 style={[
-                  GlobalStyles.h4,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.h4,
+                  SharedStyles.textPrimary,
                   styles.sectionTitle,
                 ]}
               >
@@ -364,15 +364,15 @@ const WordForm: React.FC<WordFormProps> = ({
               <View style={styles.fieldContainer}>
                 <Text
                   style={[
-                    GlobalStyles.bodyMedium,
-                    GlobalStyles.textPrimary,
+                    SharedStyles.bodyMedium,
+                    SharedStyles.textPrimary,
                     styles.label,
                   ]}
                 >
                   Explanation
                 </Text>
                 <TextInput
-                  style={[GlobalStyles.input, styles.textArea]}
+                  style={[SharedStyles.input, styles.textArea]}
                   value={formData.explanation}
                   onChangeText={(text) => updateFormData("explanation", text)}
                   placeholder="Explain usage, context, or special notes..."
@@ -384,7 +384,7 @@ const WordForm: React.FC<WordFormProps> = ({
                   editable={!loading && !isSubmitting}
                 />
                 {errors.explanation && (
-                  <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                  <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                     {errors.explanation}
                   </Text>
                 )}
@@ -393,15 +393,15 @@ const WordForm: React.FC<WordFormProps> = ({
               <View style={styles.fieldContainer}>
                 <Text
                   style={[
-                    GlobalStyles.bodyMedium,
-                    GlobalStyles.textPrimary,
+                    SharedStyles.bodyMedium,
+                    SharedStyles.textPrimary,
                     styles.label,
                   ]}
                 >
                   Definition
                 </Text>
                 <TextInput
-                  style={[GlobalStyles.input, styles.textArea]}
+                  style={[SharedStyles.input, styles.textArea]}
                   value={formData.definition}
                   onChangeText={(text) => updateFormData("definition", text)}
                   placeholder="English definition of the word..."
@@ -413,7 +413,7 @@ const WordForm: React.FC<WordFormProps> = ({
                   editable={!loading && !isSubmitting}
                 />
                 {errors.definition && (
-                  <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                  <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                     {errors.definition}
                   </Text>
                 )}
@@ -425,8 +425,8 @@ const WordForm: React.FC<WordFormProps> = ({
             <View style={styles.sectionHeader}>
               <Text
                 style={[
-                  GlobalStyles.h4,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.h4,
+                  SharedStyles.textPrimary,
                   styles.sectionTitle,
                 ]}
               >
@@ -440,7 +440,7 @@ const WordForm: React.FC<WordFormProps> = ({
               >
                 <Ionicons name="add" size={20} color={Colors.primary} />
                 <Text
-                  style={[GlobalStyles.bodyMedium, { color: Colors.primary }]}
+                  style={[SharedStyles.bodyMedium, { color: Colors.primary }]}
                 >
                   Add Example
                 </Text>
@@ -452,8 +452,8 @@ const WordForm: React.FC<WordFormProps> = ({
                 <View style={styles.exampleHeader}>
                   <Text
                     style={[
-                      GlobalStyles.bodyMedium,
-                      GlobalStyles.textSecondary,
+                      SharedStyles.bodyMedium,
+                      SharedStyles.textSecondary,
                     ]}
                   >
                     Example {index + 1}
@@ -473,8 +473,8 @@ const WordForm: React.FC<WordFormProps> = ({
                 <View style={styles.fieldContainer}>
                   <Text
                     style={[
-                      GlobalStyles.bodySmall,
-                      GlobalStyles.textSecondary,
+                      SharedStyles.bodySmall,
+                      SharedStyles.textSecondary,
                       styles.label,
                     ]}
                   >
@@ -482,7 +482,7 @@ const WordForm: React.FC<WordFormProps> = ({
                   </Text>
                   <TextInput
                     style={[
-                      GlobalStyles.input,
+                      SharedStyles.input,
                       errors[`example_${index}_sentence`] && styles.inputError,
                     ]}
                     value={example.sentence}
@@ -495,7 +495,7 @@ const WordForm: React.FC<WordFormProps> = ({
                     editable={!loading && !isSubmitting}
                   />
                   {errors[`example_${index}_sentence`] && (
-                    <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                    <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                       {errors[`example_${index}_sentence`]}
                     </Text>
                   )}
@@ -504,8 +504,8 @@ const WordForm: React.FC<WordFormProps> = ({
                 <View style={styles.fieldContainer}>
                   <Text
                     style={[
-                      GlobalStyles.bodySmall,
-                      GlobalStyles.textSecondary,
+                      SharedStyles.bodySmall,
+                      SharedStyles.textSecondary,
                       styles.label,
                     ]}
                   >
@@ -513,7 +513,7 @@ const WordForm: React.FC<WordFormProps> = ({
                   </Text>
                   <TextInput
                     style={[
-                      GlobalStyles.input,
+                      SharedStyles.input,
                       errors[`example_${index}_translation`] &&
                         styles.inputError,
                     ]}
@@ -527,7 +527,7 @@ const WordForm: React.FC<WordFormProps> = ({
                     editable={!loading && !isSubmitting}
                   />
                   {errors[`example_${index}_translation`] && (
-                    <Text style={[GlobalStyles.bodySmall, styles.errorText]}>
+                    <Text style={[SharedStyles.bodySmall, styles.errorText]}>
                       {errors[`example_${index}_translation`]}
                     </Text>
                   )}
@@ -540,8 +540,8 @@ const WordForm: React.FC<WordFormProps> = ({
         <View style={styles.actions}>
           <TouchableOpacity
             style={[
-              GlobalStyles.button,
-              GlobalStyles.buttonOutline,
+              SharedStyles.button,
+              SharedStyles.buttonOutline,
               styles.cancelButton,
             ]}
             onPress={handleCancel}
@@ -549,7 +549,7 @@ const WordForm: React.FC<WordFormProps> = ({
             activeOpacity={0.7}
           >
             <Text
-              style={[GlobalStyles.buttonText, { color: Colors.textSecondary }]}
+              style={[SharedStyles.buttonText, { color: Colors.textSecondary }]}
             >
               Cancel
             </Text>
@@ -557,11 +557,11 @@ const WordForm: React.FC<WordFormProps> = ({
 
           <TouchableOpacity
             style={[
-              GlobalStyles.button,
-              GlobalStyles.buttonPrimary,
+              SharedStyles.button,
+              SharedStyles.buttonPrimary,
               styles.saveButton,
               (!isFormValid || !hasChanges || isSubmitting) &&
-                GlobalStyles.buttonDisabled,
+                SharedStyles.buttonDisabled,
             ]}
             onPress={handleSave}
             disabled={!isFormValid || !hasChanges || loading || isSubmitting}
@@ -570,13 +570,13 @@ const WordForm: React.FC<WordFormProps> = ({
             {isSubmitting ? (
               <View style={styles.loadingContainer}>
                 <Text
-                  style={[GlobalStyles.buttonText, { marginRight: Spacing.sm }]}
+                  style={[SharedStyles.buttonText, { marginRight: Spacing.sm }]}
                 >
                   {isEditMode ? "Updating..." : "Creating..."}
                 </Text>
               </View>
             ) : (
-              <Text style={GlobalStyles.buttonText}>
+              <Text style={SharedStyles.buttonText}>
                 {isEditMode ? "Update Word" : "Add Word"}
               </Text>
             )}

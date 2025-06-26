@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, Shadows } from '../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, Shadows } from '../../styles/SharedStyles';
 import { PartOfSpeech, Level, WordFilters } from '../../data/DataModels';
 
 interface FilterModalProps {
@@ -65,7 +65,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           <Ionicons name="checkmark" size={16} color={Colors.textPrimary} />
         )}
       </View>
-      <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textPrimary]}>
+      <Text style={[SharedStyles.bodyMedium, SharedStyles.textPrimary]}>
         {label || value}
       </Text>
     </TouchableOpacity>
@@ -83,26 +83,26 @@ const FilterModal: React.FC<FilterModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={GlobalStyles.container}>
+      <View style={SharedStyles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
           
-          <Text style={[GlobalStyles.h3, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.h3, SharedStyles.textPrimary]}>
             Filters
           </Text>
           
           <TouchableOpacity onPress={resetFilters} style={styles.resetButton}>
-            <Text style={[GlobalStyles.bodyMedium, { color: Colors.primary }]}>
+            <Text style={[SharedStyles.bodyMedium, { color: Colors.primary }]}>
               Reset
             </Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={GlobalStyles.flex1} contentContainerStyle={styles.content}>
+        <ScrollView style={SharedStyles.flex1} contentContainerStyle={styles.content}>
           <View style={styles.section}>
-            <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.sectionTitle]}>
+            <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.sectionTitle]}>
               Part of Speech
             </Text>
             <View style={styles.optionsGrid}>
@@ -123,7 +123,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </View>
 
           <View style={styles.section}>
-            <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.sectionTitle]}>
+            <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.sectionTitle]}>
               Level
             </Text>
             <View style={styles.optionsRow}>
@@ -144,7 +144,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </View>
 
           <View style={styles.section}>
-            <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.sectionTitle]}>
+            <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.sectionTitle]}>
               Word Type
             </Text>
             <View style={styles.optionsColumn}>
@@ -168,7 +168,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </View>
 
           <View style={styles.section}>
-            <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.sectionTitle]}>
+            <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.sectionTitle]}>
               Sort By
             </Text>
             <View style={styles.optionsColumn}>
@@ -184,7 +184,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </View>
 
           <View style={styles.section}>
-            <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary, styles.sectionTitle]}>
+            <Text style={[SharedStyles.h5, SharedStyles.textPrimary, styles.sectionTitle]}>
               Sort Order
             </Text>
             <View style={styles.optionsRow}>
@@ -206,11 +206,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
         <View style={styles.footer}>
           <TouchableOpacity
-            style={[GlobalStyles.button, GlobalStyles.buttonPrimary]}
+            style={[SharedStyles.button, SharedStyles.buttonPrimary]}
             onPress={onClose}
             activeOpacity={0.8}
           >
-            <Text style={GlobalStyles.buttonText}>
+            <Text style={SharedStyles.buttonText}>
               Apply Filters
             </Text>
           </TouchableOpacity>
