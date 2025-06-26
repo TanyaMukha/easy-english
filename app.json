@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#0F172A"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,37 +21,28 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#0F172A"
       },
       "package": "com.easyenglish.app"
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "name": "Easy English - Вивчення англійської",
-      "shortName": "Easy English",
-      "lang": "uk",
-      "scope": "/",
-      "themeColor": "#000000",
-      "backgroundColor": "#000000",
-      "display": "standalone",
-      "orientation": "portrait-primary",
-      "startUrl": "/",
-      "preferRelatedApplications": false,
       "bundler": "metro",
       "output": "static",
-      "build": {
-        "babel": {
-          "include": ["@expo/vector-icons"]
-        }
-      }
+      "lang": "uk"
     },
     "plugins": [
       "expo-router",
       [
         "expo-sqlite",
         {
-          "enableFTS": true,
-          "useSQLCipher": false
+          "enableFTS": true
+        }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": false
         }
       ]
     ],

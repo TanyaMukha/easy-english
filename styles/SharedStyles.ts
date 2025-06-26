@@ -1,381 +1,259 @@
-import { StyleSheet, Platform, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// Device breakpoints
-const isTablet = screenWidth >= 768;
-const isLargeTablet = screenWidth >= 1024;
-const isDesktop = screenWidth >= 1200;
-
-// Unified Dark Theme Color System
-export const Colors = {
-  // Primary brand colors
-  primary: '#6366F1', // Indigo - main brand color
-  primaryLight: '#8B8CF8',
-  primaryDark: '#4F46E5',
-  primaryBg: '#1E1B4B',
-
-  // Secondary colors  
-  secondary: '#EC4899', // Pink - secondary brand
-  secondaryLight: '#F472B6',
-  secondaryDark: '#DB2777',
-
-  // Accent colors
-  accent: '#06B6D4', // Cyan - accent highlights
-  accentLight: '#22D3EE',
-  accentDark: '#0891B2',
-
-  // Background hierarchy
-  background: '#0F0F23', // Main app background (very dark blue)
-  backgroundSecondary: '#1A1B3A', // Card backgrounds
-  backgroundTertiary: '#252653', // Elevated surfaces
-  surface: '#1E1F42', // Interactive surfaces
-  surfaceLight: '#2A2B5A', // Hover states
-  surfaceSecondary: '#1C1C1E', // Alternative surface
-  
-  // Text hierarchy
-  text: '#F8FAFC', // Primary text (almost white)
-  textPrimary: '#F8FAFC', // Alias for main text
-  textSecondary: '#CBD5E1', // Secondary text (light gray)
-  textTertiary: '#94A3B8', // Tertiary text (medium gray)
-  textMuted: '#64748B', // Muted text (dark gray)
-  textDisabled: '#475569', // Disabled text
-  textOnPrimary: '#FFFFFF', // Text on primary buttons
-
-  // Semantic colors
-  success: '#10B981', // Green - success states
-  successLight: '#34D399',
-  successDark: '#059669',
-  successBg: '#064E3B',
-
-  warning: '#F59E0B', // Amber - warning states
-  warningLight: '#FBBF24',
-  warningDark: '#D97706',
-  warningBg: '#451A03',
-
-  error: '#EF4444', // Red - error states
-  errorLight: '#F87171',
-  errorDark: '#DC2626',
-  errorBg: '#450A0A',
-
-  info: '#3B82F6', // Blue - info states
-  infoLight: '#60A5FA',
-  infoDark: '#2563EB',
-  infoBg: '#1E3A8A',
-
-  // Border colors
-  border: '#334155', // Default borders
-  borderLight: '#475569', // Lighter borders
-  borderDark: '#1E293B', // Darker borders
-  outline: '#334155', // Outline elements
-
-  // Input-specific colors
-  inputBackground: '#1E293B',
-  inputBorder: '#475569',
-  inputFocus: '#6366F1',
-  inputPlaceholder: '#64748B',
-
-  // Progress and interactive elements
-  progressBackground: '#1E293B',
-  progressFill: '#6366F1',
-  shadow: '#000000',
-
-  // Level-specific colors for language learning
-  levelA1: '#10B981', // Green - beginner
-  levelA2: '#06B6D4', // Cyan - elementary
-  levelB1: '#3B82F6', // Blue - intermediate
-  levelB2: '#8B5CF6', // Purple - upper intermediate
-  levelC1: '#F59E0B', // Orange - advanced
-  levelC2: '#EF4444', // Red - proficiency
-
-  // Part of speech colors (optimized for dark theme)
-  card: {
-    noun: '#EF4444', // Red
-    verb: '#10B981', // Green
-    adjective: '#3B82F6', // Blue
-    adverb: '#8B5CF6', // Purple
-    preposition: '#F59E0B', // Orange
-    phrase: '#EC4899', // Pink
-    phrasal_verb: '#06B6D4', // Cyan
-    idiom: '#F59E0B', // Orange
-    pronoun: '#8B5CF6', // Purple
-    conjunction: '#10B981', // Green
-    interjection: '#EF4444', // Red
-    slang: '#EC4899', // Pink
-    abbreviation: '#06B6D4', // Cyan
-    fixed_expression: '#8B5CF6', // Purple
-    irregular: '#F59E0B', // Orange
-  }
+// Breakpoints for responsive design
+export const Breakpoints = {
+  mobile: 480,
+  tablet: 768,
+  desktop: 1024,
 } as const;
 
-// Typography system
-export const Typography = {
-  // Font families (platform-specific)
-  fontRegular: Platform.select({
-    ios: 'System',
-    android: 'Roboto',
-    web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    default: 'System',
-  }),
-  fontMedium: Platform.select({
-    ios: 'System',
-    android: 'Roboto_medium',
-    web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    default: 'System',
-  }),
-  fontBold: Platform.select({
-    ios: 'System',
-    android: 'Roboto',
-    web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    default: 'System',
-  }),
-  fontMono: Platform.select({
-    ios: 'Menlo',
-    android: 'monospace',
-    web: 'ui-monospace, Menlo, Monaco, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace',
-    default: 'monospace',
-  }),
+// Check if device is tablet sized
+export const isTablet = width >= Breakpoints.tablet;
+export const isDesktop = width >= Breakpoints.desktop;
 
-  // Responsive font sizes
-  fontSize: {
-    xs: isTablet ? 14 : 12,
-    sm: isTablet ? 16 : 14,
-    base: isTablet ? 18 : 16,
-    lg: isTablet ? 20 : 18,
-    xl: isTablet ? 22 : 20,
-    '2xl': isTablet ? 26 : 24,
-    '3xl': isTablet ? 32 : 30,
-    '4xl': isTablet ? 38 : 36,
-    '5xl': isTablet ? 50 : 48,
-  },
-  
-  // Font weights
-  fontWeight: {
-    light: '300' as const,
-    normal: '400' as const,
-    medium: '500' as const,
-    semibold: '600' as const,
-    bold: '700' as const,
-  },
-  
-  // Line heights
-  lineHeight: {
-    tight: 1.25,
-    snug: 1.375,
-    normal: 1.5,
-    relaxed: 1.625,
-    loose: 2,
-  },
-
-  // Semantic typography aliases
-  h1: isTablet ? 32 : 28,
-  h2: isTablet ? 28 : 24,
-  h3: isTablet ? 24 : 20,
-  h4: isTablet ? 20 : 18,
-  h5: isTablet ? 18 : 16,
-  h6: isTablet ? 16 : 14,
-  bodyLarge: isTablet ? 18 : 16,
-  bodyMedium: isTablet ? 16 : 14,
-  bodySmall: isTablet ? 14 : 12,
-  caption: isTablet ? 12 : 10,
-  overline: isTablet ? 10 : 9,
-  
-  // Typography styles for headlines
-  headlineLarge: isTablet ? 32 : 28,
-  headlineMedium: isTablet ? 28 : 24,
-  headlineSmall: isTablet ? 24 : 20,
-} as const;
-
-// Spacing system (8pt grid)
+// Spacing scale
 export const Spacing = {
   xs: 4,
   sm: 8,
   md: 16,
   lg: 24,
   xl: 32,
-  '2xl': 48,
-  '3xl': 64,
+  xxl: 48,
 } as const;
 
-// Border radius system
-export const BorderRadius = {
-  none: 0,
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  '2xl': 24,
-  full: 9999,
+// Color palette
+export const Colors = {
+  // Primary colors
+  primary: '#6366F1',
+  primaryLight: '#818CF8',
+  primaryDark: '#4F46E5',
+  
+  // Secondary colors
+  secondary: '#10B981',
+  secondaryLight: '#34D399',
+  secondaryDark: '#059669',
+  
+  // Neutral colors
+  background: '#0F172A',
+  surface: '#1E293B',
+  surfaceLight: '#334155',
+  
+  // Text colors
+  text: '#F1F5F9',
+  textSecondary: '#94A3B8',
+  textMuted: '#64748B',
+  
+  // Accent colors
+  accent: '#F59E0B',
+  accentLight: '#FCD34D',
+  
+  // Status colors
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+  info: '#3B82F6',
+  
+  // Border colors
+  border: '#374151',
+  borderLight: '#4B5563',
+  
+  // Card colors by part of speech
+  noun: '#6366F1',
+  verb: '#10B981',
+  adjective: '#F59E0B',
+  adverb: '#8B5CF6',
+  preposition: '#EC4899',
+  phrase: '#06B6D4',
+  phrasal_verb: '#84CC16',
+  idiom: '#F97316',
+  pronoun: '#EF4444',
+  conjunction: '#14B8A6',
+  interjection: '#A855F7',
+  slang: '#F43F5E',
+  abbreviation: '#64748B',
+  fixed_expression: '#0EA5E9',
+  irregular: '#DC2626',
 } as const;
 
-// Shadow system (platform-specific)
+// Typography scale
+export const Typography = {
+  fontSize: {
+    xs: 12,
+    sm: 14,
+    base: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 30,
+    '4xl': 36,
+    '5xl': 48,
+  },
+  
+  fontWeight: {
+    light: '300' as const,
+    normal: '400' as const,
+    medium: '500' as const,
+    semibold: '600' as const,
+    bold: '700' as const,
+    extrabold: '800' as const,
+  },
+  
+  lineHeight: {
+    tight: 1.2,
+    snug: 1.375,
+    normal: 1.5,
+    relaxed: 1.625,
+    loose: 2,
+  },
+  
+  // Header sizes
+  h1: 32,
+  h2: 28,
+  h3: 24,
+  h4: 20,
+  h5: 18,
+  h6: 16,
+} as const;
+
+// Shadow styles
 export const Shadows = {
-  sm: Platform.select({
-    ios: {
-      shadowColor: Colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.22,
-      shadowRadius: 2.22,
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
     },
-    android: {
-      elevation: 3,
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    web: {
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
     },
-  }),
-  
-  md: Platform.select({
-    ios: {
-      shadowColor: Colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-    },
-    android: {
-      elevation: 5,
-    },
-    web: {
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 20px rgba(0, 0, 0, 0.10)',
-    },
-  }),
-  
-  lg: Platform.select({
-    ios: {
-      shadowColor: Colors.shadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.30,
-      shadowRadius: 4.65,
-    },
-    android: {
-      elevation: 8,
-    },
-    web: {
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15), 0 20px 40px rgba(0, 0, 0, 0.20)',
-    },
-  }),
-  
-  xl: Platform.select({
-    ios: {
-      shadowColor: Colors.shadow,
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.35,
-      shadowRadius: 6.27,
-    },
-    android: {
-      elevation: 12,
-    },
-    web: {
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.20), 0 30px 60px rgba(0, 0, 0, 0.25)',
-    },
-  }),
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
 } as const;
 
-// Main stylesheet with all common styles
-export const SharedStyles = StyleSheet.create({
-  // === LAYOUT STYLES ===
+// Utility functions
+export const getResponsiveValue = (mobile: number, tablet?: number, desktop?: number) => {
+  if (isDesktop && desktop) return desktop;
+  if (isTablet && tablet) return tablet;
+  return mobile;
+};
+
+export const getResponsiveStyle = <T>(mobile: T, tablet?: T, desktop?: T): T => {
+  if (isDesktop && desktop) return desktop;
+  if (isTablet && tablet) return tablet;
+  return mobile;
+};
+
+// Get color for part of speech
+export const getCardColor = (partOfSpeech: string): string => {
+  const colorMap: Record<string, string> = {
+    noun: Colors.noun,
+    verb: Colors.verb,
+    adjective: Colors.adjective,
+    adverb: Colors.adverb,
+    preposition: Colors.preposition,
+    phrase: Colors.phrase,
+    phrasal_verb: Colors.phrasal_verb,
+    idiom: Colors.idiom,
+    pronoun: Colors.pronoun,
+    conjunction: Colors.conjunction,
+    interjection: Colors.interjection,
+    slang: Colors.slang,
+    abbreviation: Colors.abbreviation,
+    fixed_expression: Colors.fixed_expression,
+    irregular: Colors.irregular,
+  };
   
-  // Main containers
+  return colorMap[partOfSpeech] || Colors.primary;
+};
+
+// Main shared styles
+export const SharedStyles = StyleSheet.create({
+  // Layout styles
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    paddingHorizontal: getResponsiveValue(Spacing.md, Spacing.lg, Spacing.xl),
   },
   
-  safeArea: {
+  centerContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: Colors.background,
   },
   
-  contentContainer: {
-    flex: 1,
-    paddingHorizontal: isTablet ? Spacing.xl : Spacing.md,
-    paddingVertical: Spacing.md,
-  },
-  
-  // Scrollable content
-  scrollContainer: {
-    flexGrow: 1,
-  },
-  
-  // Centered content
-  centeredContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xl,
-  },
-  
-  // === FLEXBOX UTILITIES ===
-  
-  flexRow: {
+  row: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   
-  flexColumn: {
+  column: {
     flexDirection: 'column',
   },
   
-  flexCenter: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  
-  flexBetween: {
+  spaceBetween: {
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
   
-  flexAround: {
+  spaceAround: {
     justifyContent: 'space-around',
-    alignItems: 'center',
   },
   
-  flex1: {
-    flex: 1,
+  spaceEvenly: {
+    justifyContent: 'space-evenly',
   },
   
-  // === CARD STYLES ===
-  
-  card: {
+  // Surface styles
+  surface: {
     backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
+    borderRadius: 12,
     padding: Spacing.md,
-    marginBottom: Spacing.md,
-    ...Shadows.md,
-  },
-  
-  cardSmall: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.sm,
-    marginBottom: Spacing.sm,
     ...Shadows.sm,
   },
   
-  cardLarge: {
+  surfaceLight: {
+    backgroundColor: Colors.surfaceLight,
+    borderRadius: 12,
+    padding: Spacing.md,
+    ...Shadows.sm,
+  },
+  
+  card: {
     backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.xl,
+    borderRadius: 16,
     padding: Spacing.lg,
-    marginBottom: Spacing.lg,
-    ...Shadows.lg,
+    marginVertical: Spacing.sm,
+    ...Shadows.md,
   },
   
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  
-  // === TYPOGRAPHY STYLES ===
-  
-  // Headings
+  // Header styles
   h1: {
     fontSize: Typography.h1,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.text,
     lineHeight: Typography.h1 * Typography.lineHeight.tight,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   
   h2: {
@@ -440,332 +318,218 @@ export const SharedStyles = StyleSheet.create({
     lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
   },
   
-  bodyLarge: {
-    fontSize: Typography.bodyLarge,
+  bodySecondary: {
+    fontSize: Typography.fontSize.base,
     fontWeight: Typography.fontWeight.normal,
-    color: Colors.text,
-    lineHeight: Typography.bodyLarge * Typography.lineHeight.relaxed,
-  },
-  
-  bodyMedium: {
-    fontSize: Typography.bodyMedium,
-    fontWeight: Typography.fontWeight.normal,
-    color: Colors.text,
-    lineHeight: Typography.bodyMedium * Typography.lineHeight.normal,
-  },
-  
-  bodySmall: {
-    fontSize: Typography.bodySmall,
-    fontWeight: Typography.fontWeight.normal,
-    color: Colors.text,
-    lineHeight: Typography.bodySmall * Typography.lineHeight.normal,
+    color: Colors.textSecondary,
+    lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
   },
   
   caption: {
     fontSize: Typography.fontSize.sm,
     fontWeight: Typography.fontWeight.normal,
-    color: Colors.textTertiary,
+    color: Colors.textMuted,
     lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
   },
   
-  overline: {
-    fontSize: Typography.caption,
-    fontWeight: Typography.fontWeight.semibold,
-    color: Colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  
-  // Text color variants
-  textPrimary: {
-    color: Colors.textPrimary,
-  },
-  
-  textSecondary: {
-    color: Colors.textSecondary,
-  },
-  
-  textTertiary: {
-    color: Colors.textTertiary,
-  },
-  
-  textMuted: {
-    color: Colors.textMuted,
-  },
-  
-  textDisabled: {
-    color: Colors.textDisabled,
-  },
-  
-  // === BUTTON STYLES ===
-  
-  button: {
+  // Button styles
+  primaryButton: {
     backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
     ...Shadows.sm,
+  },
+  
+  secondaryButton: {
+    backgroundColor: Colors.surface,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   
   buttonText: {
     fontSize: Typography.fontSize.base,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.textOnPrimary,
+    color: Colors.text,
   },
   
-  buttonSecondary: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-  
-  buttonSecondaryText: {
+  primaryButtonText: {
     fontSize: Typography.fontSize.base,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text,
+    color: '#FFFFFF',
   },
   
-  buttonSmall: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    minHeight: 36,
-  },
-  
-  buttonLarge: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.lg,
-    minHeight: 56,
-  },
-  
-  buttonDisabled: {
-    backgroundColor: Colors.textDisabled,
-    opacity: 0.6,
-  },
-  
-  // === INPUT STYLES ===
-  
+  // Input styles
   input: {
-    backgroundColor: Colors.inputBackground,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
     fontSize: Typography.fontSize.base,
     color: Colors.text,
     borderWidth: 1,
-    borderColor: Colors.inputBorder,
-    minHeight: 48,
+    borderColor: Colors.border,
   },
   
   inputFocused: {
-    borderColor: Colors.inputFocus,
-    borderWidth: 2,
+    borderColor: Colors.primary,
   },
   
   inputError: {
     borderColor: Colors.error,
-    borderWidth: 2,
   },
   
-  inputMultiline: {
-    minHeight: 96,
-    textAlignVertical: 'top',
+  // Spacing utilities
+  mt: {
+    marginTop: Spacing.md,
   },
   
-  // === LIST STYLES ===
+  mb: {
+    marginBottom: Spacing.md,
+  },
   
-  listContainer: {
-    paddingHorizontal: isTablet ? Spacing.xl : Spacing.md,
+  ml: {
+    marginLeft: Spacing.md,
+  },
+  
+  mr: {
+    marginRight: Spacing.md,
+  },
+  
+  mx: {
+    marginHorizontal: Spacing.md,
+  },
+  
+  my: {
+    marginVertical: Spacing.md,
+  },
+  
+  pt: {
+    paddingTop: Spacing.md,
+  },
+  
+  pb: {
+    paddingBottom: Spacing.md,
+  },
+  
+  pl: {
+    paddingLeft: Spacing.md,
+  },
+  
+  pr: {
+    paddingRight: Spacing.md,
+  },
+  
+  px: {
+    paddingHorizontal: Spacing.md,
+  },
+  
+  py: {
     paddingVertical: Spacing.md,
   },
   
-  listItem: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    ...Shadows.sm,
+  // Responsive grid
+  grid: {
+    flexDirection: getResponsiveStyle('column', 'row'),
+    flexWrap: 'wrap',
+    gap: Spacing.md,
   },
   
-  listSeparator: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: Spacing.sm,
+  gridItem: {
+    flex: getResponsiveValue(1, 0.5, 0.33),
+    minWidth: getResponsiveValue(280, 320, 300),
   },
   
-  // === PROGRESS STYLES ===
-  
-  progressBarContainer: {
-    height: 6,
-    backgroundColor: Colors.progressBackground,
-    borderRadius: BorderRadius.sm,
-    overflow: 'hidden',
-  },
-  
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: Colors.progressFill,
-    borderRadius: BorderRadius.sm,
-  },
-  
-  // === FEEDBACK STYLES ===
-  
+  // Loading and error states
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.background,
-    padding: Spacing.xl,
   },
   
   errorContainer: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    margin: Spacing.md,
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    ...Shadows.md,
+    backgroundColor: Colors.background,
+    padding: Spacing.lg,
   },
   
   errorText: {
-    fontSize: Typography.fontSize.base,
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.medium,
     color: Colors.error,
     textAlign: 'center',
     marginBottom: Spacing.md,
   },
   
-  // === SPACING UTILITIES ===
-  
-  marginXs: { margin: Spacing.xs },
-  marginSm: { margin: Spacing.sm },
-  marginMd: { margin: Spacing.md },
-  marginLg: { margin: Spacing.lg },
-  marginXl: { margin: Spacing.xl },
-  
-  paddingXs: { padding: Spacing.xs },
-  paddingSm: { padding: Spacing.sm },
-  paddingMd: { padding: Spacing.md },
-  paddingLg: { padding: Spacing.lg },
-  paddingXl: { padding: Spacing.xl },
-  
-  paddingHorizontalXs: { paddingHorizontal: Spacing.xs },
-  paddingHorizontalSm: { paddingHorizontal: Spacing.sm },
-  paddingHorizontalMd: { paddingHorizontal: Spacing.md },
-  paddingHorizontalLg: { paddingHorizontal: Spacing.lg },
-  paddingHorizontalXl: { paddingHorizontal: Spacing.xl },
-  
-  paddingVerticalXs: { paddingVertical: Spacing.xs },
-  paddingVerticalSm: { paddingVertical: Spacing.sm },
-  paddingVerticalMd: { paddingVertical: Spacing.md },
-  paddingVerticalLg: { paddingVertical: Spacing.lg },
-  paddingVerticalXl: { paddingVertical: Spacing.xl },
-  
-  // === RESPONSIVE UTILITIES ===
-  
-  tabletOnly: {
-    display: isTablet ? 'flex' : 'none',
+  // Safe area styles
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.background,
   },
   
-  mobileOnly: {
-    display: isTablet ? 'none' : 'flex',
+  // Separator
+  separator: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
   },
   
-  desktopOnly: {
-    display: isDesktop ? 'flex' : 'none',
+  // Centered content
+  centered: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   
-  // === WEB-SPECIFIC STYLES ===
+  // Full width
+  fullWidth: {
+    width: '100%',
+  },
   
-  webContainer: Platform.select({
-    web: {
-      maxWidth: isDesktop ? 1200 : isTablet ? 768 : '100%',
-      alignSelf: 'center',
-      width: '100%',
-    },
-    default: {},
-  }),
+  // Flex utilities
+  flex1: {
+    flex: 1,
+  },
+  
+  flex0: {
+    flex: 0,
+  },
+  
+  // Absolute positioning
+  absolute: {
+    position: 'absolute',
+  },
+  
+  // Rounded corners
+  rounded: {
+    borderRadius: 8,
+  },
+  
+  roundedLg: {
+    borderRadius: 12,
+  },
+  
+  roundedXl: {
+    borderRadius: 16,
+  },
+  
+  // Opacity
+  opacity50: {
+    opacity: 0.5,
+  },
+  
+  opacity75: {
+    opacity: 0.75,
+  },
 });
 
-// === UTILITY FUNCTIONS ===
-
-// Device utilities
-export const DeviceUtils = {
-  isTablet,
-  isLargeTablet,
-  isDesktop,
-  screenWidth,
-  screenHeight,
-  
-  // Get responsive value based on device
-  getValue: (mobile: any, tablet?: any, desktop?: any) => {
-    if (isDesktop && desktop !== undefined) return desktop;
-    if (isTablet && tablet !== undefined) return tablet;
-    return mobile;
-  },
-};
-
-// Platform-specific utilities
-export const getResponsiveStyle = (mobile: any, tablet?: any, desktop?: any) => {
-  if (isDesktop && desktop !== undefined) return desktop;
-  if (isTablet && tablet !== undefined) return tablet;
-  return mobile;
-};
-
-// Get color for card based on part of speech
-export const getCardColor = (partOfSpeech: string): string => {
-  return Colors.card[partOfSpeech as keyof typeof Colors.card] || Colors.primary;
-};
-
-// Get level-specific color
-export const getLevelColor = (level: string): string => {
-  const levelColors = {
-    A1: Colors.levelA1,
-    A2: Colors.levelA2,
-    B1: Colors.levelB1,
-    B2: Colors.levelB2,
-    C1: Colors.levelC1,
-    C2: Colors.levelC2,
-  };
-  return levelColors[level as keyof typeof levelColors] || Colors.primary;
-};
-
-// Get responsive font size
-export const getResponsiveFontSize = (size: keyof typeof Typography.fontSize) => {
-  return Typography.fontSize[size];
-};
-
-// Get responsive spacing
-export const getResponsiveSpacing = (size: keyof typeof Spacing) => {
-  const baseSpacing = Spacing[size];
-  return isTablet ? baseSpacing + 4 : baseSpacing;
-};
-
-// Create theme variant (for future theming support)
-export const createTheme = (overrides: Partial<typeof Colors> = {}) => ({
-  ...Colors,
-  ...overrides,
-});
-
-// Export everything for easy imports
-export default {
-  Colors,
-  Typography,
-  Spacing,
-  BorderRadius,
-  Shadows,
-  SharedStyles,
-  DeviceUtils,
-  getResponsiveStyle,
-  getCardColor,
-  getLevelColor,
-  getResponsiveFontSize,
-  getResponsiveSpacing,
-  createTheme,
-};
+export default SharedStyles;
