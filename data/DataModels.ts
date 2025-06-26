@@ -111,7 +111,7 @@ export interface WordTag {
 
 export interface Set extends BaseEntity, Progress {
   title: string;
-  description?: string;
+  description?: string | undefined;
 }
 
 export interface SetWord {

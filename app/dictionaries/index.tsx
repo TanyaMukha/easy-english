@@ -41,11 +41,11 @@ export default function DictionariesScreen() {
 
   const handleDictionaryPress = (dictionary: Dictionary) => {
     console.log("Navigate to dictionary:", dictionary);
-    router.push(`/dictionaries/${dictionary.id}`);
+    router.replace(`/dictionaries/${dictionary.id}`);
   };
 
   const handleCreatePress = () => {
-    router.push("/dictionaries/create");
+    router.replace("/dictionaries/create");
   };
 
   const handleBackPress = () => {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
-import WordCard from "../../../components/cards/WordCard";
+import WordCard from "../../components/cards/WordCard";
 import {
   EmptyState,
   ErrorState,
@@ -10,10 +10,10 @@ import {
   LoadingState,
   ScreenHeader,
   SearchBar,
-} from "../../../components/ui";
-import { WordWithExamples } from "../../../data/DataModels";
-import { MockDataService } from "../../../data/MockData";
-import { Colors, GlobalStyles, Spacing } from "../../../styles/GlobalStyles";
+} from "../../components/ui";
+import { WordWithExamples } from "../../data/DataModels";
+import { MockDataService } from "../../data/MockData";
+import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
 
 export default function DictionaryScreen() {
   const { dictionaryId } = useLocalSearchParams<{ dictionaryId: string }>();

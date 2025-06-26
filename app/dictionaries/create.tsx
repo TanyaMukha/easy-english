@@ -1,10 +1,10 @@
 import { Alert, View } from "react-native";
 import { router } from "expo-router";
 
-import { DictionaryForm } from "../../../components/forms";
-import { ScreenHeader } from "../../../components/ui";
-import { Dictionary } from "../../../data/DataModels";
-import { GlobalStyles } from "../../../styles/GlobalStyles";
+import { DictionaryForm } from "../../components/forms";
+import { ScreenHeader } from "../../components/ui";
+import { Dictionary } from "../../data/DataModels";
+import { GlobalStyles } from "../../styles/GlobalStyles";
 
 /**
  * Screen for creating new dictionaries

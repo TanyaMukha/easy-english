@@ -1,21 +1,18 @@
 const { getDefaultConfig } = require('expo/metro-config');
 
+/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-// Configure for web support
+// Enable web support
 config.resolver.platforms = ['ios', 'android', 'native', 'web'];
 
-// Web aliases for better React Native Web compatibility
+// Configure web aliases
 config.resolver.alias = {
+  // Ensure react-native-web compatibility
   'react-native': 'react-native-web',
-  'react-native/Libraries/Components/View/ViewStylePropTypes':
-    'react-native-web/dist/exports/View/ViewStylePropTypes',
-  'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter':
-    'react-native-web/dist/vendor/react-native/NativeEventEmitter/RCTDeviceEventEmitter',
-  'react-native/Libraries/vendor/emitter/EventEmitter':
-    'react-native-web/dist/vendor/react-native/emitter/EventEmitter',
-  'react-native/Libraries/EventEmitter/NativeEventEmitter':
-    'react-native-web/dist/vendor/react-native/NativeEventEmitter',
 };
+
+// Ensure proper file extensions for web
+config.resolver.sourceExts.push('web.js', 'web.jsx', 'web.ts', 'web.tsx');
 
 module.exports = config;

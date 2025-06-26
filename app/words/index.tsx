@@ -47,17 +47,17 @@ export default function WordsScreen() {
 
   const handleWordPress = (word: WordWithExamples) => {
     console.log("Navigate to word details:", word.id);
-    router.push(`/words/${word.id}`);
+    router.replace(`/words/${word.id}`);
   };
 
   const handleCreatePress = () => {
     console.log("Navigate to create word");
-    router.push("/words/create");
+    router.replace("/words/create");
   };
 
   const handleEditWord = (word: WordWithExamples) => {
     console.log("Navigate to edit word:", word.id);
-    router.push(`/words/edit/${word.id}`);
+    router.replace(`/words/edit/${word.id}`);
   };
 
   const handleDeleteWord = async (word: WordWithExamples) => {

@@ -19,15 +19,15 @@ export default function DictionariesLayout() {
         }}
       />
       <Stack.Screen 
-        name="[dictionaryId]" 
+        name="create" 
         options={{
-          title: 'Dictionary',
+          title: 'New Dictionary',
         }}
       />
       <Stack.Screen 
-        name="(manage)" 
+        name="[dictionaryId]" 
         options={{
-          title: 'Manage Dictionaries',
+          title: 'Dictionary',
         }}
       />
     </Stack>
