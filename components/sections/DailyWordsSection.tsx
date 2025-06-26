@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: Typography.fontSize.xl,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text,
+    color: Colors.textPrimary,
   },
   
   seeAllText: {

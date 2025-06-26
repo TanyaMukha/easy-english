@@ -238,7 +238,7 @@ export default function HomeScreen() {
           <DailyWordsSection
             words={dailyWords}
             onWordPress={handleWordPress}
-            onSeeAllPress={handleSeeAllWords}
+            onSeeAll={handleSeeAllWords}
           />
 
           <WordCollectionsSection

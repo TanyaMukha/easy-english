@@ -6,9 +6,9 @@ import { Utils } from "../../data/DataUtils";
 import {
   Colors,
   DeviceUtils,
-  getLevelColor,
   Spacing,
   SharedStyles,
+  getLevelColor,
 } from "../../styles/SharedStyles";
 
 interface DailyWordCardProps {

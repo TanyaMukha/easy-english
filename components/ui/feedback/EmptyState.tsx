@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Typography.fontSize['2xl'],
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text,
+    color: Colors.textPrimary,
     textAlign: 'center',
     marginBottom: Spacing.md,
   },

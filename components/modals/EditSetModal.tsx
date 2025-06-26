@@ -160,7 +160,7 @@ const EditSetModal: React.FC<EditSetModalProps> = ({
             accessible={true}
             accessibilityLabel="Close modal"
           >
-            <Icon name="x" size={24} color={Colors.onSurface} />
+            <Icon name="x" size={24} /* color={Colors.onSurface} *//>
           </TouchableOpacity>
 
           <Text style={styles.headerTitle}>{modalTitle}</Text>
@@ -260,7 +260,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.outline,
     backgroundColor: Colors.surface,
   },
   closeButton: {
@@ -268,8 +267,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
   },
   headerTitle: {
-    ...Typography.headlineSmall,
-    color: Colors.onSurface,
     flex: 1,
     textAlign: "center",
     marginHorizontal: Spacing.md,
@@ -281,15 +278,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   saveButtonDisabled: {
-    backgroundColor: Colors.outline,
   },
   saveButtonText: {
-    ...Typography.labelLarge,
-    color: Colors.onPrimary,
     fontWeight: "600",
   },
   saveButtonTextDisabled: {
-    color: Colors.onSurfaceVariant,
   },
   content: {
     flex: 1,
@@ -299,8 +292,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   label: {
-    ...Typography.labelLarge,
-    color: Colors.onSurface,
     marginBottom: Spacing.sm,
     fontWeight: "600",
   },
@@ -308,22 +299,14 @@ const styles = StyleSheet.create({
     color: Colors.error,
   },
   input: {
-    ...Typography.bodyLarge,
-    color: Colors.onSurface,
-    backgroundColor: Colors.surfaceContainer,
     borderWidth: 1,
-    borderColor: Colors.outline,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     minHeight: 48,
   },
   textArea: {
-    ...Typography.bodyLarge,
-    color: Colors.onSurface,
-    backgroundColor: Colors.surfaceContainer,
     borderWidth: 1,
-    borderColor: Colors.outline,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
@@ -334,12 +317,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.error,
   },
   errorText: {
-    ...Typography.bodySmall,
     color: Colors.error,
     marginTop: Spacing.xs,
   },
   characterCount: {
-    ...Typography.bodySmall,
     color: Colors.textSecondary,
     textAlign: "right",
     marginTop: Spacing.xs,
@@ -347,7 +328,6 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginTop: Spacing.lg,
     padding: Spacing.md,
-    backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.md,
   },
   infoItem: {
@@ -355,8 +335,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   infoText: {
-    ...Typography.bodyMedium,
-    color: Colors.onPrimaryContainer,
     marginLeft: Spacing.sm,
     flex: 1,
     lineHeight: 20,

@@ -291,7 +291,7 @@ const styles = {
     backgroundColor: Colors.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
-    ...Shadows.medium,
+    ...Shadows.md,
   },
 };
 

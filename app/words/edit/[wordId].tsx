@@ -6,7 +6,7 @@ import { UpdatedWordForm } from "../../../components/forms";
 import { ErrorState, LoadingState, ScreenHeader } from "../../../components/ui";
 import { WordWithExamples } from "../../../data/DataModels";
 import { WordService } from "../../../services/WordService";
-import { GlobalStyles } from "../../../styles/GlobalStyles";
+import { SharedStyles } from "../../../styles/SharedStyles";
 
 export default function EditWordScreen() {
   const { wordId } = useLocalSearchParams<{ wordId: string }>();
@@ -109,11 +109,11 @@ export default function EditWordScreen() {
   }, [wordIdNumber]);
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       <ScreenHeader
         title="Edit Word"
         subtitle={word?.word || "Update word information"}
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleBackPress}
       />
 

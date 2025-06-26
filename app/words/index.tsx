@@ -15,7 +15,7 @@ import {
 import { WordWithExamples } from "../../data/DataModels";
 // Custom hooks
 import { useWords } from "../../hooks/useWords";
-import { Colors, GlobalStyles, Spacing } from "../../styles/GlobalStyles";
+import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 /**
  * All Words Screen with full CRUD support
@@ -109,16 +109,16 @@ export default function WordsScreen() {
   };
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title="All Words"
         subtitle={`${pagination.total} words total`}
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={() => router.back()}
-        rightIcon="add"
-        onRightPress={handleCreatePress}
-        onRightPressAccessibilityLabel="Add new word"
+        // rightIcon="add"
+        // onRightPress={handleCreatePress}
+        // onRightPressAccessibilityLabel="Add new word"
       />
 
       {loading && filteredWords.length === 0 ? (
@@ -130,10 +130,10 @@ export default function WordsScreen() {
           onRetry={loadData}
         />
       ) : (
-        <View style={GlobalStyles.flex1}>
+        <View style={SharedStyles.flex1}>
           {/* Search Bar */}
           <View
-            style={[GlobalStyles.paddingHorizontalLg, styles.searchContainer]}
+            style={[SharedStyles.paddingHorizontalLg, styles.searchContainer]}
           >
             <SearchBar
               value={searchQuery}
@@ -148,8 +148,8 @@ export default function WordsScreen() {
             <EmptyState
               title="No words yet"
               message="Start building your vocabulary by adding your first word"
-              buttonText="Add Word"
-              onButtonPress={handleCreatePress}
+              // buttonText="Add Word"
+              // onButtonPress={handleCreatePress}
               icon="book-outline"
             />
           ) : filteredWords.length === 0 && searchQuery ? (
@@ -157,7 +157,7 @@ export default function WordsScreen() {
               title="No words found"
               message={`No words match "${searchQuery}"`}
               icon="search"
-              showButton={false}
+              // showButton={false}
             />
           ) : (
             <>

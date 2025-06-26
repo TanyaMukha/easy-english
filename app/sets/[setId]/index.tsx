@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { WordCard } from "../../components/cards";
+import { WordCard } from "../../../components/cards";
 import Icon from "react-native-vector-icons/Ionicons";
-import { EditSetModal, SetActionsModal } from "../../components/modals";
+import { EditSetModal, SetActionsModal } from "../../../components/modals";
 import {
   EmptyState,
   ErrorState,
@@ -19,16 +19,16 @@ import {
   LoadingState,
   ScreenHeader,
   SearchBar,
-} from "../../components/ui";
-import { Set, WordWithExamples } from "../../data/DataModels";
-import { MockDataService } from "../../data/MockData";
-import { SetService } from "../../services/SetService";
+} from "../../../components/ui";
+import { Set, WordWithExamples } from "../../../data/DataModels";
+import { MockDataService } from "../../../data/MockData";
+import { SetService } from "../../../services/SetService";
 import {
   Colors,
   SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/SharedStyles";
+} from "../../../styles/SharedStyles";
 
 /**
  * Set Details Screen - shows words in a specific set
@@ -105,7 +105,7 @@ export default function SetDetailsScreen() {
   const handleAddWordsPress = () => {
     console.log("Navigate to add words to set:", setIdNumber);
     // TODO: Implement add words screen
-    router.push(`/sets/add-word`, { setIdNumber: setIdNumber });
+    router.push(`/sets/${setIdNumber}/add-word`);
   };
 
   const handlePracticePress = () => {
@@ -185,7 +185,6 @@ export default function SetDetailsScreen() {
       <TouchableOpacity
         style={[
           styles.quickActionButton,
-          { backgroundColor: Colors.primaryContainer },
         ]}
         onPress={handlePracticePress}
         accessible={true}
@@ -197,7 +196,6 @@ export default function SetDetailsScreen() {
       <TouchableOpacity
         style={[
           styles.quickActionButton,
-          { backgroundColor: Colors.successContainer },
         ]}
         onPress={handleTestPress}
         accessible={true}
@@ -209,7 +207,6 @@ export default function SetDetailsScreen() {
       <TouchableOpacity
         style={[
           styles.quickActionButton,
-          { backgroundColor: Colors.warningContainer },
         ]}
         onPress={handleAddWordsPress}
         accessible={true}
@@ -224,9 +221,9 @@ export default function SetDetailsScreen() {
     <EmptyState
       icon="list"
       title="No Words in Set"
-      description="Add words to this set to start learning"
+      message="Add words to this set to start learning"
       actionText="Add Words"
-      onActionPress={handleAddWordsPress}
+      onAction={handleAddWordsPress}
     />
   );
 
@@ -239,9 +236,9 @@ export default function SetDetailsScreen() {
       return (
         <ErrorState
           title="Failed to Load Set"
-          description={error}
-          actionText="Try Again"
-          onActionPress={onRefresh}
+          message={error}
+          buttonText="Try Again"
+          onRetry={onRefresh}
         />
       );
     }
@@ -255,9 +252,9 @@ export default function SetDetailsScreen() {
         <EmptyState
           icon="search"
           title="No Words Found"
-          description={`No words match "${searchQuery}"`}
+        //   description={`No words match "${searchQuery}"`}
           actionText="Clear Search"
-          onActionPress={() => setSearchQuery("")}
+        //   onActionPress={() => setSearchQuery("")}
         />
       );
     }
@@ -288,10 +285,10 @@ export default function SetDetailsScreen() {
       <ScreenHeader
         title={set?.title || "Set"}
         subtitle={`${filteredWords.length} words`}
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleBackPress}
-        rightIcon="ellipsis-horizontal"
-        onRightPress={handleMenuPress}
+        // rightIcon="ellipsis-horizontal"
+        // onRightPress={handleMenuPress}
       />
 
       {/* Quick Actions */}
@@ -302,7 +299,7 @@ export default function SetDetailsScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search words..."
-        containerStyle={styles.searchContainer}
+        // containerStyle={styles.searchContainer}
       />
 
       {/* Content */}

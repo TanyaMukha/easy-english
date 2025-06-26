@@ -116,11 +116,11 @@ export default function CreateSetScreen() {
       {/* Header */}
       <ScreenHeader
         title="Create Set"
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleCancel}
-        rightText="Save"
-        onRightPress={handleSave}
-        rightDisabled={!canSave}
+        // rightText="Save"
+        // onRightPress={handleSave}
+        // rightDisabled={!canSave}
       />
 
       <KeyboardAvoidingView
@@ -220,7 +220,7 @@ export default function CreateSetScreen() {
             <Icon
               name="plus"
               size={20}
-              color={canSave ? Colors.onPrimary : Colors.onSurfaceVariant}
+            //   color={canSave ? Colors.onPrimary : Colors.onSurfaceVariant}
             />
             <Text
               style={[
@@ -248,14 +248,14 @@ const styles = StyleSheet.create({
   errorContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.errorContainer,
+    // backgroundColor: Colors.errorContainer,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.lg,
   },
   generalErrorText: {
-    ...Typography.bodyMedium,
+    // ...Typography.bodyMedium,
     color: Colors.error,
     marginLeft: Spacing.sm,
     flex: 1,
@@ -264,8 +264,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   label: {
-    ...Typography.labelLarge,
-    color: Colors.onSurface,
+    // ...Typography.labelLarge,
+    // color: Colors.onSurface,
     marginBottom: Spacing.sm,
     fontWeight: "600",
   },
@@ -273,22 +273,22 @@ const styles = StyleSheet.create({
     color: Colors.error,
   },
   input: {
-    ...Typography.bodyLarge,
-    color: Colors.onSurface,
-    backgroundColor: Colors.surfaceContainer,
+    // ...Typography.bodyLarge,
+    // color: Colors.onSurface,
+    // backgroundColor: Colors.surfaceContainer,
     borderWidth: 1,
-    borderColor: Colors.outline,
+    // borderColor: Colors.outline,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     minHeight: 48,
   },
   textArea: {
-    ...Typography.bodyLarge,
-    color: Colors.onSurface,
-    backgroundColor: Colors.surfaceContainer,
+    // ...Typography.bodyLarge,
+    // color: Colors.onSurface,
+    // backgroundColor: Colors.surfaceContainer,
     borderWidth: 1,
-    borderColor: Colors.outline,
+    // borderColor: Colors.outline,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
@@ -299,12 +299,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.error,
   },
   errorText: {
-    ...Typography.bodySmall,
+    // ...Typography.bodySmall,
     color: Colors.error,
     marginTop: Spacing.xs,
   },
   characterCount: {
-    ...Typography.bodySmall,
+    // ...Typography.bodySmall,
     color: Colors.textSecondary,
     textAlign: "right",
     marginTop: Spacing.xs,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     marginBottom: Spacing.xl,
     padding: Spacing.md,
-    backgroundColor: Colors.primaryContainer,
+    // backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.md,
   },
   infoItem: {
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   infoText: {
-    ...Typography.bodyMedium,
-    color: Colors.onPrimaryContainer,
+    // ...Typography.bodyMedium,
+    // color: Colors.onPrimaryContainer,
     marginLeft: Spacing.sm,
     flex: 1,
     lineHeight: 20,
@@ -339,15 +339,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   createButtonDisabled: {
-    backgroundColor: Colors.outline,
+    // backgroundColor: Colors.outline,
   },
   createButtonText: {
-    ...Typography.labelLarge,
-    color: Colors.onPrimary,
+    // ...Typography.labelLarge,
+    // color: Colors.onPrimary,
     fontWeight: "600",
     marginLeft: Spacing.sm,
   },
   createButtonTextDisabled: {
-    color: Colors.onSurfaceVariant,
+    // color: Colors.onSurfaceVariant,
   },
 });

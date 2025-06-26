@@ -6,7 +6,7 @@ import { UpdatedWordForm } from "../../components/forms";
 import { ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
 import { WordService } from "../../services/WordService";
-import { GlobalStyles } from "../../styles/GlobalStyles";
+import { SharedStyles } from "../../styles/SharedStyles";
 
 export default function CreateWordScreen() {
   const { dictionaryId } = useLocalSearchParams<{ dictionaryId?: string }>();
@@ -87,11 +87,11 @@ export default function CreateWordScreen() {
   };
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       <ScreenHeader
         title="Add New Word"
         subtitle="Build your vocabulary"
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleBackPress}
       />
 

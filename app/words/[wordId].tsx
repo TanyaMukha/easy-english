@@ -10,9 +10,9 @@ import { WordService } from "../../services/WordService";
 import {
   Colors,
   getLevelColor,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 /**
  * Word Details Screen
@@ -135,16 +135,16 @@ export default function WordDetailsScreen() {
   }, [wordIdNumber]);
 
   return (
-    <View style={GlobalStyles.container}>
+    <View style={SharedStyles.container}>
       {/* Header */}
       <ScreenHeader
         title={word?.word || "Word Details"}
         subtitle={word?.translation ?? ""}
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={() => router.back()}
-        rightIcon="create"
-        onRightPress={handleEdit}
-        onRightPressAccessibilityLabel="Edit word"
+        // rightIcon="create"
+        // onRightPress={handleEdit}
+        // onRightPressAccessibilityLabel="Edit word"
       />
 
       {loading ? (
@@ -157,21 +157,21 @@ export default function WordDetailsScreen() {
         />
       ) : (
         <ScrollView
-          style={GlobalStyles.flex1}
+          style={SharedStyles.flex1}
           contentContainerStyle={styles.scrollContent}
         >
           {/* Main Info Card */}
-          <View style={[GlobalStyles.card, styles.mainCard]}>
+          <View style={[SharedStyles.card, styles.mainCard]}>
             <View style={styles.wordHeader}>
               <View style={styles.wordTitleContainer}>
-                <Text style={[GlobalStyles.h2, GlobalStyles.textPrimary]}>
+                <Text style={[SharedStyles.h2, SharedStyles.textPrimary]}>
                   {word.word}
                 </Text>
                 {word.transcription && (
                   <Text
                     style={[
-                      GlobalStyles.bodyMedium,
-                      GlobalStyles.textTertiary,
+                      SharedStyles.bodyMedium,
+                      SharedStyles.textTertiary,
                       styles.transcription,
                     ]}
                   >
@@ -185,7 +185,7 @@ export default function WordDetailsScreen() {
                   { backgroundColor: getLevelColor(word.level) },
                 ]}
               >
-                <Text style={[GlobalStyles.bodySmall, styles.levelText]}>
+                <Text style={[SharedStyles.bodySmall, styles.levelText]}>
                   {word.level}
                 </Text>
               </View>
@@ -193,8 +193,8 @@ export default function WordDetailsScreen() {
 
             <Text
               style={[
-                GlobalStyles.h4,
-                GlobalStyles.textSecondary,
+                SharedStyles.h4,
+                SharedStyles.textSecondary,
                 styles.translation,
               ]}
             >
@@ -213,7 +213,7 @@ export default function WordDetailsScreen() {
               >
                 <Text
                   style={[
-                    GlobalStyles.bodySmall,
+                    SharedStyles.bodySmall,
                     { color: getPartOfSpeechColor(word.partOfSpeech) },
                   ]}
                 >
@@ -223,7 +223,7 @@ export default function WordDetailsScreen() {
 
               {word.isIrregular && (
                 <View style={styles.irregularBadge}>
-                  <Text style={[GlobalStyles.bodySmall, styles.irregularText]}>
+                  <Text style={[SharedStyles.bodySmall, styles.irregularText]}>
                     irregular
                   </Text>
                 </View>
@@ -233,18 +233,18 @@ export default function WordDetailsScreen() {
 
           {/* Definition Card */}
           {word.definition && (
-            <View style={[GlobalStyles.card, styles.sectionCard]}>
+            <View style={[SharedStyles.card, styles.sectionCard]}>
               <Text
                 style={[
-                  GlobalStyles.h4,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.h4,
+                  SharedStyles.textPrimary,
                   styles.sectionTitle,
                 ]}
               >
                 Definition
               </Text>
               <Text
-                style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}
+                style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}
               >
                 {word.definition}
               </Text>
@@ -253,18 +253,18 @@ export default function WordDetailsScreen() {
 
           {/* Explanation Card */}
           {word.explanation && (
-            <View style={[GlobalStyles.card, styles.sectionCard]}>
+            <View style={[SharedStyles.card, styles.sectionCard]}>
               <Text
                 style={[
-                  GlobalStyles.h4,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.h4,
+                  SharedStyles.textPrimary,
                   styles.sectionTitle,
                 ]}
               >
                 Explanation
               </Text>
               <Text
-                style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}
+                style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}
               >
                 {word.explanation}
               </Text>
@@ -273,11 +273,11 @@ export default function WordDetailsScreen() {
 
           {/* Examples Card */}
           {word.examples.length > 0 && (
-            <View style={[GlobalStyles.card, styles.sectionCard]}>
+            <View style={[SharedStyles.card, styles.sectionCard]}>
               <Text
                 style={[
-                  GlobalStyles.h4,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.h4,
+                  SharedStyles.textPrimary,
                   styles.sectionTitle,
                 ]}
               >
@@ -287,8 +287,8 @@ export default function WordDetailsScreen() {
                 <View key={example.id} style={styles.exampleItem}>
                   <Text
                     style={[
-                      GlobalStyles.bodyMedium,
-                      GlobalStyles.textPrimary,
+                      SharedStyles.bodyMedium,
+                      SharedStyles.textPrimary,
                       styles.exampleSentence,
                     ]}
                   >
@@ -297,8 +297,8 @@ export default function WordDetailsScreen() {
                   {example.translation && (
                     <Text
                       style={[
-                        GlobalStyles.bodySmall,
-                        GlobalStyles.textTertiary,
+                        SharedStyles.bodySmall,
+                        SharedStyles.textTertiary,
                         styles.exampleTranslation,
                       ]}
                     >
@@ -314,11 +314,11 @@ export default function WordDetailsScreen() {
           )}
 
           {/* Progress Card */}
-          <View style={[GlobalStyles.card, styles.sectionCard]}>
+          <View style={[SharedStyles.card, styles.sectionCard]}>
             <Text
               style={[
-                GlobalStyles.h4,
-                GlobalStyles.textPrimary,
+                SharedStyles.h4,
+                SharedStyles.textPrimary,
                 styles.sectionTitle,
               ]}
             >
@@ -328,7 +328,7 @@ export default function WordDetailsScreen() {
             <View style={styles.progressContainer}>
               <View style={styles.progressItem}>
                 <Text
-                  style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary]}
+                  style={[SharedStyles.bodySmall, SharedStyles.textTertiary]}
                 >
                   Progress Rating
                 </Text>
@@ -344,7 +344,7 @@ export default function WordDetailsScreen() {
                   >
                     <Text
                       style={[
-                        GlobalStyles.h5,
+                        SharedStyles.h5,
                         { color: getProgressColor(word.rate || 0) },
                       ]}
                     >
@@ -356,23 +356,23 @@ export default function WordDetailsScreen() {
 
               <View style={styles.progressItem}>
                 <Text
-                  style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary]}
+                  style={[SharedStyles.bodySmall, SharedStyles.textTertiary]}
                 >
                   Times Reviewed
                 </Text>
-                <Text style={[GlobalStyles.h5, GlobalStyles.textPrimary]}>
+                <Text style={[SharedStyles.h5, SharedStyles.textPrimary]}>
                   {word.reviewCount || 0}
                 </Text>
               </View>
 
               <View style={styles.progressItem}>
                 <Text
-                  style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary]}
+                  style={[SharedStyles.bodySmall, SharedStyles.textTertiary]}
                 >
                   Last Reviewed
                 </Text>
                 <Text
-                  style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}
+                  style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}
                 >
                   {word.lastReviewDate
                     ? new Date(word.lastReviewDate).toLocaleDateString()
@@ -384,11 +384,11 @@ export default function WordDetailsScreen() {
 
           {/* Tags Card */}
           {word.tags.length > 0 && (
-            <View style={[GlobalStyles.card, styles.sectionCard]}>
+            <View style={[SharedStyles.card, styles.sectionCard]}>
               <Text
                 style={[
-                  GlobalStyles.h4,
-                  GlobalStyles.textPrimary,
+                  SharedStyles.h4,
+                  SharedStyles.textPrimary,
                   styles.sectionTitle,
                 ]}
               >
@@ -397,7 +397,7 @@ export default function WordDetailsScreen() {
               <View style={styles.tagsContainer}>
                 {word.tags.map((tag) => (
                   <View key={tag.id} style={styles.tag}>
-                    <Text style={[GlobalStyles.bodySmall, styles.tagText]}>
+                    <Text style={[SharedStyles.bodySmall, styles.tagText]}>
                       {tag.title}
                     </Text>
                   </View>
@@ -410,8 +410,8 @@ export default function WordDetailsScreen() {
           <View style={styles.actionsContainer}>
             <TouchableOpacity
               style={[
-                GlobalStyles.button,
-                GlobalStyles.buttonPrimary,
+                SharedStyles.button,
+                SharedStyles.buttonPrimary,
                 styles.actionButton,
               ]}
               onPress={handlePractice}
@@ -423,13 +423,13 @@ export default function WordDetailsScreen() {
                 color={Colors.textPrimary}
                 style={styles.buttonIcon}
               />
-              <Text style={GlobalStyles.buttonText}>Practice</Text>
+              <Text style={SharedStyles.buttonText}>Practice</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
-                GlobalStyles.button,
-                GlobalStyles.buttonOutline,
+                SharedStyles.button,
+                SharedStyles.buttonOutline,
                 styles.actionButton,
               ]}
               onPress={handleEdit}
@@ -442,7 +442,7 @@ export default function WordDetailsScreen() {
                 style={styles.buttonIcon}
               />
               <Text
-                style={[GlobalStyles.buttonText, { color: Colors.primary }]}
+                style={[SharedStyles.buttonText, { color: Colors.primary }]}
               >
                 Edit
               </Text>
@@ -450,7 +450,7 @@ export default function WordDetailsScreen() {
 
             <TouchableOpacity
               style={[
-                GlobalStyles.button,
+                SharedStyles.button,
                 styles.deleteButton,
                 styles.actionButton,
               ]}
@@ -463,7 +463,7 @@ export default function WordDetailsScreen() {
                 color={Colors.error}
                 style={styles.buttonIcon}
               />
-              <Text style={[GlobalStyles.buttonText, { color: Colors.error }]}>
+              <Text style={[SharedStyles.buttonText, { color: Colors.error }]}>
                 Delete
               </Text>
             </TouchableOpacity>

@@ -1,18 +1,10 @@
-// styles/SharedStyles.ts
+// styles/GlobalStyles.ts
 import { StyleSheet, Dimensions, Platform } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
-
-// Breakpoints for responsive design
-export const Breakpoints = {
-  mobile: 480,
-  tablet: 768,
-  desktop: 1024,
-} as const;
-
-// Check if device is tablet sized
-export const isTablet = width >= Breakpoints.tablet;
-export const isDesktop = width >= Breakpoints.desktop;
+// Device dimensions and breakpoints
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const isTablet = screenWidth >= 768;
+const isLargeTablet = screenWidth >= 1024;
 
 // Color palette for dark theme
 export const Colors = {
@@ -92,82 +84,10 @@ export const Colors = {
   levelB2: '#8B5CF6', // Purple
   levelC1: '#F59E0B', // Orange
   levelC2: '#EF4444', // Red
-
-  // Card colors by part of speech
-  noun: '#6366F1',
-  verb: '#10B981',
-  adjective: '#F59E0B',
-  adverb: '#8B5CF6',
-  preposition: '#EC4899',
-  phrase: '#06B6D4',
-  phrasal_verb: '#84CC16',
-  idiom: '#F97316',
-  pronoun: '#EF4444',
-  conjunction: '#14B8A6',
-  interjection: '#A855F7',
-  slang: '#F43F5E',
-  abbreviation: '#64748B',
-  fixed_expression: '#0EA5E9',
-};
-
-// Spacing scale (8pt grid system)
-export const Spacing = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  xxxl: 64,
-
-  // Component specific spacing
-  cardPadding: isTablet ? 20 : 16,
-  screenPadding: isTablet ? 24 : 16,
-  sectionSpacing: isTablet ? 32 : 24,
-  itemSpacing: isTablet ? 16 : 12,
-};
-
-// Border radius
-export const BorderRadius = {
-  xs: 2,
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  xxl: 24,
-  round: 999,
 };
 
 // Typography scale
 export const Typography = {
-  fontSize: {
-    xs: 12,
-    sm: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
-    '5xl': 48,
-  },
-  
-  fontWeight: {
-    light: '300' as const,
-    normal: '400' as const,
-    medium: '500' as const,
-    semibold: '600' as const,
-    bold: '700' as const,
-    extrabold: '800' as const,
-  },
-  
-  lineHeight: {
-    tight: 1.2,
-    snug: 1.375,
-    normal: 1.5,
-    relaxed: 1.625,
-    loose: 2,
-  },
   // Font families
   fontRegular: Platform.select({
     ios: 'System',
@@ -220,34 +140,53 @@ export const Typography = {
   weightExtraBold: '800' as const,
 };
 
-// Shadow styles
+// Spacing scale (8pt grid system)
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+  xxxl: 64,
+
+  // Component specific spacing
+  cardPadding: isTablet ? 20 : 16,
+  screenPadding: isTablet ? 24 : 16,
+  sectionSpacing: isTablet ? 32 : 24,
+  itemSpacing: isTablet ? 16 : 12,
+};
+
+// Border radius
+export const BorderRadius = {
+  xs: 2,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  xxl: 24,
+  round: 999,
+};
+
+// Shadows
 export const Shadows = {
-  sm: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
-    elevation: 1,
+  small: {
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
   },
-  md: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+  medium: {
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  lg: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+  large: {
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.30,
     shadowRadius: 4.65,
     elevation: 8,
@@ -259,57 +198,10 @@ export const Shadows = {
     shadowRadius: 10.32,
     elevation: 16,
   },
-} as const;
-
-// Device utility functions
-export const DeviceUtils = {
-  getValue: (mobile: number, tablet?: number, desktop?: number) => {
-    if (isDesktop && desktop) return desktop;
-    if (isTablet && tablet) return tablet;
-    return mobile;
-  },
-  isMobile: () => width < Breakpoints.tablet,
-  isTablet: () => width >= Breakpoints.tablet && width < Breakpoints.desktop,
-  isDesktop: () => width >= Breakpoints.desktop,
 };
 
-// Utility functions
-export const getResponsiveValue = (mobile: number, tablet?: number, desktop?: number) => {
-  if (isDesktop && desktop) return desktop;
-  if (isTablet && tablet) return tablet;
-  return mobile;
-};
-
-export const getResponsiveStyle = <T>(mobile: T, tablet?: T, desktop?: T): T => {
-  if (isDesktop && desktop) return desktop;
-  if (isTablet && tablet) return tablet;
-  return mobile;
-};
-
-// Get color for part of speech
-export const getCardColor = (partOfSpeech: string): string => {
-  const colorMap: Record<string, string> = {
-    noun: Colors.noun,
-    verb: Colors.verb,
-    adjective: Colors.adjective,
-    adverb: Colors.adverb,
-    preposition: Colors.preposition,
-    phrase: Colors.phrase,
-    phrasal_verb: Colors.phrasal_verb,
-    idiom: Colors.idiom,
-    pronoun: Colors.pronoun,
-    conjunction: Colors.conjunction,
-    interjection: Colors.interjection,
-    slang: Colors.slang,
-    abbreviation: Colors.abbreviation,
-    fixed_expression: Colors.fixed_expression,
-  };
-  
-  return colorMap[partOfSpeech] || Colors.primary;
-};
-
-// Main shared styles
-export const SharedStyles = StyleSheet.create({
+// Global styles
+export const GlobalStyles = StyleSheet.create({
   // Layout
   flex1: {
     flex: 1,
@@ -337,6 +229,11 @@ export const SharedStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
 
+  // Container styles
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
   containerPadded: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -366,19 +263,19 @@ export const SharedStyles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.cardPadding,
-    ...Shadows.md,
+    ...Shadows.medium,
   },
   cardSmall: {
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    ...Shadows.sm,
+    ...Shadows.small,
   },
   cardLarge: {
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
-    ...Shadows.lg,
+    ...Shadows.large,
   },
 
   // Typography styles
@@ -610,7 +507,7 @@ export const SharedStyles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     padding: Spacing.cardPadding,
     marginBottom: Spacing.md,
-    ...Shadows.sm,
+    ...Shadows.small,
   },
   listItemLast: {
     marginBottom: 0,
@@ -778,245 +675,25 @@ export const SharedStyles = StyleSheet.create({
   paddingVerticalMd: { paddingVertical: Spacing.md },
   paddingVerticalLg: { paddingVertical: Spacing.lg },
   paddingVerticalXl: { paddingVertical: Spacing.xl },
-  
-  // Layout styles
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingHorizontal: getResponsiveValue(Spacing.md, Spacing.lg, Spacing.xl),
-  },
-  
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-  },
-  
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  
-  column: {
-    flexDirection: 'column',
-  },
-  
-  spaceBetween: {
-    justifyContent: 'space-between',
-  },
-  
-  spaceAround: {
-    justifyContent: 'space-around',
-  },
-  
-  spaceEvenly: {
-    justifyContent: 'space-evenly',
-  },
-  
-  // Surface styles
-  surface: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    padding: Spacing.md,
-    ...Shadows.sm,
-  },
-  
-  surfaceLight: {
-    backgroundColor: Colors.surfaceLight,
-    borderRadius: 12,
-    padding: Spacing.md,
-    ...Shadows.sm,
-  },
-  
-  
-  // Main typography
-  title: {
-    fontSize: Typography.fontSize['2xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textPrimary,
-    lineHeight: Typography.fontSize['2xl'] * Typography.lineHeight.tight,
-  },
-  
-  subtitle: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.textSecondary,
-    lineHeight: Typography.fontSize.lg * Typography.lineHeight.normal,
-  },
-  
-  body: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.normal,
-
-    color: Colors.textPrimary,
-    lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
-  },
-  
-  bodySecondary: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.normal,
-    color: Colors.textSecondary,
-    lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
-  },
-
-  primaryButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Shadows.sm,
-  },
-  
-  secondaryButton: {
-    backgroundColor: Colors.surface,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  
-  primaryButtonText: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.semibold,
-    color: '#FFFFFF',
-  },
-  
-  buttonSecondaryText: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.semibold,
-    color: Colors.primary,
-  },
-  
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-    padding: Spacing.lg,
-  },
-  
-  errorText: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.error,
-    textAlign: 'center',
-    marginBottom: Spacing.md,
-  },
-  
-  // Spacing utilities
-  mt: {
-    marginTop: Spacing.md,
-  },
-  
-  mb: {
-    marginBottom: Spacing.md,
-  },
-  
-  ml: {
-    marginLeft: Spacing.md,
-  },
-  
-  mr: {
-    marginRight: Spacing.md,
-  },
-  
-  mx: {
-    marginHorizontal: Spacing.md,
-  },
-  
-  my: {
-    marginVertical: Spacing.md,
-  },
-  
-  pt: {
-    paddingTop: Spacing.md,
-  },
-  
-  pb: {
-    paddingBottom: Spacing.md,
-  },
-  
-  pl: {
-    paddingLeft: Spacing.md,
-  },
-  
-  pr: {
-    paddingRight: Spacing.md,
-  },
-  
-  px: {
-    paddingHorizontal: Spacing.md,
-  },
-  
-  py: {
-    paddingVertical: Spacing.md,
-  },
-  
-  // Background utilities
-  backgroundSecondary: {
-    backgroundColor: Colors.backgroundSecondary,
-  },
-  
-  backgroundTertiary: {
-    backgroundColor: Colors.backgroundTertiary,
-  },
-  
-  // Responsive grid
-  grid: {
-    flexDirection: getResponsiveStyle('column', 'row'),
-    flexWrap: 'wrap',
-    gap: Spacing.md,
-  },
-  
-  gridItem: {
-    flex: getResponsiveValue(1, 0.5, 0.33),
-    minWidth: getResponsiveValue(280, 320, 300),
-  },
-  
-  
-  // Centered content
-  centered: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  
-  
-  flex0: {
-    flex: 0,
-  },
-
-  
-  // Rounded corners
-  rounded: {
-    borderRadius: 8,
-  },
-  
-  roundedLg: {
-    borderRadius: 12,
-  },
-  
-  roundedXl: {
-    borderRadius: 16,
-  },
-  
-  // Opacity
-  opacity50: {
-    opacity: 0.5,
-  },
-  
-  opacity75: {
-    opacity: 0.75,
-  },
 });
 
-// Export everything for backward compatibility
-export default SharedStyles;
+// Device-specific utilities
+export const DeviceUtils = {
+  isTablet,
+  isLargeTablet,
+  screenWidth,
+  screenHeight,
+  isIOS: Platform.OS === 'ios',
+  isAndroid: Platform.OS === 'android',
+  
+  // Responsive values
+  getValue: (mobile: number, tablet: number, largeTablet?: number) => {
+    if (isLargeTablet && largeTablet !== undefined) {
+      return largeTablet;
+    }
+    return isTablet ? tablet : mobile;
+  },
+};
 
 // Helper function to get level color
 export const getLevelColor = (level: string): string => {
@@ -1033,9 +710,11 @@ export const getLevelColor = (level: string): string => {
 
 // Helper function to get level badge style
 export const getLevelBadgeStyle = (level: string) => {
-  const baseStyle = SharedStyles.badge;
+  const baseStyle = GlobalStyles.badge;
   const colorStyle = {
     backgroundColor: getLevelColor(level),
   };
   return [baseStyle, colorStyle];
 };
+
+export default GlobalStyles;

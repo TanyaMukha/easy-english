@@ -10,24 +10,24 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { WordCard } from "../../components/cards";
+import { WordCard } from "../../../components/cards";
 import {
   EmptyState,
   ErrorState,
   LoadingState,
   ScreenHeader,
   SearchBar,
-} from "../../components/ui";
-import { WordWithExamples } from "../../data/DataModels";
-import { MockDataService } from "../../data/MockData";
-import { SetService } from "../../services/SetService";
+} from "../../../components/ui";
+import { WordWithExamples } from "../../../data/DataModels";
+import { MockDataService } from "../../../data/MockData";
+import { SetService } from "../../../services/SetService";
 import {
   BorderRadius,
   Colors,
   SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/SharedStyles";
+} from "../../../styles/SharedStyles";
 
 /**
  * Add Words to Set Screen
@@ -158,7 +158,7 @@ export default function AddWordsToSetScreen() {
         <View style={styles.selectionIndicator}>
           <View style={[styles.checkbox, isSelected && styles.checkedCheckbox]}>
             {isSelected && (
-              <Icon name="check" size={16} color={Colors.onPrimary} />
+              <Icon name="check" size={16} /* color={Colors.onPrimary} */ />
             )}
           </View>
         </View>
@@ -195,9 +195,9 @@ export default function AddWordsToSetScreen() {
       return (
         <ErrorState
           title="Failed to Load Words"
-          description={error}
-          actionText="Try Again"
-          onActionPress={loadWords}
+          message={error}
+          buttonText="Try Again"
+          onRetry={loadWords}
         />
       );
     }
@@ -207,7 +207,7 @@ export default function AddWordsToSetScreen() {
         <EmptyState
           icon="list"
           title="No Words Available"
-          description="There are no words available to add to this set"
+          message="There are no words available to add to this set"
         />
       );
     }
@@ -217,9 +217,9 @@ export default function AddWordsToSetScreen() {
         <EmptyState
           icon="search"
           title="No Words Found"
-          description={`No words match "${searchQuery}"`}
+          message={`No words match "${searchQuery}"`}
           actionText="Clear Search"
-          onActionPress={() => setSearchQuery("")}
+          onAction={() => setSearchQuery("")}
         />
       );
     }
@@ -243,13 +243,13 @@ export default function AddWordsToSetScreen() {
       <ScreenHeader
         title="Add Words to Set"
         subtitle={`${selectedWords.size} words selected`}
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleBackPress}
-        rightText={selectedWords.size > 0 ? "Add" : undefined}
-        onRightPress={
-          selectedWords.size > 0 ? handleAddSelectedWords : undefined
-        }
-        rightDisabled={isAdding}
+        // rightText={selectedWords.size > 0 ? "Add" : undefined}
+        // onRightPress={
+        //   selectedWords.size > 0 ? handleAddSelectedWords : undefined
+        // }
+        // rightDisabled={isAdding}
       />
 
       {/* Search */}
@@ -257,7 +257,7 @@ export default function AddWordsToSetScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search words..."
-        containerStyle={styles.searchContainer}
+        // containerStyle={styles.searchContainer}
       />
 
       {/* Content */}
@@ -274,7 +274,7 @@ export default function AddWordsToSetScreen() {
             <Icon
               name="plus"
               size={20}
-              color={isAdding ? Colors.onSurfaceVariant : Colors.onPrimary}
+              // color={isAdding ? Colors.onSurfaceVariant : Colors.onPrimary}
             />
             <Text
               style={[
@@ -302,22 +302,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    backgroundColor: Colors.surfaceContainer,
+    // backgroundColor: Colors.surfaceContainer,
     marginBottom: Spacing.md,
   },
   selectAllButton: {
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.primaryContainer,
+    // backgroundColor: Colors.primaryContainer,
   },
   selectAllText: {
-    ...Typography.labelMedium,
+    // ...Typography.labelMedium,
     color: Colors.primary,
     fontWeight: "600",
   },
   selectionCount: {
-    ...Typography.bodyMedium,
+    // ...Typography.bodyMedium,
     color: Colors.textSecondary,
   },
   listContainer: {
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
   selectedWordContainer: {
-    backgroundColor: Colors.primaryContainer,
+    // backgroundColor: Colors.primaryContainer,
   },
   wordContent: {
     flex: 1,
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: Colors.outline,
+    // borderColor: Colors.outline,
     backgroundColor: Colors.surface,
     justifyContent: "center",
     alignItems: "center",
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     backgroundColor: Colors.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.outline,
+    // borderTopColor: Colors.outline,
   },
   addButton: {
     flexDirection: "row",
@@ -373,15 +373,15 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   addButtonDisabled: {
-    backgroundColor: Colors.outline,
+    // backgroundColor: Colors.outline,
   },
   addButtonText: {
-    ...Typography.labelLarge,
-    color: Colors.onPrimary,
+    // ...Typography.labelLarge,
+    // color: Colors.onPrimary,
     fontWeight: "600",
     marginLeft: Spacing.sm,
   },
   addButtonTextDisabled: {
-    color: Colors.onSurfaceVariant,
+    // color: Colors.onSurfaceVariant,
   },
 });

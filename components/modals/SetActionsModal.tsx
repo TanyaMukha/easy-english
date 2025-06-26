@@ -254,13 +254,11 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     paddingBottom: Spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.outline,
     alignItems: "center",
   },
   dragHandle: {
     width: 40,
     height: 4,
-    backgroundColor: Colors.outline,
     borderRadius: 2,
     marginBottom: Spacing.md,
   },
@@ -269,12 +267,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   setTitle: {
-    ...Typography.headlineSmall,
-    color: Colors.onSurface,
     marginBottom: Spacing.xs,
   },
   setSubtitle: {
-    ...Typography.bodyMedium,
     color: Colors.textSecondary,
   },
   closeButton: {
@@ -308,8 +303,6 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
   },
   actionTitle: {
-    ...Typography.bodyLarge,
-    color: Colors.onSurface,
     flex: 1,
   },
   destructiveText: {

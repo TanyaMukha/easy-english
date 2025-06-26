@@ -44,7 +44,7 @@ export default function CreateDictionaryScreen() {
       <ScreenHeader
         title="New Dictionary"
         subtitle="Create a vocabulary collection"
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleBackPress}
       />
 

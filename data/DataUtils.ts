@@ -47,7 +47,7 @@ export class Result<T> {
     return new Result(true, data);
   }
 
-  static failure<T>(error: string, code?: ErrorCodes): Result<T> {
+  static failure(error: string, code?: ErrorCodes): Result<undefined> {
     return new Result(false, undefined, error, code);
   }
 }
@@ -58,20 +58,14 @@ export class DataMapper {
   static wordToFlashcardWord(word: WordWithExamples): FlashcardWord {
     return {
       word: word.word,
-      translation: word.translation || "",
-      transcription: word.transcription,
-      explanation: word.explanation,
-      definition: word.definition,
+      translate: word.translation || "",
+      transcription: word.transcription || "",
+      explanation: word.explanation || "",
+      definition: word.definition || "",
       examples: word.examples.map((ex) => ({
         sentence: ex.sentence,
         translation: ex.translation || "",
       })),
-      progress: {
-        lastReviewDate: word.lastReviewDate,
-        nextReviewDate: word.nextReviewDate,
-        reviewCount: word.reviewCount,
-        rate: word.rate,
-      },
     };
   }
 
@@ -88,8 +82,7 @@ export class DataMapper {
       description: `Learning: ${word.word}`,
       items: [this.wordToFlashcardWord(word)],
       progress: {
-        lastReviewDate: word.lastReviewDate,
-        nextReviewDate: word.nextReviewDate ? new Date(word.nextReviewDate) : undefined,
+        ...(word.lastReviewDate ? { lastReviewed: word.lastReviewDate } : {}),
         reviewCount: word.reviewCount,
         rate: word.rate,
       },
@@ -107,7 +100,7 @@ export class DataMapper {
       viewAs: StudyCardType.WORD_LIST,
       guid: `word-list-${Date.now()}`,
       title,
-      description,
+      description: description ?? "",
       items: words.map((word, index) => ({
         label: `${index + 1}.`,
         ...this.wordToFlashcardWord(word),
@@ -134,7 +127,7 @@ export class DataMapper {
       question: `What does '${word.word}' mean?`,
       options,
       correctAnswers: [word.translation!],
-      explanation: word.explanation || word.definition,
+      explanation: word.explanation || word.definition || "",
     };
   }
 
@@ -160,7 +153,7 @@ export class DataMapper {
       description: "Complete the sentence",
       question: sentence,
       correctAnswers: [word.word],
-      explanation: example.translation,
+      explanation: example.translation ?? "",
     };
   }
 }
@@ -224,7 +217,7 @@ export class TextProcessor {
   // Extract word from sentence (remove markdown)
   static extractWordFromSentence(sentence: string): string | null {
     const match = sentence.match(/\*\*(.*?)\*\*/);
-    return match ? match[1] : null;
+    return match && typeof match[1] === "string" ? match[1] : null;
   }
 
   // Generate audio filename for word
@@ -279,7 +272,7 @@ export class DateUtils {
   }
 
   static getDateString(date: Date = new Date()): string {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split('T')[0] ?? '';
   }
 }
 
@@ -433,7 +426,7 @@ export class RandomUtils {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
     }
     return shuffled;
   }
@@ -465,11 +458,14 @@ export class RandomUtils {
       let random = Math.random() * totalWeight;
 
       for (let j = 0; j < remaining.length; j++) {
-        random -= remainingWeights[j];
+        const weight = remainingWeights[j] ?? 0;
+        random -= weight;
         if (random <= 0) {
-          selected.push(remaining[j]);
-          remaining.splice(j, 1);
-          remainingWeights.splice(j, 1);
+          if (remaining[j] !== undefined) {
+            selected.push(remaining[j] as WordWithExamples);
+            remaining.splice(j, 1);
+            remainingWeights.splice(j, 1);
+          }
           break;
         }
       }

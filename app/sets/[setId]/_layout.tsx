@@ -1,12 +1,11 @@
-import React from 'react';
 import { Stack } from 'expo-router';
 import { Colors } from '../../../styles/SharedStyles';
 
-export default function EditWordsLayout() {
+export default function DictionariesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: false, // Using custom headers
         contentStyle: { 
           backgroundColor: Colors.background 
         },
@@ -14,10 +13,15 @@ export default function EditWordsLayout() {
       }}
     >
       <Stack.Screen 
-        name="[wordId]" 
+        name="index" 
         options={{
-          title: 'Edit Word',
-          presentation: 'modal',
+          title: 'Word set',
+        }}
+      />
+      <Stack.Screen 
+        name="add-word" 
+        options={{
+          title: 'Add words to set',
         }}
       />
     </Stack>

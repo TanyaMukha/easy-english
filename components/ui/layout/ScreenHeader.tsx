@@ -10,6 +10,7 @@ import {
   Spacing,
   Typography,
   DeviceUtils,
+  isTablet,
 } from '../../../styles/SharedStyles';
 
 interface ScreenHeaderProps {
@@ -65,7 +66,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
               <Ionicons
                 name="arrow-back"
                 size={24}
-                color={Colors.text}
+                color={Colors.textPrimary}
               />
             </TouchableOpacity>
           ) : (
@@ -96,7 +97,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: DeviceUtils.isTablet ? Spacing.lg : Spacing.md,
+    paddingTop: isTablet ? Spacing.lg : Spacing.md,
     paddingBottom: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Typography.fontSize.xl,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text,
+    color: Colors.textPrimary,
     textAlign: 'left',
   },
   

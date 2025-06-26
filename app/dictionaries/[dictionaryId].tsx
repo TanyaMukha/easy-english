@@ -95,11 +95,11 @@ export default function DictionaryScreen() {
       <ScreenHeader
         title={dictionary?.title || "Dictionary"}
         subtitle={`${words.length} words`}
-        showBackButton={true}
+        // showBackButton={true}
         onBackPress={handleBackPress}
-        rightIcon="ellipsis-horizontal"
-        onRightPress={() => console.log("Show dictionary menu")}
-        onRightPressAccessibilityLabel="Dictionary options"
+        // rightIcon="ellipsis-horizontal"
+        // onRightPress={() => console.log("Show dictionary menu")}
+        // onRightPressAccessibilityLabel="Dictionary options"
       />
 
       {loading && <LoadingState message="Loading dictionary..." />}
@@ -115,7 +115,7 @@ export default function DictionaryScreen() {
       {!loading && !error && dictionary && (
         <View style={SharedStyles.flex1}>
           <View
-            style={[SharedStyles.paddingHorizontalLg, styles.searchContainer]}
+            style={[/* SharedStyles.paddingHorizontalLg, */ styles.searchContainer]}
           >
             <SearchBar
               value={searchQuery}
@@ -129,8 +129,8 @@ export default function DictionaryScreen() {
             <EmptyState
               title="No words yet"
               message="Start building your vocabulary by adding your first word"
-              buttonText="Add Word"
-              onButtonPress={handleAddWordPress}
+              // buttonText="Add Word"
+              // onButtonPress={handleAddWordPress}
               icon="book-outline"
             />
           )}
@@ -140,7 +140,7 @@ export default function DictionaryScreen() {
               title="No words found"
               message={`No words match "${searchQuery}"`}
               icon="search"
-              showButton={false}
+              // showButton={false}
             />
           )}
 

@@ -1,8 +1,7 @@
-import React from 'react';
 import { Stack } from 'expo-router';
 import { Colors } from '../../styles/SharedStyles';
 
-export default function WordsLayout() {
+export default function DictionariesLayout() {
   return (
     <Stack
       screenOptions={{
@@ -16,26 +15,19 @@ export default function WordsLayout() {
       <Stack.Screen 
         name="index" 
         options={{
-          title: 'All Words',
-        }}
-      />
-      <Stack.Screen 
-        name="[wordId]" 
-        options={{
-          title: 'Word Details',
+          title: 'Word Sets',
         }}
       />
       <Stack.Screen 
         name="create" 
         options={{
-          title: 'Add Word',
-          presentation: 'modal',
+          title: 'New Set',
         }}
       />
       <Stack.Screen 
-        name="edit"
+        name="[setId]" 
         options={{
-          title: 'Edit Word',
+          title: 'Set',
         }}
       />
     </Stack>

@@ -296,6 +296,7 @@ export class WordService {
           .map(wt => mockTags.find(tag => tag.id === wt.tagId)!)
           .filter(Boolean),
         dictionary: mockDictionaries.find(dict => dict.id === word.dictionaryId)!,
+        nextReviewDate: undefined,
       }));
 
       return {
@@ -339,6 +340,7 @@ export class WordService {
           .map(wt => mockTags.find(tag => tag.id === wt.tagId)!)
           .filter(Boolean),
         dictionary: mockDictionaries.find(dict => dict.id === word.dictionaryId)!,
+        nextReviewDate: undefined
       };
 
       return {
@@ -967,6 +969,7 @@ export class WordService {
           .map(wt => mockTags.find(tag => tag.id === wt.tagId)!)
           .filter(Boolean),
         dictionary: mockDictionaries.find(dict => dict.id === word.dictionaryId)!,
+        nextReviewDate: undefined,
       }));
 
       return {

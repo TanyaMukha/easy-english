@@ -30,8 +30,6 @@ enum PartOfSpeech {
   SLANG = "slang",
   ABBREVIATION = "abbreviation",
   FIXEDEXPRESSION = "fixed_expression",
-  --
-  IRREGULAR = "irregular",
 }
 
 interface WordMinimumInfo {

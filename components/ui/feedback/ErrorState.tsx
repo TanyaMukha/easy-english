@@ -21,8 +21,8 @@ const ErrorState: React.FC<ErrorStateProps> = ({
   onRetry
 }) => {
   return (
-    <View style={SharedStyles.screenCentered}>
-      <Text style={[SharedStyles.h3, SharedStyles.textError]}>
+    <View /* style={ SharedStyles.screenCentered} */>
+      <Text style={[SharedStyles.h3 /* , SharedStyles.textError */]}>
         {title}
       </Text>
       {message && (

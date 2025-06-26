@@ -1,102 +1,107 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
+import { getLocales } from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Import translation files (correct paths for your structure)
-import en from './locales/en.json';
-import uk from './locales/uk.json';
+// Import translation files
+import ukTranslations from './locales/uk.json';
+import enTranslations from './locales/en.json';
 
-// Language detector for AsyncStorage
+const LANGUAGE_STORAGE_KEY = 'app-language';
+
+// Language resources
+const resources = {
+  uk: {
+    translation: ukTranslations,
+  },
+  en: {
+    translation: enTranslations,
+  },
+};
+
+// Get device language
+const getDeviceLanguage = (): string => {
+  const deviceLocales = getLocales();
+  const deviceLanguage = deviceLocales[0]?.languageCode || 'uk';
+  
+  // Support only uk and en, default to uk for Ukrainian users
+  return ['uk', 'en'].includes(deviceLanguage) ? deviceLanguage : 'uk';
+};
+
+// Custom language detector
 const languageDetector = {
   type: 'languageDetector' as const,
+  
   async: true,
-  detect: async (callback: (lng: string) => void) => {
+  
+  detect: async (callback: (language: string) => void) => {
     try {
       // Try to get saved language from AsyncStorage
-      const savedLanguage = await AsyncStorage.getItem('user-language');
+      const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+      
       if (savedLanguage) {
         callback(savedLanguage);
-        return;
-      }
-      
-      // Fallback to device language
-      const deviceLanguage = Localization.locale;
-      const supportedLanguages = ['en', 'uk'];
-      const detectedLanguage = deviceLanguage.split('-')[0];
-      
-      if (supportedLanguages.includes(detectedLanguage)) {
-        callback(detectedLanguage);
       } else {
-        // Default to Ukrainian for Ukrainian users, English for others
-        callback('uk');
+        // Use device language as fallback
+        const deviceLanguage = getDeviceLanguage();
+        callback(deviceLanguage);
       }
     } catch (error) {
-      console.error('Error detecting language:', error);
-      callback('uk'); // Default fallback
+      console.warn('Error detecting language:', error);
+      callback('uk'); // Fallback to Ukrainian
     }
   },
+  
   init: () => {},
-  cacheUserLanguage: async (lng: string) => {
+  
+  cacheUserLanguage: async (language: string) => {
     try {
-      await AsyncStorage.setItem('user-language', lng);
+      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     } catch (error) {
-      console.error('Error caching language:', error);
+      console.warn('Error saving language:', error);
     }
   },
 };
 
 // Initialize i18n
 i18n
-  .use(languageDetector as any)
+  .use(languageDetector)
   .use(initReactI18next)
   .init({
-    // Fallback language
+    compatibilityJSON: 'v4',
+    resources,
     fallbackLng: 'uk',
     
-    // Debug mode (set to false in production)
+    // Debug mode (disable in production)
     debug: __DEV__,
     
-    // Interpolation options
     interpolation: {
-      escapeValue: false, // React already escapes values
+      escapeValue: false, // React already does escaping
     },
     
-    // Translation resources
-    resources: {
-      en: {
-        translation: en,
-      },
-      uk: {
-        translation: uk,
-      },
-    },
-    
-    // React options
     react: {
       useSuspense: false, // Disable suspense for React Native
     },
     
-    // Compatibility options
-    compatibilityJSON: 'v3',
-    
-    // Namespace configuration
-    ns: ['translation'],
+    // Default namespace
     defaultNS: 'translation',
     
-    // Load languages synchronously
-    initImmediate: false,
+    // Key separator
+    keySeparator: '.',
+    
+    // Namespace separator
+    nsSeparator: ':',
   });
 
 export default i18n;
 
 // Helper function to change language
-export const changeLanguage = async (language: string) => {
+export const changeLanguage = async (language: string): Promise<void> => {
   try {
     await i18n.changeLanguage(language);
-    await AsyncStorage.setItem('user-language', language);
   } catch (error) {
     console.error('Error changing language:', error);
+    throw error;
   }
 };
 
@@ -106,6 +111,9 @@ export const getCurrentLanguage = (): string => {
 };
 
 // Helper function to get available languages
-export const getAvailableLanguages = (): string[] => {
-  return ['en', 'uk'];
+export const getAvailableLanguages = () => {
+  return [
+    { code: 'uk', name: 'Українська', nativeName: 'Українська' },
+    { code: 'en', name: 'English', nativeName: 'English' },
+  ];
 };

@@ -14,7 +14,6 @@ export enum PartOfSpeech {
   SLANG = "slang",
   ABBREVIATION = "abbreviation",
   FIXED_EXPRESSION = "fixed_expression",
-  IRREGULAR = "irregular",
 }
 
 export enum LanguageCode {
@@ -173,6 +172,7 @@ export interface GrammarTopicTest {
 
 // Enhanced models for UI components (with populated data)
 export interface WordWithExamples extends Word {
+  nextReviewDate: any;
   examples: Example[];
   tags: Tag[];
   dictionary: Dictionary;

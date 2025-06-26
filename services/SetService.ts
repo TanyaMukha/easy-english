@@ -61,7 +61,7 @@ let nextId = 4;
 
 export interface CreateSetRequest {
   title: string;
-  description?: string;
+  description?: string | undefined;
 }
 
 export interface UpdateSetRequest {

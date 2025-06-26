@@ -4,10 +4,10 @@ import { Text, TextInput, TextInputProps, View } from "react-native";
 
 import {
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../../styles/GlobalStyles";
+} from "../../../styles/SharedStyles";
 
 interface InputFieldProps extends TextInputProps {
   label: string;
@@ -44,7 +44,7 @@ const InputField: React.FC<InputFieldProps> = ({
       <View style={styles.inputContainer}>
         <TextInput
           style={[
-            multiline ? GlobalStyles.inputMultiline : GlobalStyles.input,
+            multiline ? SharedStyles.inputMultiline : SharedStyles.input,
             styles.input,
             rightElement && styles.inputWithRightElement as any,
             error && styles.inputError,

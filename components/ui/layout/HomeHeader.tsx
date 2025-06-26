@@ -10,6 +10,7 @@ import {
   Spacing,
   Typography,
   DeviceUtils,
+  isTablet,
 } from '../../../styles/SharedStyles';
 
 interface HomeHeaderProps {
@@ -71,7 +72,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
               <Ionicons
                 name={notificationCount > 0 ? "notifications" : "notifications-outline"}
                 size={24}
-                color={Colors.text}
+                color={Colors.textPrimary}
               />
               {notificationCount > 0 && (
                 <View style={styles.notificationBadge}>
@@ -95,7 +96,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
             <Ionicons
               name="person-circle-outline"
               size={28}
-              color={Colors.text}
+              color={Colors.textPrimary}
             />
           </TouchableOpacity>
         </View>
@@ -107,7 +108,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.background,
-    paddingTop: DeviceUtils.isTablet ? Spacing.xl : Spacing.lg,
+    paddingTop: isTablet ? Spacing.xl : Spacing.lg,
     paddingBottom: Spacing.md,
   },
   
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: Typography.fontSize['2xl'],
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text,
+    color: Colors.textPrimary,
   },
   
   actionsContainer: {
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   notificationCount: {
     fontSize: Typography.fontSize.xs,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.textOnPrimary,
+    color: Colors.textTertiary,
     textAlign: 'center',
   },
 });
