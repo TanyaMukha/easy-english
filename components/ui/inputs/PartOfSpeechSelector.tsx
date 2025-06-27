@@ -7,10 +7,10 @@ import { PartOfSpeech } from "../../../data/DataModels";
 import {
   BorderRadius,
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../../styles/GlobalStyles";
+} from "../../../styles/SharedStyles";
 
 interface PartOfSpeechSelectorProps {
   selected: PartOfSpeech;
@@ -132,8 +132,8 @@ const PartOfSpeechSelector: React.FC<PartOfSpeechSelectorProps> = ({
         <View style={styles.selectorContent}>
           <Text
             style={[
-              GlobalStyles.bodyMedium,
-              GlobalStyles.textPrimary,
+              SharedStyles.bodyMedium,
+              SharedStyles.textPrimary,
               disabled && { color: Colors.textDisabled },
             ]}
           >
@@ -157,7 +157,7 @@ const PartOfSpeechSelector: React.FC<PartOfSpeechSelectorProps> = ({
           <View style={styles.modalContainer as any}>
             {/* Header */}
             <View style={styles.modalHeader}>
-              <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary]}>
+              <Text style={[SharedStyles.h4, SharedStyles.textPrimary]}>
                 Select Part of Speech
               </Text>
               <TouchableOpacity
@@ -187,8 +187,8 @@ const PartOfSpeechSelector: React.FC<PartOfSpeechSelectorProps> = ({
                   <View style={styles.optionContent}>
                     <Text
                       style={[
-                        GlobalStyles.bodyMedium,
-                        GlobalStyles.textPrimary,
+                        SharedStyles.bodyMedium,
+                        SharedStyles.textPrimary,
                         styles.optionLabel,
                       ]}
                     >
@@ -196,8 +196,8 @@ const PartOfSpeechSelector: React.FC<PartOfSpeechSelectorProps> = ({
                     </Text>
                     <Text
                       style={[
-                        GlobalStyles.bodySmall,
-                        GlobalStyles.textSecondary,
+                        SharedStyles.bodySmall,
+                        SharedStyles.textSecondary,
                         styles.optionDescription,
                       ]}
                     >

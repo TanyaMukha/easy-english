@@ -91,7 +91,7 @@ export default function CreateWordScreen() {
       <ScreenHeader
         title="Add New Word"
         subtitle="Build your vocabulary"
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={handleBackPress}
       />
 

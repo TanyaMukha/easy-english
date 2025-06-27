@@ -783,7 +783,7 @@ export const SharedStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    paddingHorizontal: getResponsiveValue(Spacing.md, Spacing.lg, Spacing.xl),
+    // paddingHorizontal: getResponsiveValue(Spacing.md, Spacing.lg, Spacing.xl),
   },
   
   centerContainer: {

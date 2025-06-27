@@ -116,11 +116,10 @@ export default function CreateSetScreen() {
       {/* Header */}
       <ScreenHeader
         title="Create Set"
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={handleCancel}
-        // rightText="Save"
-        // onRightPress={handleSave}
-        // rightDisabled={!canSave}
+        rightIcon="save"
+        onRightPress={handleSave}
       />
 
       <KeyboardAvoidingView

@@ -6,9 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   BorderRadius,
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
-} from "../../../styles/GlobalStyles";
+} from "../../../styles/SharedStyles";
 
 interface PhoneticKeyboardProps {
   visible: boolean;
@@ -89,8 +89,8 @@ const PhoneticKeyboard: React.FC<PhoneticKeyboardProps> = ({
     <View style={styles.section}>
       <Text
         style={[
-          GlobalStyles.bodyMedium,
-          GlobalStyles.textSecondary,
+          SharedStyles.bodyMedium,
+          SharedStyles.textSecondary,
           styles.sectionTitle,
         ]}
       >
@@ -104,7 +104,7 @@ const PhoneticKeyboard: React.FC<PhoneticKeyboardProps> = ({
             onPress={() => handleKeyPress(symbol)}
             activeOpacity={0.7}
           >
-            <Text style={[GlobalStyles.bodyLarge, styles.keyText]}>
+            <Text style={[SharedStyles.bodyLarge, styles.keyText]}>
               {symbol}
             </Text>
           </TouchableOpacity>
@@ -124,7 +124,7 @@ const PhoneticKeyboard: React.FC<PhoneticKeyboardProps> = ({
         <View style={styles.container as any}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[GlobalStyles.h4, GlobalStyles.textPrimary]}>
+            <Text style={[SharedStyles.h4, SharedStyles.textPrimary]}>
               IPA Keyboard
             </Text>
             <TouchableOpacity
@@ -154,7 +154,7 @@ const PhoneticKeyboard: React.FC<PhoneticKeyboardProps> = ({
               activeOpacity={0.7}
             >
               <Ionicons name="backspace" size={20} color={Colors.textPrimary} />
-              <Text style={[GlobalStyles.bodySmall, styles.utilityButtonText]}>
+              <Text style={[SharedStyles.bodySmall, styles.utilityButtonText]}>
                 Backspace
               </Text>
             </TouchableOpacity>
@@ -164,7 +164,7 @@ const PhoneticKeyboard: React.FC<PhoneticKeyboardProps> = ({
               onPress={onClose}
               activeOpacity={0.8}
             >
-              <Text style={[GlobalStyles.bodyMedium, styles.doneButtonText]}>
+              <Text style={[SharedStyles.bodyMedium, styles.doneButtonText]}>
                 Done
               </Text>
             </TouchableOpacity>

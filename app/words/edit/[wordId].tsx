@@ -113,7 +113,7 @@ export default function EditWordScreen() {
       <ScreenHeader
         title="Edit Word"
         subtitle={word?.word || "Update word information"}
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={handleBackPress}
       />
 

@@ -29,10 +29,10 @@ import {
 import { useWordForm } from "../../hooks/useWordForm";
 import {
   Colors,
-  GlobalStyles,
+  SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/GlobalStyles";
+} from "../../styles/SharedStyles";
 
 interface IrregularForms {
   base?: string;
@@ -275,20 +275,20 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={GlobalStyles.flex1}
+      style={SharedStyles.flex1}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
-        style={GlobalStyles.container}
+        style={SharedStyles.container}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[GlobalStyles.h2, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.h2, SharedStyles.textPrimary]}>
             {isEditMode ? "Edit Word" : "Add New Word"}
           </Text>
-          <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}>
             {isEditMode
               ? "Update word information and examples"
               : "Add a new word to your vocabulary"}
@@ -299,8 +299,8 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
         <View style={styles.section}>
           <Text
             style={[
-              GlobalStyles.h4,
-              GlobalStyles.textPrimary,
+              SharedStyles.h4,
+              SharedStyles.textPrimary,
               styles.sectionTitle,
             ]}
           >
@@ -399,8 +399,8 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
           <View style={styles.sectionHeader}>
             <Text
               style={[
-                GlobalStyles.h4,
-                GlobalStyles.textPrimary,
+                SharedStyles.h4,
+                SharedStyles.textPrimary,
                 styles.sectionTitle,
               ]}
             >
@@ -414,7 +414,7 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
             >
               <Ionicons name="add" size={20} color={Colors.primary} />
               <Text
-                style={[GlobalStyles.bodyMedium, { color: Colors.primary }]}
+                style={[SharedStyles.bodyMedium, { color: Colors.primary }]}
               >
                 Add Example
               </Text>
@@ -425,7 +425,7 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
             <View key={index} style={styles.exampleContainer}>
               <View style={styles.exampleHeader}>
                 <Text
-                  style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary]}
+                  style={[SharedStyles.bodyMedium, SharedStyles.textSecondary]}
                 >
                   Example {index + 1}
                 </Text>
@@ -469,8 +469,8 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
         <View style={styles.actions}>
           <TouchableOpacity
             style={[
-              GlobalStyles.button,
-              GlobalStyles.buttonOutline,
+              SharedStyles.button,
+              SharedStyles.buttonOutline,
               styles.cancelButton,
             ]}
             onPress={handleCancel}
@@ -478,7 +478,7 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
             activeOpacity={0.7}
           >
             <Text
-              style={[GlobalStyles.buttonText, { color: Colors.textSecondary }]}
+              style={[SharedStyles.buttonText, { color: Colors.textSecondary }]}
             >
               Cancel
             </Text>
@@ -486,10 +486,10 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
 
           <TouchableOpacity
             style={[
-              GlobalStyles.button,
-              GlobalStyles.buttonPrimary,
+              SharedStyles.button,
+              SharedStyles.buttonPrimary,
               styles.saveButton,
-              isSubmitting && GlobalStyles.buttonDisabled,
+              isSubmitting && SharedStyles.buttonDisabled,
             ]}
             onPress={handleSave}
             disabled={loading || isSubmitting}
@@ -499,13 +499,13 @@ const UpdatedWordForm: React.FC<UpdatedWordFormProps> = ({
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="small" color={Colors.textPrimary} />
                 <Text
-                  style={[GlobalStyles.buttonText, { marginLeft: Spacing.sm }]}
+                  style={[SharedStyles.buttonText, { marginLeft: Spacing.sm }]}
                 >
                   {isEditMode ? "Updating..." : "Creating..."}
                 </Text>
               </View>
             ) : (
-              <Text style={GlobalStyles.buttonText}>
+              <Text style={SharedStyles.buttonText}>
                 {isEditMode ? "Update Word" : "Add Word"}
               </Text>
             )}

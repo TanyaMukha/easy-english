@@ -42,7 +42,7 @@ const EditDictionaryModal: React.FC<EditDictionaryModalProps> = ({
         <ScreenHeader
           title="Edit Dictionary"
           subtitle="Update dictionary information"
-          // showBackButton={true}
+          showBackButton={true}
           onBackPress={onCancel}
         />
 

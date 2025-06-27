@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../../styles/SharedStyles';
 
 interface QuickActionButtonProps {
   title: string;
@@ -27,7 +27,7 @@ const QuickActionButton: React.FC<QuickActionButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity 
-      style={[GlobalStyles.card, styles.container]} 
+      style={[SharedStyles.card, styles.container]} 
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}
@@ -37,10 +37,10 @@ const QuickActionButton: React.FC<QuickActionButtonProps> = ({
           <Ionicons name={icon as any} size={28} color={color} />
         </View>
         <View style={styles.textContainer}>
-          <Text style={[GlobalStyles.bodyLarge, GlobalStyles.textPrimary, styles.title]}>
+          <Text style={[SharedStyles.bodyLarge, SharedStyles.textPrimary, styles.title]}>
             {title}
           </Text>
-          <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
             {subtitle}
           </Text>
         </View>

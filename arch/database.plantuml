@@ -88,7 +88,7 @@ table(words) {
     column(language): TEXT NOT NULL DEFAULT 'en'
     column(level): TEXT NOT NULL DEFAULT 'A1'
     column(isIrregular): BOOLEAN
-    column(audio): BLOB
+    column(pronunciation): BLOB
     column(lastReviewDate): TIMESTAMP
     column(reviewCount): INT
     column(rate): INT

@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, BorderRadius } from '../../../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, BorderRadius } from '../../../styles/SharedStyles';
 
 interface IrregularToggleProps {
   label: string;
@@ -39,10 +39,10 @@ const IrregularToggle: React.FC<IrregularToggleProps> = ({
     >
       <View style={styles.content}>
         <View style={styles.textContainer}>
-          <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textPrimary]}>
+          <Text style={[SharedStyles.bodyMedium, SharedStyles.textPrimary]}>
             {label}
           </Text>
-          <Text style={[GlobalStyles.bodySmall, GlobalStyles.textSecondary]}>
+          <Text style={[SharedStyles.bodySmall, SharedStyles.textSecondary]}>
             Mark if this word has irregular forms
           </Text>
         </View>

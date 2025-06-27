@@ -140,11 +140,11 @@ export default function WordDetailsScreen() {
       <ScreenHeader
         title={word?.word || "Word Details"}
         subtitle={word?.translation ?? ""}
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={() => router.back()}
-        // rightIcon="create"
-        // onRightPress={handleEdit}
-        // onRightPressAccessibilityLabel="Edit word"
+        rightIcon="create"
+        onRightPress={handleEdit}
+        onRightPressAccessibilityLabel="Edit word"
       />
 
       {loading ? (

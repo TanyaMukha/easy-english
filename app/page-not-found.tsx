@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, Spacing, DeviceUtils } from '../styles/GlobalStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../styles/SharedStyles';
 
 export default function NotFoundScreen() {
   return (
@@ -16,7 +16,7 @@ export default function NotFoundScreen() {
         }} 
       />
       
-      <View style={GlobalStyles.container}>
+      <View style={SharedStyles.container}>
         <View style={styles.content}>
           {/* 404 Icon */}
           <View style={styles.iconContainer}>
@@ -28,41 +28,41 @@ export default function NotFoundScreen() {
           </View>
 
           {/* Error Message */}
-          <Text style={[GlobalStyles.h2, GlobalStyles.textPrimary, styles.title]}>
+          <Text style={[SharedStyles.h2, SharedStyles.textPrimary, styles.title]}>
             Page Not Found
           </Text>
           
-          <Text style={[GlobalStyles.bodyMedium, GlobalStyles.textSecondary, styles.message]}>
+          <Text style={[SharedStyles.bodyMedium, SharedStyles.textSecondary, styles.message]}>
             The page you're looking for doesn't exist or has been moved.
           </Text>
 
           {/* Navigation Links */}
           <View style={styles.linksContainer as any}>
             <Link href="/" asChild>
-              <TouchableOpacity style={[GlobalStyles.button, GlobalStyles.buttonPrimary, styles.primaryButton]}>
+              <TouchableOpacity style={[SharedStyles.button, SharedStyles.buttonPrimary, styles.primaryButton]}>
                 <Ionicons name="home" size={20} color={Colors.textPrimary} style={styles.buttonIcon} />
-                <Text style={GlobalStyles.buttonText}>Go to Home</Text>
+                <Text style={SharedStyles.buttonText}>Go to Home</Text>
               </TouchableOpacity>
             </Link>
 
             <Link href="/dictionaries" asChild>
-              <TouchableOpacity style={[GlobalStyles.button, GlobalStyles.buttonOutline, styles.secondaryButton]}>
+              <TouchableOpacity style={[SharedStyles.button, SharedStyles.buttonOutline, styles.secondaryButton]}>
                 <Ionicons name="book" size={20} color={Colors.primary} style={styles.buttonIcon} />
-                <Text style={[GlobalStyles.buttonText, { color: Colors.primary }]}>Browse Dictionaries</Text>
+                <Text style={[SharedStyles.buttonText, { color: Colors.primary }]}>Browse Dictionaries</Text>
               </TouchableOpacity>
             </Link>
 
             <Link href="/words" asChild>
-              <TouchableOpacity style={[GlobalStyles.button, GlobalStyles.buttonOutline, styles.secondaryButton]}>
+              <TouchableOpacity style={[SharedStyles.button, SharedStyles.buttonOutline, styles.secondaryButton]}>
                 <Ionicons name="library" size={20} color={Colors.primary} style={styles.buttonIcon} />
-                <Text style={[GlobalStyles.buttonText, { color: Colors.primary }]}>All Words</Text>
+                <Text style={[SharedStyles.buttonText, { color: Colors.primary }]}>All Words</Text>
               </TouchableOpacity>
             </Link>
           </View>
 
           {/* Quick Actions */}
           <View style={styles.quickActions}>
-            <Text style={[GlobalStyles.bodySmall, GlobalStyles.textTertiary, styles.quickActionsTitle]}>
+            <Text style={[SharedStyles.bodySmall, SharedStyles.textTertiary, styles.quickActionsTitle]}>
               Quick Actions
             </Text>
             
@@ -70,14 +70,14 @@ export default function NotFoundScreen() {
               <Link href="/words/create" asChild>
                 <TouchableOpacity style={styles.quickAction}>
                   <Ionicons name="add-circle-outline" size={24} color={Colors.success} />
-                  <Text style={[GlobalStyles.bodySmall, { color: Colors.success }]}>Add Word</Text>
+                  <Text style={[SharedStyles.bodySmall, { color: Colors.success }]}>Add Word</Text>
                 </TouchableOpacity>
               </Link>
 
               <Link href="/dictionaries/create" asChild>
                 <TouchableOpacity style={styles.quickAction}>
                   <Ionicons name="create-outline" size={24} color={Colors.accent} />
-                  <Text style={[GlobalStyles.bodySmall, { color: Colors.accent }]}>New Dictionary</Text>
+                  <Text style={[SharedStyles.bodySmall, { color: Colors.accent }]}>New Dictionary</Text>
                 </TouchableOpacity>
               </Link>
             </View>

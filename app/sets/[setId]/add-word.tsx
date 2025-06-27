@@ -218,8 +218,8 @@ export default function AddWordsToSetScreen() {
           icon="search"
           title="No Words Found"
           message={`No words match "${searchQuery}"`}
-          actionText="Clear Search"
-          onAction={() => setSearchQuery("")}
+          buttonText="Clear Search"
+          onButtonPress={() => setSearchQuery("")}
         />
       );
     }
@@ -243,13 +243,13 @@ export default function AddWordsToSetScreen() {
       <ScreenHeader
         title="Add Words to Set"
         subtitle={`${selectedWords.size} words selected`}
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={handleBackPress}
-        // rightText={selectedWords.size > 0 ? "Add" : undefined}
-        // onRightPress={
-        //   selectedWords.size > 0 ? handleAddSelectedWords : undefined
-        // }
-        // rightDisabled={isAdding}
+        rightText={selectedWords.size > 0 ? "Add" : undefined}
+        onRightPress={
+          selectedWords.size > 0 ? handleAddSelectedWords : undefined
+        }
+        rightDisabled={isAdding}
       />
 
       {/* Search */}

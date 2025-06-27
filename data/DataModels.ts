@@ -89,7 +89,7 @@ export interface Word extends BaseEntity, Progress {
   language: LanguageCode;
   level: Level;
   isIrregular: boolean;
-  audio?: Uint8Array | undefined; // BLOB data
+  pronunciation?: Uint8Array | undefined; // BLOB data
   dictionaryId: number;
 }
 
@@ -227,7 +227,7 @@ export interface StudyFlashcard {
   title?: string;
   description?: string;
   items?: FlashcardWord[];
-  progress?: FlashcardProgress;
+  // progress?: FlashcardProgress;
 }
 
 export interface TestFlashcard {
@@ -247,7 +247,7 @@ export interface TestFlashcard {
       };
   correctAnswers?: string[] | Record<string, string>[];
   explanation?: string;
-  progress?: FlashcardProgress;
+  // progress?: FlashcardProgress;
 }
 
 export interface FlashcardWord {
@@ -275,55 +275,55 @@ export interface FlashcardProgress {
   rate?: number;
 }
 
-// Response types for API/Database operations
-export interface DictionariesResponse {
-  dictionaries: Dictionary[];
-  total: number;
-}
+// // Response types for API/Database operations
+// export interface DictionariesResponse {
+//   dictionaries: Dictionary[];
+//   total: number;
+// }
 
-export interface WordsResponse {
-  words: WordWithExamples[];
-  total: number;
-  dictionary?: Dictionary;
-}
+// export interface WordsResponse {
+//   words: WordWithExamples[];
+//   total: number;
+//   dictionary?: Dictionary;
+// }
 
-export interface UnitsResponse {
-  units: UnitWithContent[];
-  total: number;
-}
+// export interface UnitsResponse {
+//   units: UnitWithContent[];
+//   total: number;
+// }
 
-export interface SetsResponse {
-  sets: SetWithWords[];
-  total: number;
-}
+// export interface SetsResponse {
+//   sets: SetWithWords[];
+//   total: number;
+// }
 
-export interface GrammarTopicsResponse {
-  topics: GrammarTopicWithContent[];
-  total: number;
-}
+// export interface GrammarTopicsResponse {
+//   topics: GrammarTopicWithContent[];
+//   total: number;
+// }
 
-// Query parameters
-export interface WordsQueryParams {
-  dictionaryId?: number;
-  search?: string;
-  partOfSpeech?: PartOfSpeech;
-  level?: Level;
-  language?: LanguageCode;
-  isIrregular?: boolean;
-  tagIds?: number[];
-  limit?: number;
-  offset?: number;
-  sortBy?: "word" | "createdAt" | "reviewCount" | "rate";
-  sortOrder?: "asc" | "desc";
-}
+// // Query parameters
+// export interface WordsQueryParams {
+//   dictionaryId?: number;
+//   search?: string;
+//   partOfSpeech?: PartOfSpeech;
+//   level?: Level;
+//   language?: LanguageCode;
+//   isIrregular?: boolean;
+//   tagIds?: number[];
+//   limit?: number;
+//   offset?: number;
+//   sortBy?: "word" | "createdAt" | "reviewCount" | "rate";
+//   sortOrder?: "asc" | "desc";
+// }
 
-export interface UnitsQueryParams {
-  search?: string;
-  limit?: number;
-  offset?: number;
-  sortBy?: "title" | "createdAt" | "reviewCount";
-  sortOrder?: "asc" | "desc";
-}
+// export interface UnitsQueryParams {
+//   search?: string;
+//   limit?: number;
+//   offset?: number;
+//   sortBy?: "title" | "createdAt" | "reviewCount";
+//   sortOrder?: "asc" | "desc";
+// }
 
 // Statistics and progress tracking
 export interface DailyProgress {
@@ -334,83 +334,83 @@ export interface DailyProgress {
   accuracy: number; // percentage
 }
 
-export interface UserStatistics {
-  totalWords: number;
-  wordsLearned: number;
-  currentStreak: number;
-  longestStreak: number;
-  totalTimeSpent: number;
-  averageAccuracy: number;
-  dailyProgress: DailyProgress[];
-  levelDistribution: Record<Level, number>;
-  partOfSpeechDistribution: Record<PartOfSpeech, number>;
-}
+// export interface UserStatistics {
+//   totalWords: number;
+//   wordsLearned: number;
+//   currentStreak: number;
+//   longestStreak: number;
+//   totalTimeSpent: number;
+//   averageAccuracy: number;
+//   dailyProgress: DailyProgress[];
+//   levelDistribution: Record<Level, number>;
+//   partOfSpeechDistribution: Record<PartOfSpeech, number>;
+// }
 
-// Settings and preferences
-export interface UserSettings {
-  theme: "light" | "dark" | "system";
-  language: LanguageCode;
-  dailyGoal: number;
-  notificationsEnabled: boolean;
-  soundEnabled: boolean;
-  autoPlayAudio: boolean;
-  studyReminders: {
-    enabled: boolean;
-    time: string; // HH:MM format
-    days: number[]; // 0-6, Sunday to Saturday
-  };
-  defaultStudyMode: StudyCardType;
-  showTranscription: boolean;
-  showDefinition: boolean;
-}
+// // Settings and preferences
+// export interface UserSettings {
+//   theme: "light" | "dark" | "system";
+//   language: LanguageCode;
+//   dailyGoal: number;
+//   notificationsEnabled: boolean;
+//   soundEnabled: boolean;
+//   autoPlayAudio: boolean;
+//   studyReminders: {
+//     enabled: boolean;
+//     time: string; // HH:MM format
+//     days: number[]; // 0-6, Sunday to Saturday
+//   };
+//   defaultStudyMode: StudyCardType;
+//   showTranscription: boolean;
+//   showDefinition: boolean;
+// }
 
-// Error handling
-export interface AppError {
-  code: string;
-  message: string;
-  details?: any;
-}
+// // Error handling
+// export interface AppError {
+//   code: string;
+//   message: string;
+//   details?: any;
+// }
 
-export interface Result<T> {
-  success: boolean;
-  data?: T;
-  error?: AppError;
-}
+// export interface Result<T> {
+//   success: boolean;
+//   data?: T;
+//   error?: AppError;
+// }
 
-export interface CreateWordData {
-  word: string;
-  transcription?: string;
-  translation?: string;
-  explanation?: string;
-  definition?: string;
-  partOfSpeech: PartOfSpeech;
-  language: LanguageCode;
-  level: Level;
-  isIrregular?: boolean;
-  dictionaryId: number;
-  examples?: Omit<Example, "id" | "wordId">[];
-  tagIds?: number[];
-}
+// export interface CreateWordData {
+//   word: string;
+//   transcription?: string;
+//   translation?: string;
+//   explanation?: string;
+//   definition?: string;
+//   partOfSpeech: PartOfSpeech;
+//   language: LanguageCode;
+//   level: Level;
+//   isIrregular?: boolean;
+//   dictionaryId: number;
+//   examples?: Omit<Example, "id" | "wordId">[];
+//   tagIds?: number[];
+// }
 
-export interface UpdateWordData extends Partial<CreateWordData> {
-  id: number;
-}
+// export interface UpdateWordData extends Partial<CreateWordData> {
+//   id: number;
+// }
 
-export interface WordFilters {
-  dictionaryId?: number | undefined;
-  search?: string | undefined;
-  partOfSpeech?: PartOfSpeech[] | undefined;
-  level?: Level[] | undefined;
-  language?: LanguageCode | undefined;
-  isIrregular?: boolean | undefined;
-  tagIds?: number[] | undefined;
-  sortBy?: 'word' | 'createdAt' | 'reviewCount' | 'rate' | undefined;
-  sortOrder?: 'asc' | 'desc' | undefined;
-}
+// export interface WordFilters {
+//   dictionaryId?: number | undefined;
+//   search?: string | undefined;
+//   partOfSpeech?: PartOfSpeech[] | undefined;
+//   level?: Level[] | undefined;
+//   language?: LanguageCode | undefined;
+//   isIrregular?: boolean | undefined;
+//   tagIds?: number[] | undefined;
+//   sortBy?: 'word' | 'createdAt' | 'reviewCount' | 'rate' | undefined;
+//   sortOrder?: 'asc' | 'desc' | undefined;
+// }
 
-export interface WordListResponse {
-  words: Word[];
-  total: number;
-  page: number;
-  limit: number;
-}
+// export interface WordListResponse {
+//   words: Word[];
+//   total: number;
+//   page: number;
+//   limit: number;
+// }

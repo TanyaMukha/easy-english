@@ -1,4 +1,3 @@
-// data/DataUtils.ts
 import {
   WordWithExamples,
   StudyFlashcard,
@@ -81,11 +80,11 @@ export class DataMapper {
       title: "Vocabulary Study",
       description: `Learning: ${word.word}`,
       items: [this.wordToFlashcardWord(word)],
-      progress: {
-        ...(word.lastReviewDate ? { lastReviewed: word.lastReviewDate } : {}),
-        reviewCount: word.reviewCount,
-        rate: word.rate,
-      },
+      // progress: {
+      //   ...(word.lastReviewDate ? { lastReviewed: word.lastReviewDate } : {}),
+      //   reviewCount: word.reviewCount,
+      //   rate: word.rate,
+      // },
     };
   }
 

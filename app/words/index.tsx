@@ -114,11 +114,11 @@ export default function WordsScreen() {
       <ScreenHeader
         title="All Words"
         subtitle={`${pagination.total} words total`}
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={() => router.back()}
-        // rightIcon="add"
-        // onRightPress={handleCreatePress}
-        // onRightPressAccessibilityLabel="Add new word"
+        rightIcon="add"
+        onRightPress={handleCreatePress}
+        onRightPressAccessibilityLabel="Add new word"
       />
 
       {loading && filteredWords.length === 0 ? (

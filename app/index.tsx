@@ -75,8 +75,7 @@ export default function HomeScreen() {
   };
 
   const handleSetsPress = () => {
-    // TODO: Create sets screen
-    console.log("Navigate to sets");
+    router.push("/sets");
   };
 
   const handleUnitsPress = () => {

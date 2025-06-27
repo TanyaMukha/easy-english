@@ -87,11 +87,11 @@ export default function DictionariesScreen() {
       <ScreenHeader
         title="Dictionaries"
         subtitle="Your word collections"
-        // showBackButton={true}
+        showBackButton={true}
         onBackPress={handleBackPress}
-        // rightIcon="add"
-        // onRightPress={handleCreatePress}
-        // onRightPressAccessibilityLabel="Create new dictionary"
+        rightIcon="add"
+        onRightPress={handleCreatePress}
+        onRightPressAccessibilityLabel="Create new dictionary"
       />
 
       {loading && <LoadingState message="Loading dictionaries..." />}
@@ -121,8 +121,8 @@ export default function DictionariesScreen() {
             <EmptyState
               title="No dictionaries yet"
               message="Create your first dictionary to start building your vocabulary collection"
-              // buttonText="Create Dictionary"
-              // onButtonPress={handleCreatePress}
+              buttonText="Create Dictionary"
+              onButtonPress={handleCreatePress}
               icon="book"
             />
           )}
@@ -132,7 +132,7 @@ export default function DictionariesScreen() {
               title="No dictionaries found"
               message={`No dictionaries match "${searchQuery}"`}
               icon="search"
-              // showButton={false}
+              showButton={false}
             />
           )}
 
