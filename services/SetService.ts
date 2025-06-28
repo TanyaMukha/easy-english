@@ -1,74 +1,30 @@
 // services/SetService.ts
-import { Set, SetWord, Word, SetWithWords, WordWithExamples } from "../data/DataModels";
-import { Utils } from "../data/DataUtils";
+import { Set, SetWithWords, SetWord, WordWithExamples } from "../data/DataModels";
+import { DatabaseService } from "./DatabaseService";
+import { MockDataService } from "./MockDataService";
 
-// Mock database simulation - replace with actual SQLite operations
-let mockSets: Set[] = [
-  {
-    id: 1,
-    guid: "set-001",
-    title: "Basic Vocabulary",
-    description: "Essential words for beginners",
-    lastReviewDate: null,
-    reviewCount: 0,
-    rate: 0,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-  },
-  {
-    id: 2,
-    guid: "set-002", 
-    title: "Travel Phrases",
-    description: "Common phrases for travelers",
-    lastReviewDate: null,
-    reviewCount: 0,
-    rate: 0,
-    createdAt: "2024-01-02T00:00:00Z",
-    updatedAt: "2024-01-02T00:00:00Z",
-  },
-  {
-    id: 3,
-    guid: "set-003",
-    title: "Business English", 
-    description: "Professional vocabulary",
-    lastReviewDate: null,
-    reviewCount: 0,
-    rate: 0,
-    createdAt: "2024-01-03T00:00:00Z",
-    updatedAt: "2024-01-03T00:00:00Z",
-  },
-];
-
-// Mock set-word relationships
-let mockSetWords: SetWord[] = [
-  { setId: 1, wordId: 1 },
-  { setId: 1, wordId: 2 },
-  { setId: 1, wordId: 3 },
-  { setId: 2, wordId: 1 },
-  { setId: 2, wordId: 4 },
-  { setId: 3, wordId: 5 },
-  { setId: 3, wordId: 6 },
-];
-
-// Mock words count storage
-const mockWordsCount: Record<number, number> = {
-  1: 25,
-  2: 18,
-  3: 12,
-};
-
-let nextId = 4;
-
+// Request interfaces
 export interface CreateSetRequest {
   title: string;
-  description?: string | undefined;
+  description?: string;
 }
 
 export interface UpdateSetRequest {
-  title?: string | undefined;
-  description?: string | undefined;
+  title?: string;
+  description?: string;
 }
 
+export interface AddWordToSetRequest {
+  setId: number;
+  wordId: number;
+}
+
+export interface RemoveWordFromSetRequest {
+  setId: number;
+  wordId: number;
+}
+
+// Response interfaces
 export interface SetResponse {
   success: boolean;
   data?: Set;
@@ -87,19 +43,14 @@ export interface SetWithWordsResponse {
   error?: string;
 }
 
-export interface AddWordToSetRequest {
-  setId: number;
-  wordId: number;
-}
-
-export interface RemoveWordFromSetRequest {
-  setId: number;
-  wordId: number;
+interface ValidationResult {
+  isValid: boolean;
+  error?: string;
 }
 
 /**
- * Service for managing word sets CRUD operations
- * Single Responsibility: Handle all set data operations
+ * Set Service with platform-aware data management  
+ * Single Responsibility: Handle all word set CRUD operations
  * Open/Closed: Can be extended with additional set operations
  * Dependency Inversion: Abstracts database operations
  */
@@ -109,18 +60,30 @@ export class SetService {
    */
   static async getAll(): Promise<SetsListResponse> {
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await MockDataService.delay();
 
-      return {
-        success: true,
-        data: [...mockSets].sort(
-          (a, b) =>
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime(),
-        ),
-      };
+      if (DatabaseService.isWeb()) {
+        // Web platform - use mock data
+        return {
+          success: true,
+          data: [...MockDataService.mockSets].sort(
+            (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          ),
+        };
+      } else {
+        // Native platform - use SQLite
+        const db = await DatabaseService.getDatabase();
+        const rows = await db.getAllAsync(
+          'SELECT * FROM sets ORDER BY createdAt DESC'
+        );
+        
+        return {
+          success: true,
+          data: rows,
+        };
+      }
     } catch (error) {
+      console.error('Error fetching sets:', error);
       return {
         success: false,
         error: "Failed to fetch sets",
@@ -133,22 +96,43 @@ export class SetService {
    */
   static async getById(id: number): Promise<SetResponse> {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await MockDataService.delay();
 
-      const set = mockSets.find((s) => s.id === id);
+      if (DatabaseService.isWeb()) {
+        const set = MockDataService.mockSets.find(s => s.id === id);
+        
+        if (!set) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
 
-      if (!set) {
         return {
-          success: false,
-          error: "Set not found",
+          success: true,
+          data: set,
+        };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        const set = await db.getFirstAsync(
+          'SELECT * FROM sets WHERE id = ?',
+          [id]
+        );
+
+        if (!set) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
+
+        return {
+          success: true,
+          data: set,
         };
       }
-
-      return {
-        success: true,
-        data: set,
-      };
     } catch (error) {
+      console.error('Error fetching set:', error);
       return {
         success: false,
         error: "Failed to fetch set",
@@ -161,36 +145,96 @@ export class SetService {
    */
   static async getSetWithWords(id: number): Promise<SetWithWordsResponse> {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await MockDataService.delay(150);
 
-      const set = mockSets.find((s) => s.id === id);
+      if (DatabaseService.isWeb()) {
+        const set = MockDataService.mockSets.find(s => s.id === id);
+        
+        if (!set) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
 
-      if (!set) {
+        // Get word IDs for this set
+        const setWordIds = MockDataService.mockSetWords
+          .filter(sw => sw.setId === id)
+          .map(sw => sw.wordId);
+
+        // Get words with examples
+        const words: WordWithExamples[] = MockDataService.mockWords
+          .filter(w => setWordIds.includes(w.id))
+          .map(word => ({
+            ...word,
+            examples: MockDataService.mockExamples.filter(e => e.wordId === word.id),
+            tags: [], // TODO: Implement tags if needed
+            dictionary: MockDataService.mockDictionaries.find(d => d.id === word.dictionaryId)!,
+            nextReviewDate: null,
+          }));
+
+        const setWithWords: SetWithWords = {
+          ...set,
+          words,
+          wordCount: words.length,
+        };
+
         return {
-          success: false,
-          error: "Set not found",
+          success: true,
+          data: setWithWords,
+        };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        // Get set
+        const set = await db.getFirstAsync('SELECT * FROM sets WHERE id = ?', [id]);
+        if (!set) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
+
+        // Get words in set with examples
+        const words = await db.getAllAsync(`
+          SELECT w.*, d.title as dictionaryTitle
+          FROM words w
+          JOIN set_words sw ON w.id = sw.wordId  
+          JOIN dictionaries d ON w.dictionaryId = d.id
+          WHERE sw.setId = ?
+          ORDER BY w.word ASC
+        `, [id]);
+
+        // Get examples for each word
+        const wordsWithExamples: WordWithExamples[] = [];
+        for (const word of words) {
+          const examples = await db.getAllAsync(
+            'SELECT * FROM examples WHERE wordId = ?',
+            [word.id]
+          );
+          
+          wordsWithExamples.push({
+            ...word,
+            examples,
+            tags: [], // TODO: Implement tags
+            dictionary: { id: word.dictionaryId, title: word.dictionaryTitle },
+            nextReviewDate: null,
+          });
+        }
+
+        const setWithWords: SetWithWords = {
+          ...set,
+          words: wordsWithExamples,
+          wordCount: wordsWithExamples.length,
+        };
+
+        return {
+          success: true,
+          data: setWithWords,
         };
       }
-
-      // Get word IDs for this set
-      const setWordIds = mockSetWords
-        .filter((sw) => sw.setId === id)
-        .map((sw) => sw.wordId);
-
-      // Mock getting words - in real implementation would fetch from WordService
-      const words: WordWithExamples[] = []; // TODO: Implement actual word fetching
-
-      const setWithWords: SetWithWords = {
-        ...set,
-        words,
-        wordCount: setWordIds.length,
-      };
-
-      return {
-        success: true,
-        data: setWithWords,
-      };
     } catch (error) {
+      console.error('Error fetching set with words:', error);
       return {
         success: false,
         error: "Failed to fetch set with words",
@@ -203,49 +247,65 @@ export class SetService {
    */
   static async create(request: CreateSetRequest): Promise<SetResponse> {
     try {
-      // Validate request
       const validation = this.validateCreateRequest(request);
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error ?? "Invalid request data",
+          error: validation.error || "Invalid data",
         };
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await MockDataService.delay();
 
-      // Check if set with same title already exists
-      const existingSet = mockSets.find(
-        (s) => s.title.toLowerCase().trim() === request.title.toLowerCase().trim(),
-      );
+      const now = new Date().toISOString();
+      
+      if (DatabaseService.isWeb()) {
+        const newSet: Set = {
+          id: MockDataService.getNextId('set'),
+          guid: MockDataService.generateGuid(),
+          title: request.title.trim(),
+          description: request.description?.trim() || undefined,
+          lastReviewDate: null,
+          reviewCount: 0,
+          rate: 0,
+          createdAt: now,
+          updatedAt: now,
+        };
 
-      if (existingSet) {
+        MockDataService.mockSets.push(newSet);
+
         return {
-          success: false,
-          error: "Set with this title already exists",
+          success: true,
+          data: newSet,
+        };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        const guid = MockDataService.generateGuid();
+        
+        const result = await db.runAsync(
+          'INSERT INTO sets (guid, title, description, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)',
+          [guid, request.title.trim(), request.description?.trim() || null, now, now]
+        );
+
+        const newSet: Set = {
+          id: result.lastInsertRowId,
+          guid,
+          title: request.title.trim(),
+          description: request.description?.trim() || undefined,
+          lastReviewDate: null,
+          reviewCount: 0,
+          rate: 0,
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        return {
+          success: true,
+          data: newSet,
         };
       }
-
-      const newSet: Set = {
-        id: nextId++,
-        guid: "", //Utils.generateGuid(),
-        title: request.title.trim(),
-        description: request.description?.trim() || undefined,
-        lastReviewDate: null,
-        reviewCount: 0,
-        rate: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      mockSets.push(newSet);
-      mockWordsCount[newSet.id] = 0; // New set starts with 0 words
-
-      return {
-        success: true,
-        data: newSet,
-      };
     } catch (error) {
+      console.error('Error creating set:', error);
       return {
         success: false,
         error: "Failed to create set",
@@ -256,70 +316,80 @@ export class SetService {
   /**
    * Update set
    */
-  static async update(
-    id: number,
-    request: UpdateSetRequest,
-  ): Promise<SetResponse> {
+  static async update(id: number, request: UpdateSetRequest): Promise<SetResponse> {
     try {
-      // Validate request
       const validation = this.validateUpdateRequest(request);
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error ?? "Invalid request data",
+          error: validation.error || "Invalid data",
         };
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await MockDataService.delay();
 
-      const setIndex = mockSets.findIndex((s) => s.id === id);
+      const now = new Date().toISOString();
 
-      if (setIndex === -1) {
-        return {
-          success: false,
-          error: "Set not found",
-        };
-      }
-
-      // Check if title already exists (excluding current set)
-      if (request.title) {
-        const existingSet = mockSets.find(
-          (s) =>
-            s.id !== id &&
-            s.title.toLowerCase().trim() === request.title!.toLowerCase().trim(),
-        );
-
-        if (existingSet) {
+      if (DatabaseService.isWeb()) {
+        const setIndex = MockDataService.mockSets.findIndex(s => s.id === id);
+        
+        if (setIndex === -1) {
           return {
             success: false,
-            error: "Set with this title already exists",
+            error: "Set not found",
           };
         }
-      }
 
-      if (!mockSets[setIndex]) {
+        const updatedSet = {
+          ...MockDataService.mockSets[setIndex],
+          ...(request.title && { title: request.title.trim() }),
+          ...(request.description !== undefined && { description: request.description?.trim() || undefined }),
+          updatedAt: now,
+        };
+
+        MockDataService.mockSets[setIndex] = updatedSet;
+
         return {
-          success: false,
-          error: "Set not found",
+          success: true,
+          data: updatedSet,
+        };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        const updateFields: string[] = [];
+        const values: any[] = [];
+
+        if (request.title) {
+          updateFields.push('title = ?');
+          values.push(request.title.trim());
+        }
+
+        if (request.description !== undefined) {
+          updateFields.push('description = ?');
+          values.push(request.description?.trim() || null);
+        }
+
+        updateFields.push('updatedAt = ?');
+        values.push(now);
+        values.push(id);
+
+        await db.runAsync(
+          `UPDATE sets SET ${updateFields.join(', ')} WHERE id = ?`,
+          values
+        );
+
+        const updated = await db.getFirstAsync(
+          'SELECT * FROM sets WHERE id = ?',
+          [id]
+        );
+
+        return {
+          success: true,
+          data: updated,
         };
       }
-
-      const updatedSet: Set = {
-        ...mockSets[setIndex],
-        title: request.title !== undefined && typeof request.title === "string"
-          ? request.title.trim()
-          : mockSets[setIndex]!.title,
-        description: request.description !== undefined ? (request.description.trim() || undefined) : mockSets[setIndex]!.description,
-        updatedAt: new Date().toISOString(),
-      };
-
-      mockSets[setIndex] = updatedSet;
-
-      return {
-        success: true,
-        data: updatedSet,
-      };
     } catch (error) {
+      console.error('Error updating set:', error);
       return {
         success: false,
         error: "Failed to update set",
@@ -332,30 +402,36 @@ export class SetService {
    */
   static async delete(id: number): Promise<{ success: boolean; error?: string }> {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await MockDataService.delay();
 
-      const setIndex = mockSets.findIndex((s) => s.id === id);
+      if (DatabaseService.isWeb()) {
+        const setIndex = MockDataService.mockSets.findIndex(s => s.id === id);
+        
+        if (setIndex === -1) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
 
-      if (setIndex === -1) {
-        return {
-          success: false,
-          error: "Set not found",
-        };
+        // Remove set and its word relationships
+        MockDataService.mockSets.splice(setIndex, 1);
+        MockDataService.mockSetWords = MockDataService.mockSetWords.filter(sw => sw.setId !== id);
+
+        return { success: true };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        // Delete set words relationships first
+        await db.runAsync('DELETE FROM set_words WHERE setId = ?', [id]);
+        
+        // Delete set
+        await db.runAsync('DELETE FROM sets WHERE id = ?', [id]);
+
+        return { success: true };
       }
-
-      // Remove set from sets array
-      mockSets.splice(setIndex, 1);
-
-      // Remove all word associations
-      mockSetWords = mockSetWords.filter((sw) => sw.setId !== id);
-
-      // Remove word count tracking
-      delete mockWordsCount[id];
-
-      return {
-        success: true,
-      };
     } catch (error) {
+      console.error('Error deleting set:', error);
       return {
         success: false,
         error: "Failed to delete set",
@@ -366,45 +442,65 @@ export class SetService {
   /**
    * Add word to set
    */
-  static async addWordToSet(
-    request: AddWordToSetRequest,
-  ): Promise<{ success: boolean; error?: string }> {
+  static async addWordToSet(request: AddWordToSetRequest): Promise<{ success: boolean; error?: string }> {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await MockDataService.delay();
 
-      const { setId, wordId } = request;
+      if (DatabaseService.isWeb()) {
+        // Check if relationship already exists
+        const exists = MockDataService.mockSetWords.some(
+          sw => sw.setId === request.setId && sw.wordId === request.wordId
+        );
 
-      // Check if set exists
-      const set = mockSets.find((s) => s.id === setId);
-      if (!set) {
-        return {
-          success: false,
-          error: "Set not found",
-        };
+        if (exists) {
+          return {
+            success: false,
+            error: "Word already in set",
+          };
+        }
+
+        // Check if set and word exist
+        const setExists = MockDataService.mockSets.some(s => s.id === request.setId);
+        const wordExists = MockDataService.mockWords.some(w => w.id === request.wordId);
+
+        if (!setExists || !wordExists) {
+          return {
+            success: false,
+            error: "Set or word not found",
+          };
+        }
+
+        MockDataService.mockSetWords.push({
+          setId: request.setId,
+          wordId: request.wordId,
+        });
+
+        return { success: true };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        // Check if relationship already exists
+        const exists = await db.getFirstAsync(
+          'SELECT 1 FROM set_words WHERE setId = ? AND wordId = ?',
+          [request.setId, request.wordId]
+        );
+
+        if (exists) {
+          return {
+            success: false,
+            error: "Word already in set",
+          };
+        }
+
+        await db.runAsync(
+          'INSERT INTO set_words (setId, wordId) VALUES (?, ?)',
+          [request.setId, request.wordId]
+        );
+
+        return { success: true };
       }
-
-      // Check if word already in set
-      const existingRelation = mockSetWords.find(
-        (sw) => sw.setId === setId && sw.wordId === wordId,
-      );
-
-      if (existingRelation) {
-        return {
-          success: false,
-          error: "Word already in set",
-        };
-      }
-
-      // Add word to set
-      mockSetWords.push({ setId, wordId });
-
-      // Update word count
-      mockWordsCount[setId] = (mockWordsCount[setId] || 0) + 1;
-
-      return {
-        success: true,
-      };
     } catch (error) {
+      console.error('Error adding word to set:', error);
       return {
         success: false,
         error: "Failed to add word to set",
@@ -415,35 +511,44 @@ export class SetService {
   /**
    * Remove word from set
    */
-  static async removeWordFromSet(
-    request: RemoveWordFromSetRequest,
-  ): Promise<{ success: boolean; error?: string }> {
+  static async removeWordFromSet(request: RemoveWordFromSetRequest): Promise<{ success: boolean; error?: string }> {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await MockDataService.delay();
 
-      const { setId, wordId } = request;
+      if (DatabaseService.isWeb()) {
+        const index = MockDataService.mockSetWords.findIndex(
+          sw => sw.setId === request.setId && sw.wordId === request.wordId
+        );
 
-      // Find and remove the relation
-      const relationIndex = mockSetWords.findIndex(
-        (sw) => sw.setId === setId && sw.wordId === wordId,
-      );
+        if (index === -1) {
+          return {
+            success: false,
+            error: "Word not found in set",
+          };
+        }
 
-      if (relationIndex === -1) {
-        return {
-          success: false,
-          error: "Word not found in set",
-        };
+        MockDataService.mockSetWords.splice(index, 1);
+
+        return { success: true };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        const result = await db.runAsync(
+          'DELETE FROM set_words WHERE setId = ? AND wordId = ?',
+          [request.setId, request.wordId]
+        );
+
+        if (result.changes === 0) {
+          return {
+            success: false,
+            error: "Word not found in set",
+          };
+        }
+
+        return { success: true };
       }
-
-      mockSetWords.splice(relationIndex, 1);
-
-      // Update word count
-      mockWordsCount[setId] = Math.max(0, (mockWordsCount[setId] || 0) - 1);
-
-      return {
-        success: true,
-      };
     } catch (error) {
+      console.error('Error removing word from set:', error);
       return {
         success: false,
         error: "Failed to remove word from set",
@@ -452,48 +557,102 @@ export class SetService {
   }
 
   /**
-   * Get set statistics
+   * Get sets that contain a specific word
    */
-  static async getSetStatistics(id: number): Promise<{
-    success: boolean;
-    data?: {
-      wordCount: number;
-      lastStudied?: string;
-      averageProgress: number;
-    };
-    error?: string;
-  }> {
+  static async getSetsContainingWord(wordId: number): Promise<SetsListResponse> {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await MockDataService.delay();
 
-      const set = mockSets.find((s) => s.id === id);
+      if (DatabaseService.isWeb()) {
+        const setIds = MockDataService.mockSetWords
+          .filter(sw => sw.wordId === wordId)
+          .map(sw => sw.setId);
 
-      if (!set) {
+        const sets = MockDataService.mockSets.filter(s => setIds.includes(s.id));
+
         return {
-          success: false,
-          error: "Set not found",
+          success: true,
+          data: sets,
+        };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        const sets = await db.getAllAsync(`
+          SELECT s.* 
+          FROM sets s
+          JOIN set_words sw ON s.id = sw.setId
+          WHERE sw.wordId = ?
+          ORDER BY s.title ASC
+        `, [wordId]);
+
+        return {
+          success: true,
+          data: sets,
         };
       }
-
-      // Get word count
-      const wordCount = mockWordsCount[id] || 0;
-
-      const data: {
-        wordCount: number;
-        lastStudied?: string;
-        averageProgress: number;
-      } = {
-        wordCount,
-        averageProgress: wordCount > 0 ? Math.floor(Math.random() * 100) : 0,
-      };
-      if (set.lastReviewDate !== null && set.lastReviewDate !== undefined) {
-        data.lastStudied = set.lastReviewDate;
-      }
-      return {
-        success: true,
-        data,
-      };
     } catch (error) {
+      console.error('Error getting sets containing word:', error);
+      return {
+        success: false,
+        error: "Failed to get sets containing word",
+      };
+    }
+  }
+
+  /**
+   * Get set statistics
+   */
+  static async getStatistics(id: number): Promise<{ success: boolean; data?: { wordCount: number; reviewCount: number }; error?: string }> {
+    try {
+      await MockDataService.delay();
+
+      if (DatabaseService.isWeb()) {
+        const set = MockDataService.mockSets.find(s => s.id === id);
+        if (!set) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
+
+        const wordIds = MockDataService.mockSetWords
+          .filter(sw => sw.setId === id)
+          .map(sw => sw.wordId);
+
+        const wordCount = wordIds.length;
+        const reviewCount = set.reviewCount;
+
+        return {
+          success: true,
+          data: { wordCount, reviewCount },
+        };
+      } else {
+        const db = await DatabaseService.getDatabase();
+        
+        const stats = await db.getFirstAsync(`
+          SELECT 
+            COUNT(sw.wordId) as wordCount,
+            s.reviewCount
+          FROM sets s
+          LEFT JOIN set_words sw ON s.id = sw.setId
+          WHERE s.id = ?
+          GROUP BY s.id
+        `, [id]);
+
+        if (!stats) {
+          return {
+            success: false,
+            error: "Set not found",
+          };
+        }
+
+        return {
+          success: true,
+          data: { wordCount: stats.wordCount || 0, reviewCount: stats.reviewCount || 0 },
+        };
+      }
+    } catch (error) {
+      console.error('Error getting set statistics:', error);
       return {
         success: false,
         error: "Failed to get set statistics",
@@ -502,83 +661,23 @@ export class SetService {
   }
 
   /**
-   * Get word count for set
-   */
-  static getWordCount(setId: number): number {
-    return mockWordsCount[setId] || 0;
-  }
-
-  /**
-   * Update word count for set
-   */
-  static updateWordCount(setId: number, newCount: number): void {
-    mockWordsCount[setId] = Math.max(0, newCount);
-  }
-
-  /**
-   * Search sets by title
-   */
-  static async search(query: string): Promise<SetsListResponse> {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 150));
-
-      const searchQuery = query.toLowerCase().trim();
-      const filteredSets = mockSets.filter((set) =>
-        set.title.toLowerCase().includes(searchQuery) ||
-        (set.description && set.description.toLowerCase().includes(searchQuery)),
-      );
-
-      return {
-        success: true,
-        data: filteredSets.sort(
-          (a, b) =>
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime(),
-        ),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Failed to search sets",
-      };
-    }
-  }
-
-  /**
    * Validate create request
    */
-  private static validateCreateRequest(request: CreateSetRequest): {
-    isValid: boolean;
-    error?: string;
-  } {
-    if (!request.title || typeof request.title !== "string") {
-      return {
-        isValid: false,
-        error: "Title is required",
-      };
+  private static validateCreateRequest(request: CreateSetRequest): ValidationResult {
+    if (!request.title || typeof request.title !== 'string') {
+      return { isValid: false, error: "Title is required" };
     }
 
-    const title = request.title.trim();
-
-    if (title.length < 1) {
-      return {
-        isValid: false,
-        error: "Title cannot be empty",
-      };
+    if (request.title.trim().length === 0) {
+      return { isValid: false, error: "Title cannot be empty" };
     }
 
-    if (title.length > 100) {
-      return {
-        isValid: false,
-        error: "Title must be less than 100 characters",
-      };
+    if (request.title.trim().length > 100) {
+      return { isValid: false, error: "Title too long (max 100 characters)" };
     }
 
     if (request.description && request.description.length > 500) {
-      return {
-        isValid: false,
-        error: "Description must be less than 500 characters",
-      };
+      return { isValid: false, error: "Description too long (max 500 characters)" };
     }
 
     return { isValid: true };
@@ -587,49 +686,23 @@ export class SetService {
   /**
    * Validate update request
    */
-  private static validateUpdateRequest(request: UpdateSetRequest): {
-    isValid: boolean;
-    error?: string;
-  } {
+  private static validateUpdateRequest(request: UpdateSetRequest): ValidationResult {
     if (request.title !== undefined) {
-      if (typeof request.title !== "string") {
-        return {
-          isValid: false,
-          error: "Title must be a string",
-        };
+      if (typeof request.title !== 'string') {
+        return { isValid: false, error: "Title must be a string" };
       }
 
-      const title = request.title.trim();
-
-      if (title.length < 1) {
-        return {
-          isValid: false,
-          error: "Title cannot be empty",
-        };
+      if (request.title.trim().length === 0) {
+        return { isValid: false, error: "Title cannot be empty" };
       }
 
-      if (title.length > 100) {
-        return {
-          isValid: false,
-          error: "Title must be less than 100 characters",
-        };
+      if (request.title.trim().length > 100) {
+        return { isValid: false, error: "Title too long (max 100 characters)" };
       }
     }
 
-    if (request.description !== undefined) {
-      if (typeof request.description !== "string") {
-        return {
-          isValid: false,
-          error: "Description must be a string",
-        };
-      }
-
-      if (request.description.length > 500) {
-        return {
-          isValid: false,
-          error: "Description must be less than 500 characters",
-        };
-      }
+    if (request.description !== undefined && request.description && request.description.length > 500) {
+      return { isValid: false, error: "Description too long (max 500 characters)" };
     }
 
     return { isValid: true };
