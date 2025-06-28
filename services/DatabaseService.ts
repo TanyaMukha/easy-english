@@ -1,9 +1,21 @@
 // services/DatabaseService.ts
 import { Platform } from "react-native";
-import * as SQLite from "expo-sqlite";
-import * as FileSystem from "expo-file-system";
 
 const DATABASE_NAME = "easy_english.db";
+
+// Import SQLite only for native platforms to avoid web compilation issues
+let SQLite: any = null;
+let FileSystem: any = null;
+
+if (Platform.OS !== "web") {
+  try {
+    // Dynamic import for native platforms only
+    SQLite = require("expo-sqlite");
+    FileSystem = require("expo-file-system");
+  } catch (error) {
+    console.warn("SQLite modules not available:", error);
+  }
+}
 
 interface DatabaseInterface {
   execAsync: (sql: string, params?: any[]) => Promise<void>;
@@ -14,7 +26,7 @@ interface DatabaseInterface {
 }
 
 /**
- * Database Service with platform detection
+ * Database Service with platform detection and proper SQLite handling
  * Single Responsibility: Manage database connections and platform detection
  * Open/Closed: Extensible for new platforms
  * Dependency Inversion: Interface-based database operations
@@ -72,21 +84,19 @@ export class DatabaseService {
    * Create SQLite database for native platforms
    */
   private static async createSQLiteDatabase(): Promise<DatabaseInterface> {
-    const dbPath = `${FileSystem.documentDirectory}${DATABASE_NAME}`;
-    
-    try {
-      const dbInfo = await FileSystem.getInfoAsync(dbPath);
-      
-      if (!dbInfo.exists) {
-        console.log("Creating new SQLite database...");
-      } else {
-        console.log("Opening existing SQLite database...");
-      }
+    if (!SQLite || !FileSystem) {
+      throw new Error("SQLite modules are not available on this platform");
+    }
 
-      const db = SQLite.openDatabaseSync(dbPath);
-      await this.initializeTables(db as DatabaseInterface);
+    try {
+      // For Expo SDK 52+, use the new openDatabaseSync API
+      const db = SQLite.openDatabaseSync(DATABASE_NAME);
       
-      return db as DatabaseInterface;
+      // Initialize tables
+      await this.initializeTables(db);
+      
+      console.log("SQLite database opened successfully");
+      return db;
     } catch (error) {
       console.error("Error creating SQLite database:", error);
       throw error;
@@ -180,11 +190,120 @@ export class DatabaseService {
         PRIMARY KEY (wordId, tagId),
         FOREIGN KEY (wordId) REFERENCES words(id),
         FOREIGN KEY (tagId) REFERENCES tags(id)
+      )`,
+
+      // Grammar tests table
+      `CREATE TABLE IF NOT EXISTS grammar_tests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        createdAt TEXT NULL,
+        updatedAt TEXT NULL
+      )`,
+
+      // Grammar topics table
+      `CREATE TABLE IF NOT EXISTS grammar_topics (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        content TEXT NOT NULL,
+        language TEXT NOT NULL DEFAULT 'en',
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        createdAt TEXT NULL,
+        updatedAt TEXT NULL,
+        topicId INTEGER,
+        FOREIGN KEY (topicId) REFERENCES grammar_topics(id)
+      )`,
+
+      // Grammar topic tests junction table
+      `CREATE TABLE IF NOT EXISTS grammar_topic_tests (
+        topicId INTEGER,
+        testId INTEGER,
+        PRIMARY KEY (topicId, testId),
+        FOREIGN KEY (topicId) REFERENCES grammar_topics(id),
+        FOREIGN KEY (testId) REFERENCES grammar_tests(id)
+      )`,
+
+      // Test cards table
+      `CREATE TABLE IF NOT EXISTS test_cards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        testType TEXT,
+        title TEXT NOT NULL,
+        description TEXT,
+        text TEXT,
+        mask TEXT,
+        options TEXT,
+        correctAnswers TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        rate INTEGER DEFAULT 0,
+        createdAt TEXT NULL,
+        updatedAt TEXT NULL,
+        testId INTEGER,
+        FOREIGN KEY (testId) REFERENCES grammar_tests(id)
+      )`,
+
+      // Study cards table
+      `CREATE TABLE IF NOT EXISTS study_cards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        dialogue TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        rate INTEGER DEFAULT 0,
+        createdAt TEXT NULL,
+        updatedAt TEXT NULL,
+        unitId INTEGER
+      )`,
+
+      // Units table
+      `CREATE TABLE IF NOT EXISTS units (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        createdAt TEXT NULL,
+        updatedAt TEXT NULL
+      )`,
+
+      // Study card items junction table
+      `CREATE TABLE IF NOT EXISTS study_card_items (
+        cardId INTEGER,
+        wordId INTEGER,
+        PRIMARY KEY (cardId, wordId),
+        FOREIGN KEY (cardId) REFERENCES study_cards(id),
+        FOREIGN KEY (wordId) REFERENCES words(id)
+      )`,
+
+      // Irregular forms table
+      `CREATE TABLE IF NOT EXISTS irregular_forms (
+        firstFormId INTEGER NOT NULL,
+        secondFormId INTEGER NOT NULL,
+        thirdFormId INTEGER,
+        PRIMARY KEY (firstFormId, secondFormId),
+        FOREIGN KEY (firstFormId) REFERENCES words(id),
+        FOREIGN KEY (secondFormId) REFERENCES words(id),
+        FOREIGN KEY (thirdFormId) REFERENCES words(id)
       )`
     ];
 
     for (const query of createQueries) {
-      await db.execAsync(query);
+      try {
+        await db.execAsync(query);
+      } catch (error) {
+        console.error(`Failed to execute query: ${query}`, error);
+        throw error;
+      }
     }
     
     console.log("Database tables initialized successfully");
@@ -214,6 +333,28 @@ export class DatabaseService {
     if (this.db) {
       await this.db.closeAsync();
       this.db = null;
+    }
+  }
+
+  /**
+   * Test database connection and operations
+   */
+  static async testConnection(): Promise<boolean> {
+    try {
+      const db = await this.getDatabase();
+      
+      if (this.isWebPlatform) {
+        // For web, just check that mock database works
+        await db.getAllAsync("SELECT 1");
+        return true;
+      } else {
+        // For native, test actual SQLite operations
+        const result = await db.getFirstAsync("SELECT 1 as test");
+        return result?.test === 1;
+      }
+    } catch (error) {
+      console.error("Database connection test failed:", error);
+      return false;
     }
   }
 }
