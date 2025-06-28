@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { UpdatedWordForm } from "../../../components/forms";
 import { ErrorState, LoadingState, ScreenHeader } from "../../../components/ui";
 import { WordWithExamples } from "../../../data/DataModels";
-import { WordService } from "../../../services/WordService";
+import { WordService } from "../../../services/words";
 import { SharedStyles } from "../../../styles/SharedStyles";
 
 export default function EditWordScreen() {

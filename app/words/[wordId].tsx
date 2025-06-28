@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import { ErrorState, LoadingState, ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
-import { WordService } from "../../services/WordService";
+import { WordService } from "../../services/words";
 import {
   Colors,
   getLevelColor,

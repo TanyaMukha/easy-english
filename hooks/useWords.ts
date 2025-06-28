@@ -5,7 +5,7 @@ import {
   WordFilters,
   WordWithExamples,
 } from "../data/DataModels";
-import { WordService, CreateWordRequest, UpdateWordRequest } from "../services/WordService";
+import { WordService, CreateWordRequest, UpdateWordRequest } from "../services/words";
 
 interface WordsState {
   loading: boolean;

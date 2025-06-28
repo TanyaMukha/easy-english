@@ -95,7 +95,7 @@ export interface Word extends BaseEntity, Progress {
 
 export interface Example extends BaseEntity {
   sentence: string;
-  translation?: string;
+  translation?: string | null | undefined;
   wordId: number;
 }
 

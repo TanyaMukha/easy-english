@@ -84,9 +84,9 @@ export class DatabaseService {
       }
 
       const db = SQLite.openDatabaseSync(dbPath);
-      await this.initializeTables(db);
+      await this.initializeTables(db as DatabaseInterface);
       
-      return db;
+      return db as DatabaseInterface;
     } catch (error) {
       console.error("Error creating SQLite database:", error);
       throw error;

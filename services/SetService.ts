@@ -347,11 +347,11 @@ export class SetService {
           updatedAt: now,
         };
 
-        MockDataService.mockSets[setIndex] = updatedSet;
+        MockDataService.mockSets[setIndex] = updatedSet as Set;
 
         return {
           success: true,
-          data: updatedSet,
+          data: updatedSet as Set,
         };
       } else {
         const db = await DatabaseService.getDatabase();

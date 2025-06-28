@@ -269,11 +269,11 @@ export class DictionaryService {
           updatedAt: now,
         };
 
-        MockDataService.mockDictionaries[dictionaryIndex] = updatedDictionary;
+        MockDataService.mockDictionaries[dictionaryIndex] = updatedDictionary as Dictionary;
 
         return {
           success: true,
-          data: updatedDictionary,
+          data: updatedDictionary as Dictionary,
         };
       } else {
         const db = await DatabaseService.getDatabase();
@@ -418,8 +418,8 @@ export class DictionaryService {
             reviewCount,
             lastStudied,
             averageProgress
-          },
-        };
+          } as DictionaryStatsResponse['data'],
+        } as DictionaryStatsResponse;
       } else {
         const db = await DatabaseService.getDatabase();
         
@@ -815,7 +815,7 @@ export class DictionaryService {
         MockDataService.mockDictionaries[dictionaryIndex] = {
           ...MockDataService.mockDictionaries[dictionaryIndex],
           updatedAt: now,
-        };
+        } as Dictionary;
 
         return { success: true };
       } else {
@@ -880,7 +880,7 @@ export class DictionaryService {
             newWords,
             averageRating: Math.round(averageRating * 100) / 100,
             streakDays: Math.floor(Math.random() * 30), // Mock streak
-            lastStudyDate,
+            ...(lastStudyDate ? { lastStudyDate } : {}),
           },
         };
       } else {

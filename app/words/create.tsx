@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { UpdatedWordForm } from "../../components/forms";
 import { ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
-import { WordService } from "../../services/WordService";
+import { WordService } from "../../services/words";
 import { SharedStyles } from "../../styles/SharedStyles";
 
 export default function CreateWordScreen() {
@@ -23,8 +23,8 @@ export default function CreateWordScreen() {
         word: wordData.word,
         transcription: wordData.transcription ?? "",
         translation: wordData.translation || "",
-        explanation: wordData.explanation,
-        definition: wordData.definition,
+        explanation: wordData.explanation ?? "",
+        definition: wordData.definition ?? "",
         partOfSpeech: wordData.partOfSpeech,
         language: wordData.language,
         level: wordData.level,

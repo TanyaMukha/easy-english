@@ -5,7 +5,7 @@ import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { WordWithExamples } from "../../data/DataModels";
-import { WordService } from "../../services/WordService";
+import { WordService } from "../../services/words";
 import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 interface WordActionsModalProps {

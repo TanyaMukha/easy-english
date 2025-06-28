@@ -13,7 +13,7 @@ import {
   CreateWordRequest,
   UpdateWordRequest,
   WordService,
-} from "../services/WordService";
+} from "../services/words";
 import {
   ExampleFormData,
   ValidationErrors,
