@@ -10,9 +10,10 @@ import {
   WordWithExamples,
 } from "../data/DataModels";
 import {
+  WordCrudService,
+  WordValidationService,
   CreateWordRequest,
   UpdateWordRequest,
-  WordService,
 } from "../services/words";
 import {
   ExampleFormData,
@@ -56,9 +57,16 @@ interface UseWordFormReturn {
 }
 
 /**
+ * Enhanced word form hook using modular services architecture
+ * 
  * Single Responsibility: Manage word form state and logic
  * Open/Closed: Can be extended with additional form operations
  * Interface Segregation: Only handles form-related operations
+ * 
+ * This hook now uses the modular services:
+ * - WordCrudService for create/update operations
+ * - WordValidationService for validation logic
+ * - Maintains the same interface for backward compatibility
  */
 export const useWordForm = ({
   word,
@@ -68,7 +76,7 @@ export const useWordForm = ({
 }: UseWordFormParams): UseWordFormReturn => {
   const isEditMode = !!word;
 
-  // Initialize form data
+  // Initialize form data with proper defaults
   const [formData, setFormData] = useState<WordFormData>({
     word: word?.word || "",
     transcription: word?.transcription || "",
@@ -81,6 +89,7 @@ export const useWordForm = ({
     isIrregular: word?.isIrregular || false,
   });
 
+  // Initialize examples data
   const [examples, setExamples] = useState<ExampleFormData[]>(
     word?.examples?.map((ex) => ({
       sentence: ex.sentence,
@@ -88,11 +97,12 @@ export const useWordForm = ({
     })) || [{ sentence: "", translation: "" }],
   );
 
+  // UI and validation state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Reset form when word changes
+  // Reset form when word changes (edit mode)
   useEffect(() => {
     if (word) {
       setFormData({
@@ -106,6 +116,7 @@ export const useWordForm = ({
         level: word.level,
         isIrregular: word.isIrregular || false,
       });
+      
       setExamples(
         word.examples?.map((ex) => ({
           sentence: ex.sentence,
@@ -113,14 +124,17 @@ export const useWordForm = ({
         })) || [{ sentence: "", translation: "" }],
       );
     }
+    
+    // Clear errors when word changes
     setErrors({});
   }, [word]);
 
-  // Computed values
+  // Computed validation state
   const isFormValid =
     WordFormValidator.hasRequiredFields(formData) &&
     Object.keys(errors).length === 0;
 
+  // Track if form has been modified
   const hasChanges =
     formData.word !== (word?.word || "") ||
     formData.transcription !== (word?.transcription || "") ||
@@ -139,11 +153,11 @@ export const useWordForm = ({
         })) || [{ sentence: "", translation: "" }],
       );
 
-  // Actions
+  // Form data update handler with real-time validation
   const updateFormData = (field: keyof WordFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // Clear field error if exists
+    // Clear existing field error
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -152,16 +166,14 @@ export const useWordForm = ({
       });
     }
 
-    // Real-time validation for this field
-    const fieldError = WordFormValidator.getFieldValidationMessage(
-      field,
-      value,
-    );
+    // Perform real-time validation for the field
+    const fieldError = WordFormValidator.getFieldValidationMessage(field, value);
     if (fieldError) {
       setErrors((prev) => ({ ...prev, [field]: fieldError }));
     }
   };
 
+  // Example update handler
   const updateExample = (
     index: number,
     field: "sentence" | "translation",
@@ -170,106 +182,112 @@ export const useWordForm = ({
     setExamples((prev) =>
       prev.map((ex, i) => (i === index ? { ...ex, [field]: value } : ex)),
     );
-
-    // Clear related errors
-    const errorKey = `example_${index}_${field}`;
-    if (errors[errorKey]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[errorKey];
-        return newErrors;
-      });
-    }
   };
 
+  // Add new example entry
   const addExample = () => {
     setExamples((prev) => [...prev, { sentence: "", translation: "" }]);
   };
 
+  // Remove example entry
   const removeExample = (index: number) => {
     if (examples.length > 1) {
       setExamples((prev) => prev.filter((_, i) => i !== index));
-
-      // Clear errors for this example
-      const newErrors = { ...errors };
-      delete newErrors[`example_${index}_sentence`];
-      delete newErrors[`example_${index}_translation`];
-      setErrors(newErrors);
     }
   };
 
+  // Clear specific field error
   const clearFieldError = (field: string) => {
-    if (errors[field]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
   };
 
-  const validateForm = (): boolean => {
-    const validationErrors = WordFormValidator.validateCompleteForm(
-      formData,
-      examples,
-    );
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
-  };
-
+  // Save handler with proper validation and service calls
   const handleSave = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
     try {
+      setIsSubmitting(true);
+      
+      // Validate form data using validation service
+      const validationResult = isEditMode
+        ? WordValidationService.validateUpdateRequest(formData)
+        : WordValidationService.validateCreateRequest(formData as CreateWordRequest);
+
+      if (!validationResult.isValid) {
+        setErrors(validationResult.error as unknown as ValidationErrors);
+        Alert.alert("Validation Error", "Please fix the errors before saving.", [
+          { text: "OK" },
+        ]);
+        return;
+      }
+
+      // Clean and prepare form data
+      const cleanFormData = {
+        ...formData,
+        word: formData.word.trim(),
+        translation: formData.translation.trim(),
+        transcription: formData.transcription?.trim() || undefined,
+        explanation: formData.explanation?.trim() || undefined,
+        definition: formData.definition?.trim() || undefined,
+      };
+
+      // Validate and prepare examples
+      const validExamples = examples
+        .filter((ex) => ex.sentence.trim())
+        .map((ex) => ({
+          sentence: ex.sentence.trim(),
+          translation: ex.translation?.trim() || "",
+        }));
+
+      // Validate examples using validation service
+      const examplesValidation = WordValidationService.validateExamples(validExamples);
+      if (!examplesValidation.isValid) {
+        Alert.alert("Examples Error", examplesValidation.error || "Invalid examples", [
+          { text: "OK" },
+        ]);
+        return;
+      }
+
       let response;
 
-      // Clean form data
-      const cleanFormData = WordFormValidator.cleanFormData(formData);
-      const cleanExamples = WordFormValidator.cleanExamples(examples);
-
-      // Convert to API format
-      const validExamples = cleanExamples.map((ex) => ({
-        sentence: ex.sentence,
-        translation: ex.translation ?? "",
-      }));
-
       if (isEditMode && word) {
-        // Update existing word
+        // Update existing word using WordCrudService
         const updateRequest: UpdateWordRequest = {
           word: cleanFormData.word,
-          transcription: cleanFormData.transcription || undefined,
+          transcription: cleanFormData.transcription,
           translation: cleanFormData.translation,
-          explanation: cleanFormData.explanation || undefined,
-          definition: cleanFormData.definition || undefined,
+          explanation: cleanFormData.explanation,
+          definition: cleanFormData.definition,
           partOfSpeech: cleanFormData.partOfSpeech,
           language: cleanFormData.language,
           level: cleanFormData.level,
           isIrregular: cleanFormData.isIrregular,
           examples: validExamples,
-        };
-        response = await WordService.update(word.id!, updateRequest);
+        } as UpdateWordRequest;
+        
+        response = await WordCrudService.update(word.id!, updateRequest);
       } else {
-        // Create new word
+        // Create new word using WordCrudService
         const createRequest: CreateWordRequest = {
           word: cleanFormData.word,
-          transcription: cleanFormData.transcription || undefined,
+          transcription: cleanFormData.transcription,
           translation: cleanFormData.translation,
-          explanation: cleanFormData.explanation || undefined,
-          definition: cleanFormData.definition || undefined,
+          explanation: cleanFormData.explanation,
+          definition: cleanFormData.definition,
           partOfSpeech: cleanFormData.partOfSpeech,
           language: cleanFormData.language,
           level: cleanFormData.level,
           isIrregular: cleanFormData.isIrregular,
           dictionaryId,
           examples: validExamples,
-        };
-        response = await WordService.create(createRequest);
+        } as CreateWordRequest;
+        
+        response = await WordCrudService.create(createRequest);
       }
 
+      // Handle response
       if (response.success && response.data) {
         onSave(response.data);
       } else {
@@ -278,6 +296,7 @@ export const useWordForm = ({
         ]);
       }
     } catch (error) {
+      console.error("Error saving word:", error);
       Alert.alert("Error", "Failed to save word. Please try again.", [
         { text: "OK" },
       ]);
@@ -286,6 +305,7 @@ export const useWordForm = ({
     }
   };
 
+  // Cancel handler with unsaved changes warning
   const handleCancel = () => {
     if (hasChanges) {
       Alert.alert(

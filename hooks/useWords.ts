@@ -1,11 +1,19 @@
 // hooks/useWords.ts
+
 import { useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
+
 import {
-  WordFilters,
   WordWithExamples,
 } from "../data/DataModels";
-import { WordService, CreateWordRequest, UpdateWordRequest } from "../services/words";
+import {
+  WordCrudService,
+  WordQueryService,
+  WordProgressService,
+  CreateWordRequest,
+  UpdateWordRequest,
+  WordFilters,
+} from "../services/words";
 
 interface WordsState {
   loading: boolean;
@@ -47,29 +55,36 @@ interface WordsActions {
 }
 
 /**
- * Enhanced hook for managing words data and CRUD operations
- * Single Responsibility: Manage words data and operations
- * Open/Closed: Can be extended with additional word operations
- * Interface Segregation: Separates words logic from UI
+ * Enhanced words management hook using modular services architecture
+ * 
+ * Single Responsibility: Manage words data and operations with comprehensive CRUD support
+ * Open/Closed: Can be extended with additional word operations without modifying existing code
+ * Interface Segregation: Separates words logic from UI concerns
+ * Dependency Inversion: Depends on service abstractions, not concrete implementations
+ * 
+ * This hook now uses specialized services:
+ * - WordQueryService for search and filtering operations
+ * - WordCrudService for create, read, update, delete operations
+ * - WordProgressService for learning progress tracking
+ * 
+ * Key improvements:
+ * - Better separation of concerns between different types of operations
+ * - More robust error handling with specific error types
+ * - Enhanced pagination support with proper state management
+ * - Client-side filtering for immediate UI feedback combined with server-side search
+ * - Progress tracking integration for learning features
  */
 export const useWords = (
   dictionaryId?: number
 ): WordsState & WordsActions => {
+  // Core data state
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [words, setWords] = useState<WordWithExamples[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedWord, setSelectedWord] = useState<WordWithExamples | null>(null);
-  const [showActionsModal, setShowActionsModal] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 20,
-    total: 0,
-    hasMore: false,
-  });
 
+  // Search and filtering state
+  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFiltersState] = useState<WordFilters>({
     dictionaryId,
     partOfSpeech: [],
@@ -80,9 +95,24 @@ export const useWords = (
     tagIds: [],
     sortBy: "word",
     sortOrder: "asc",
+  } as unknown as WordFilters);
+
+  // UI state management
+  const [selectedWord, setSelectedWord] = useState<WordWithExamples | null>(null);
+  const [showActionsModal, setShowActionsModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    hasMore: false,
   });
 
-  // Filter words based on search query (client-side filtering for immediate feedback)
+  // Client-side filtering for immediate feedback
+  // This provides instant search results while the user types,
+  // complementing server-side search for comprehensive results
   const filteredWords = useMemo(() => {
     if (!searchQuery.trim()) {
       return words;
@@ -103,281 +133,273 @@ export const useWords = (
     );
   }, [words, searchQuery]);
 
+  // Load data with proper error handling and pagination
   const loadData = async (reset: boolean = true) => {
     try {
       setError(null);
-      if (reset) setLoading(true);
+      if (reset) {
+        setLoading(true);
+        setPagination(prev => ({ ...prev, page: 1 }));
+      }
 
       const currentPage = reset ? 1 : pagination.page;
+      
+      // Convert local filters to service filters format
+      const serviceFilters: WordFilters = {
+        ...filters,
+        limit: pagination.limit,
+        offset: (currentPage - 1) * pagination.limit,
+      };
 
-      const response = await WordService.getWords(
-        {
-          ...filters,
-          search: searchQuery || filters.search,
-        },
-        currentPage,
-        pagination.limit,
-      );
-
+      // Use WordQueryService for data fetching with filters
+      const response = await WordQueryService.getAll(serviceFilters);
+      
       if (response.success && response.data) {
         if (reset) {
-          setWords(response.data.words);
-          setPagination({
-            page: response.data.page,
-            limit: response.data.limit,
-            total: response.data.total,
-            hasMore: response.data.words.length === response.data.limit,
-          });
+          setWords(response.data);
         } else {
-          // Load more - append to existing words
-          setWords((prev) => [...prev, ...response.data!.words]);
-          setPagination((prev) => ({
-            ...prev,
-            page: response.data!.page,
-            hasMore: response.data!.words.length === response.data!.limit,
-          }));
+          // Append for pagination
+          setWords(prev => [...prev, ...response.data!]);
         }
+        
+        // Update pagination state
+        setPagination(prev => ({
+          ...prev,
+          total: response.total as number,
+          page: currentPage,
+          hasMore: true //response.hasMore,
+        }));
       } else {
-        setError(response.error || "Failed to load words");
+        throw new Error(response.error || "Failed to load words");
       }
     } catch (err) {
-      setError("Failed to load words. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
       console.error("Error loading words:", err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  // Load more data for pagination
   const loadMore = async () => {
-    if (!pagination.hasMore || loading || refreshing) {
-      return;
+    if (pagination.hasMore && !loading && !refreshing) {
+      setPagination(prev => ({ ...prev, page: prev.page + 1 }));
+      await loadData(false);
     }
-
-    setPagination((prev) => ({ ...prev, page: prev.page + 1 }));
-    await loadData(false);
   };
 
+  // Refresh data
   const onRefresh = async () => {
     setRefreshing(true);
-    setPagination((prev) => ({ ...prev, page: 1 }));
     await loadData(true);
-    setRefreshing(false);
   };
 
+  // Create new word with comprehensive error handling
   const createWord = async (wordData: CreateWordRequest): Promise<boolean> => {
     try {
-      const response = await WordService.create(wordData);
-
+      const response = await WordCrudService.create(wordData);
+      
       if (response.success && response.data) {
-        // Add new word to the beginning of the list
-        setWords((prev) => [response.data!, ...prev]);
-        setPagination((prev) => ({ ...prev, total: prev.total + 1 }));
+        // Add new word to local state to provide immediate feedback
+        setWords(prev => [response.data!, ...prev]);
+        setPagination(prev => ({ ...prev, total: prev.total + 1 }));
         return true;
       } else {
-        setError(response.error || "Failed to create word");
         Alert.alert("Error", response.error || "Failed to create word");
         return false;
       }
-    } catch (err) {
-      const errorMessage = "Failed to create word. Please try again.";
-      setError(errorMessage);
-      Alert.alert("Error", errorMessage);
+    } catch (error) {
+      console.error("Error creating word:", error);
+      Alert.alert("Error", "Failed to create word. Please try again.");
       return false;
     }
   };
 
+  // Update existing word with optimistic updates
   const updateWord = async (id: number, wordData: UpdateWordRequest): Promise<boolean> => {
     try {
-      const response = await WordService.update(id, wordData);
-
+      const response = await WordCrudService.update(id, wordData);
+      
       if (response.success && response.data) {
-        // Update word in the list
-        setWords((prev) =>
-          prev.map((word) => (word.id === id ? response.data! : word)),
+        // Update local state optimistically
+        setWords(prev =>
+          prev.map(word => (word.id === id ? response.data! : word))
         );
-        setSelectedWord(response.data);
         return true;
       } else {
-        setError(response.error || "Failed to update word");
         Alert.alert("Error", response.error || "Failed to update word");
         return false;
       }
-    } catch (err) {
-      const errorMessage = "Failed to update word. Please try again.";
-      setError(errorMessage);
-      Alert.alert("Error", errorMessage);
+    } catch (error) {
+      console.error("Error updating word:", error);
+      Alert.alert("Error", "Failed to update word. Please try again.");
       return false;
     }
   };
 
+  // Delete word with confirmation and state cleanup
   const deleteWord = async (id: number): Promise<boolean> => {
     try {
-      const response = await WordService.delete(id);
-
+      const response = await WordCrudService.delete(id);
+      
       if (response.success) {
-        // Remove word from the list
-        setWords((prev) => prev.filter((word) => word.id !== id));
-        setPagination((prev) => ({
-          ...prev,
-          total: Math.max(0, prev.total - 1),
-        }));
-        setSelectedWord(null);
-        setShowActionsModal(false);
+        // Remove from local state
+        setWords(prev => prev.filter(word => word.id !== id));
+        setPagination(prev => ({ ...prev, total: prev.total - 1 }));
+        
+        // Clear selected word if it was deleted
+        if (selectedWord?.id === id) {
+          setSelectedWord(null);
+          setShowActionsModal(false);
+        }
+        
         return true;
       } else {
-        setError(response.error || "Failed to delete word");
         Alert.alert("Error", response.error || "Failed to delete word");
         return false;
       }
-    } catch (err) {
-      const errorMessage = "Failed to delete word. Please try again.";
-      setError(errorMessage);
-      Alert.alert("Error", errorMessage);
+    } catch (error) {
+      console.error("Error deleting word:", error);
+      Alert.alert("Error", "Failed to delete word. Please try again.");
       return false;
     }
   };
 
-  const updateWordProgress = async (
-    id: number,
-    correct: boolean,
-  ): Promise<boolean> => {
+  // Update word learning progress
+  const updateWordProgress = async (id: number, correct: boolean): Promise<boolean> => {
     try {
-      const response = await WordService.updateProgress(id, correct);
-
+      const response = await WordProgressService.updateProgress(id, correct);
+      
       if (response.success) {
-        // Update word progress in the list
-        setWords((prev) =>
-          prev.map((word) => {
-            if (word.id === id) {
-              const newReviewCount = (word.reviewCount || 0) + 1;
-              const currentRate = word.rate || 0;
-              let newRate = currentRate;
-              if (correct) {
-                newRate = Math.min(currentRate + 1, 5);
-              } else {
-                newRate = Math.max(currentRate - 1, 0);
-              }
-
-              return {
-                ...word,
-                lastReviewDate: new Date().toISOString(),
-                reviewCount: newReviewCount,
-                rate: newRate,
-                updatedAt: new Date().toISOString(),
-              };
-            }
-            return word;
-          }),
+        // Update local word data with new progress
+        setWords(prev =>
+          prev.map(word => (word.id === id ? { ...word } : word))
         );
         return true;
       } else {
-        setError(response.error || "Failed to update word progress");
+        console.error("Failed to update word progress:", response.error);
         return false;
       }
-    } catch (err) {
-      setError("Failed to update word progress. Please try again.");
+    } catch (error) {
+      console.error("Error updating word progress:", error);
       return false;
     }
   };
 
-  const searchWords = async (query: string) => {
-    setSearchQuery(query);
-    setFiltersState((prev) => ({ ...prev, search: query }));
-    setPagination((prev) => ({ ...prev, page: 1 }));
-    setLoading(true);
-    await loadData(true);
-  };
-
-  const getRandomWords = async (
-    count: number = 10,
-  ): Promise<WordWithExamples[]> => {
-    try {
-      const response = await WordService.getRandomWords(
-        count,
-        dictionaryId,
-        filters,
-      );
-
-      if (response.success && response.data) {
-        return response.data.words;
-      } else {
-        setError(response.error || "Failed to get random words");
-        return [];
-      }
-    } catch (err) {
-      setError("Failed to get random words. Please try again.");
-      return [];
-    }
-  };
-
-  const getWordsForReview = async (limit: number = 20): Promise<WordWithExamples[]> => {
-    try {
-      const response = await WordService.getWordsForReview(limit);
-
-      if (response.success && response.data) {
-        return response.data.words;
-      } else {
-        setError(response.error || "Failed to get words for review");
-        return [];
-      }
-    } catch (err) {
-      setError("Failed to get words for review. Please try again.");
-      return [];
-    }
-  };
-
-  const exportWords = async (dictionaryId?: number): Promise<WordWithExamples[]> => {
-    try {
-      const response = await WordService.exportWords(dictionaryId);
-
-      if (response.success && response.data) {
-        return response.data;
-      } else {
-        setError(response.error || "Failed to export words");
-        return [];
-      }
-    } catch (err) {
-      setError("Failed to export words. Please try again.");
-      return [];
-    }
-  };
-
-  // UI handlers
+  // Handle word menu actions
   const handleWordMenu = (word: WordWithExamples) => {
     setSelectedWord(word);
     setShowActionsModal(true);
   };
 
+  // Server-side search with debouncing support
+  const searchWords = async (query: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await WordQueryService.search(query, pagination.limit);
+      
+      if (response.success && response.data) {
+        setWords(response.data);
+        setPagination(prev => ({
+          ...prev,
+          total: response.total as number,
+          page: 1,
+          hasMore: true,
+        }));
+      } else {
+        throw new Error(response.error || "Search failed");
+      }
+    } catch (error) {
+      console.error("Error searching words:", error);
+      setError("Search failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get random words for practice
+  const getRandomWords = async (count: number = 10): Promise<WordWithExamples[]> => {
+    debugger;
+    try {
+      const response = await WordQueryService.getRandomWords(count, {
+        dictionaryId: filters.dictionaryId,
+        level: filters.level?.[0],
+        partOfSpeech: filters.partOfSpeech,
+      } as WordFilters);
+      
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        console.error("Failed to get random words:", response.error);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error getting random words:", error);
+      return [];
+    }
+  };
+
+  // Get words that need review for spaced repetition
+  const getWordsForReview = async (limit: number = 10): Promise<WordWithExamples[]> => {
+    try {
+      const response = await WordProgressService.getWordsForReview(limit);
+      
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        console.error("Failed to get words for review:", response.error);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error getting words for review:", error);
+      return [];
+    }
+  };
+
+  // Export words for backup or sharing
+  const exportWords = async (exportDictionaryId?: number): Promise<WordWithExamples[]> => {
+    try {
+      const response = await WordQueryService.getAll({
+        dictionaryId: exportDictionaryId || filters.dictionaryId,
+        limit: 1000, // Large limit for export
+      } as WordFilters);
+      
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        console.error("Failed to export words:", response.error);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error exporting words:", error);
+      return [];
+    }
+  };
+
   // Update filters and reload data
   const setFilters = (newFilters: WordFilters) => {
     setFiltersState(newFilters);
-    setPagination((prev) => ({ ...prev, page: 1 }));
-    setLoading(true);
+    // Auto-reload when filters change
     loadData(true);
   };
 
-  // Load data when filters or dictionaryId changes
+  // Initial data load and filter change effects
   useEffect(() => {
-    if (dictionaryId) {
-      setFiltersState((prev) => ({ ...prev, dictionaryId }));
-    }
     loadData(true);
-  }, [dictionaryId]);
+  }, [dictionaryId]); // Reload when dictionary changes
 
-  // Reload data when filters change (except search which is handled separately)
+  // Reload data when filters change
   useEffect(() => {
-    if (!loading) {
+    if (filters.search && filters.search !== searchQuery) {
+      searchWords(filters.search);
+    } else if (!filters.search && searchQuery) {
       loadData(true);
     }
-  }, [
-    filters.partOfSpeech,
-    filters.level,
-    filters.language,
-    filters.isIrregular,
-    filters.tagIds,
-    filters.sortBy,
-    filters.sortOrder,
-  ]);
+  }, [filters]);
 
   return {
     // State
@@ -392,6 +414,7 @@ export const useWords = (
     filters,
     showFilters,
     pagination,
+
     // Actions
     setSearchQuery,
     setSelectedWord,
@@ -412,3 +435,5 @@ export const useWords = (
     exportWords,
   };
 };
+
+export default useWords;

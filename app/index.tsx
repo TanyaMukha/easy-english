@@ -31,6 +31,8 @@ export default function HomeScreen() {
 
   const { getRandomWords, getWordsForReview } = useWords();
 
+  debugger;
+
   // Navigation handlers
   const handleWordPress = (word: WordWithExamples) => {
     router.push(`/words/${word.id}`);
