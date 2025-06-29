@@ -77,6 +77,7 @@ export interface Progress {
 // Core entities
 export interface Dictionary extends BaseEntity {
   title: string;
+  description?: string | undefined;
 }
 
 export interface Word extends BaseEntity, Progress {
@@ -334,17 +335,17 @@ export interface DailyProgress {
   accuracy: number; // percentage
 }
 
-// export interface UserStatistics {
-//   totalWords: number;
-//   wordsLearned: number;
-//   currentStreak: number;
-//   longestStreak: number;
-//   totalTimeSpent: number;
-//   averageAccuracy: number;
-//   dailyProgress: DailyProgress[];
-//   levelDistribution: Record<Level, number>;
-//   partOfSpeechDistribution: Record<PartOfSpeech, number>;
-// }
+export interface UserStatistics {
+  totalWords: number;
+  wordsLearned: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalTimeSpent: number;
+  averageAccuracy: number;
+  dailyProgress: DailyProgress[];
+  levelDistribution?: Record<Level, number>;
+  partOfSpeechDistribution?: Record<PartOfSpeech, number>;
+}
 
 // // Settings and preferences
 // export interface UserSettings {
