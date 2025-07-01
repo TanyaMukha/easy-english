@@ -1,3 +1,4 @@
+// metro.config.cjs - Updated for SQL.js support
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
@@ -7,11 +8,11 @@ const config = getDefaultConfig(__dirname);
 // Enable web support
 config.resolver.platforms = ['ios', 'android', 'native', 'web'];
 
-// Configure aliases for your actual project structure (WITHOUT src/)
+// Configure aliases for your project structure
 config.resolver.alias = {
   // Ensure react-native-web compatibility
   'react-native': 'react-native-web',
-  // Add path aliases for cleaner imports (based on your real structure)
+  // Add path aliases for cleaner imports
   '@': path.resolve(__dirname, '.'),
   '@/components': path.resolve(__dirname, 'components'),
   '@/styles': path.resolve(__dirname, 'styles'),
@@ -25,13 +26,19 @@ config.resolver.alias = {
 // Ensure proper file extensions for web
 config.resolver.sourceExts.push('web.js', 'web.jsx', 'web.ts', 'web.tsx');
 
-// Configure transformer for TypeScript and other file types
+// Add support for WebAssembly files (needed for SQL.js)
+config.resolver.assetExts.push('wasm');
+
+// Configure transformer for TypeScript and WebAssembly files
 config.transformer.getTransformOptions = async () => ({
   transform: {
     experimentalImportSupport: false,
     inlineRequires: false,
   },
 });
+
+// Add specific handling for SQL.js WebAssembly module
+config.resolver.resolverMainFields = ['browser', 'main'];
 
 // Ignore specific directories to improve build performance
 config.resolver.blockList = [
@@ -43,5 +50,14 @@ config.resolver.blockList = [
 
 // Enable symlinks resolution (useful for monorepos)
 config.resolver.unstable_enableSymlinks = true;
+
+// Web-specific configuration for SQL.js
+if (process.env.EXPO_PUBLIC_PLATFORM === 'web') {
+  // Ensure WebAssembly files are properly handled in web builds
+  config.transformer.minifierConfig = {
+    // Disable minification for WebAssembly files
+    filter: (filename) => !filename.endsWith('.wasm'),
+  };
+}
 
 module.exports = config;

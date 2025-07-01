@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { router } from "expo-router";
+// import { DatabaseService } from "services";
 
 import { QuickStatsCard } from "../components/cards";
 import {
@@ -14,6 +16,7 @@ import { ErrorState, HomeHeader, LoadingState } from "../components/ui";
 import { WordWithExamples } from "../data/DataModels";
 import { useHomeData } from "../hooks/useHomeData";
 import { useWords } from "../hooks/useWords";
+import { databaseTester } from "../services/database/DatabaseTester";
 import { Colors, SharedStyles, Spacing } from "../styles/SharedStyles";
 
 export default function HomeScreen() {
@@ -31,7 +34,57 @@ export default function HomeScreen() {
 
   const { getRandomWords, getWordsForReview } = useWords();
 
-  debugger;
+  // Функція для запуску тестів
+  const runDatabaseTests = async () => {
+    try {
+      console.log("🚀 Initiating comprehensive database testing...");
+
+      const testResults = await databaseTester.runAllTests();
+
+      if (testResults.failedTests === 0) {
+        console.log(
+          "🎉 All database tests passed! Your Universal SQLite implementation is working perfectly.",
+        );
+        console.log(`Platform: ${testResults.platform}`);
+        console.log(`Total tests: ${testResults.totalTests}`);
+        console.log(`Duration: ${testResults.totalDuration}ms`);
+      } else {
+        console.log(
+          `⚠️ Some tests failed. ${testResults.passedTests}/${testResults.totalTests} tests passed.`,
+        );
+        console.log("Review the detailed results above for specific issues.");
+      }
+
+      return testResults;
+    } catch (error) {
+      console.error("💥 Critical testing failure:", error);
+      return null;
+    }
+  };
+
+  // У вашому головному компоненті, додайте useEffect для запуску тестів
+  useEffect(() => {
+    // Запускаємо тести після монтування компонента
+    const timer = setTimeout(() => {
+      runDatabaseTests();
+    }, 1000); // Невелика затримка для повного завантаження додатку
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // useEffect(() => {
+  //   const initializeDatabase = async () => {
+  //     try {
+  //       await DatabaseService.initialize();
+  //       await DatabaseService.initializeSchema();
+  //       console.log("Database ready for both platforms");
+  //     } catch (error) {
+  //       console.error("Database initialization failed:", error);
+  //     }
+  //   };
+
+  //   initializeDatabase();
+  // }, []);
 
   // Navigation handlers
   const handleWordPress = (word: WordWithExamples) => {

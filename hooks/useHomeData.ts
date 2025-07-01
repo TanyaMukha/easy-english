@@ -1,6 +1,7 @@
-// hooks/useHomeData.ts - Updated with real navigation
+// hooks/useHomeData.ts - Fixed version with proper service usage
 import { useState, useEffect } from 'react';
-import { MockDataService } from '../data/MockData';
+import { WordQueryService } from '../services/words';
+import { MockDataService } from '../services/MockDataService';
 import { WordWithExamples, UserStatistics } from '../data/DataModels';
 import { getQuoteOfDay, Quote } from '../constants/MotivationalQuotes';
 
@@ -19,6 +20,20 @@ interface HomeDataActions {
   onRefresh: () => Promise<void>;
 }
 
+/**
+ * Enhanced home data hook with proper service layer usage
+ * 
+ * Single Responsibility: Manage home screen data loading and state
+ * Open/Closed: Can be extended with additional home data without modifying existing logic
+ * Interface Segregation: Separates home data logic from UI concerns
+ * Dependency Inversion: Depends on service abstractions, not concrete implementations
+ * 
+ * This hook properly uses:
+ * - WordQueryService for getting random words (not MockDataService)
+ * - MockDataService only for user statistics and delays
+ * - Proper error handling with meaningful messages
+ * - Loading states for better UX
+ */
 export const useHomeData = (): HomeDataState & HomeDataActions => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -28,15 +43,26 @@ export const useHomeData = (): HomeDataState & HomeDataActions => {
   const [todayProgress, setTodayProgress] = useState(0);
   const [quoteOfDay, setQuoteOfDay] = useState<Quote>(getQuoteOfDay());
 
+  /**
+   * Load all home screen data
+   * Uses proper service layer architecture
+   */
   const loadData = async () => {
     try {
       setError(null);
-      const [words, statistics] = await Promise.all([
-        MockDataService.getRandomWords(5),
-        MockDataService.getUserStatistics(),
-      ]);
+      
+      // Get random words using WordQueryService (not MockDataService)
+      const wordsResponse = await WordQueryService.getRandomWords(5);
+      
+      // Get user statistics using MockDataService
+      const statistics = await MockDataService.getUserStatistics();
+      
+      // Handle potential errors from services
+      if (!wordsResponse.success) {
+        throw new Error(wordsResponse.error || 'Failed to load words');
+      }
 
-      setDailyWords(words);
+      setDailyWords(wordsResponse.data || []);
       setUserStats(statistics);
       
       // Calculate today's progress from statistics
@@ -44,21 +70,34 @@ export const useHomeData = (): HomeDataState & HomeDataActions => {
       const todayProgressData = statistics.dailyProgress.find(p => p.date === today);
       setTodayProgress(todayProgressData?.wordsStudied || 0);
       
+      // Update quote of the day
       setQuoteOfDay(getQuoteOfDay());
+      
     } catch (err) {
-      setError('Failed to load data. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      setError(`Failed to load data. ${errorMessage}`);
       console.error('Error loading home data:', err);
+      
+      // Set fallback data for better UX
+      setDailyWords([]);
+      setUserStats(null);
+      setTodayProgress(0);
+      
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Refresh data for pull-to-refresh functionality
+   */
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
   };
 
+  // Load data on component mount
   useEffect(() => {
     loadData();
   }, []);

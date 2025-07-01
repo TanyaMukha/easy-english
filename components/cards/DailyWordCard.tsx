@@ -26,7 +26,7 @@ const DailyWordCard: React.FC<DailyWordCardProps> = ({ word, onPress }) => {
     onPress(word);
   };
 
-  const firstExample = word.examples.length > 0 ? word.examples[0] : null;
+  const firstExample = word.examples?.length > 0 ? word.examples[0] : null;
 
   return (
     <TouchableOpacity
