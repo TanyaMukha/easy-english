@@ -410,52 +410,52 @@ export class SQLiteUniversalService {
     }
   }
 
-  /**
-   * Execute SQL on web platform
-   */
-  private async executeWebSQL<T>(
-    sql: string,
-    params: any[],
-  ): Promise<DatabaseResult<T>> {
-    const cleanedParams = this.cleanSQLParameters(params);
-    const statement = this.webDatabase.prepare(sql);
+  // /**
+  //  * Execute SQL on web platform
+  //  */
+  // private async executeWebSQL<T>(
+  //   sql: string,
+  //   params: any[],
+  // ): Promise<DatabaseResult<T>> {
+  //   const cleanedParams = this.cleanSQLParameters(params);
+  //   const statement = this.webDatabase.prepare(sql);
 
-    try {
-      if (sql.trim().toLowerCase().startsWith("select")) {
-        const results: T[] = [];
+  //   try {
+  //     if (sql.trim().toLowerCase().startsWith("select")) {
+  //       const results: T[] = [];
 
-        if (cleanedParams.length > 0) {
-          statement.bind(cleanedParams);
-        }
+  //       if (cleanedParams.length > 0) {
+  //         statement.bind(cleanedParams);
+  //       }
 
-        while (statement.step()) {
-          results.push(statement.getAsObject() as T);
-        }
+  //       while (statement.step()) {
+  //         results.push(statement.getAsObject() as T);
+  //       }
 
-        return {
-          success: true,
-          data: results,
-          rowsAffected: results.length,
-        };
-      } else {
-        const result = statement.run(cleanedParams);
-        await this.saveWebDatabase();
+  //       return {
+  //         success: true,
+  //         data: results,
+  //         rowsAffected: results.length,
+  //       };
+  //     } else {
+  //       const result = statement.run(cleanedParams);
+  //       await this.saveWebDatabase();
 
-        // Правильно обробляємо insertId
-        const insertId = result.lastInsertRowid;
-        const rowsModified = this.webDatabase.getRowsModified();
+  //       // Правильно обробляємо insertId
+  //       const insertId = result.lastInsertRowid;
+  //       const rowsModified = this.webDatabase.getRowsModified();
 
-        return {
-          success: true,
-          rowsAffected: rowsModified,
-          // Переконуємося, що insertId є числом або undefined
-          insertId: typeof insertId === "number" ? insertId : 0,
-        };
-      }
-    } finally {
-      statement.free();
-    }
-  }
+  //       return {
+  //         success: true,
+  //         rowsAffected: rowsModified,
+  //         // Переконуємося, що insertId є числом або undefined
+  //         insertId: typeof insertId === "number" ? insertId : 0,
+  //       };
+  //     }
+  //   } finally {
+  //     statement.free();
+  //   }
+  // }
 
   /**
    * Clean SQL parameters to remove undefined values and ensure compatibility with WebAssembly
@@ -576,6 +576,184 @@ export class SQLiteUniversalService {
     } catch (error) {
       console.error("Failed to get database info:", error);
       return baseInfo;
+    }
+  }
+
+  /**
+   * Execute multiple SQL statements in a transaction
+   * Ensures atomicity - either all operations succeed or all are rolled back
+   */
+  async executeTransaction<T>(
+    callback: TransactionCallback<T>,
+  ): Promise<DatabaseResult<T>> {
+    // Ensure database is fully initialized before allowing operations
+    if (this.initState !== InitializationState.FULLY_INITIALIZED) {
+      await this.initialize();
+    }
+
+    try {
+      console.log("🔄 Starting database transaction...");
+
+      if (Platform.OS === "web") {
+        return await this.executeWebTransaction(callback);
+      } else {
+        return await this.executeNativeTransaction(callback);
+      }
+    } catch (error) {
+      console.error("❌ Transaction failed:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Transaction failed",
+      };
+    }
+  }
+
+  /**
+   * Execute transaction on web platform (SQL.js)
+   */
+  private async executeWebTransaction<T>(
+    callback: TransactionCallback<T>,
+  ): Promise<DatabaseResult<T>> {
+    if (!this.webDatabase) {
+      throw new Error("Web database not initialized");
+    }
+
+    // SQL.js doesn't have explicit transaction support, but we can simulate it
+    // by creating a savepoint and rolling back if needed
+    const savepoint = `sp_${Date.now()}`;
+
+    try {
+      // Create savepoint
+      await this.executeDirectly(`SAVEPOINT ${savepoint}`, []);
+
+      // Create transaction executor
+      const transactionExecute = async (
+        sql: string,
+        params: any[] = [],
+      ): Promise<DatabaseResult> => {
+        return this.executeWebSQL(sql, params);
+      };
+
+      // Execute callback
+      const result = await callback(transactionExecute);
+
+      // Release savepoint (commit)
+      await this.executeDirectly(`RELEASE SAVEPOINT ${savepoint}`, []);
+
+      // Save database after successful transaction
+      await this.saveWebDatabase();
+
+      console.log("✅ Web transaction completed successfully");
+
+      return {
+        success: true,
+        data: [result],
+      };
+    } catch (error) {
+      // Rollback to savepoint
+      try {
+        await this.executeDirectly(`ROLLBACK TO SAVEPOINT ${savepoint}`, []);
+        await this.executeDirectly(`RELEASE SAVEPOINT ${savepoint}`, []);
+      } catch (rollbackError) {
+        console.error("❌ Failed to rollback transaction:", rollbackError);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Execute transaction on native platform (Expo SQLite)
+   */
+  private async executeNativeTransaction<T>(
+    callback: TransactionCallback<T>,
+  ): Promise<DatabaseResult<T>> {
+    if (!this.nativeDatabase) {
+      throw new Error("Native database not initialized");
+    }
+
+    try {
+      // Use Expo SQLite's withTransactionAsync method
+      const result = await this.nativeDatabase.withTransactionAsync(
+        async () => {
+          // Create transaction executor
+          const transactionExecute = async (
+            sql: string,
+            params: any[] = [],
+          ): Promise<DatabaseResult> => {
+            return this.executeNativeSQL(sql, params);
+          };
+
+          // Execute callback and return result
+          return await callback(transactionExecute);
+        },
+      );
+
+      console.log("✅ Native transaction completed successfully");
+
+      return {
+        success: true,
+        data: [result],
+      };
+    } catch (error) {
+      // Expo SQLite automatically rolls back on error
+      throw error;
+    }
+  }
+
+  // Also add this method to complete the web SQL implementation:
+
+  /**
+   * Complete executeWebSQL method with proper insertId handling
+   */
+  private async executeWebSQL<T>(
+    sql: string,
+    params: any[],
+  ): Promise<DatabaseResult<T>> {
+    const cleanedParams = this.cleanSQLParameters(params);
+    const statement = this.webDatabase.prepare(sql);
+
+    try {
+      if (sql.trim().toLowerCase().startsWith("select")) {
+        const results: T[] = [];
+
+        if (cleanedParams.length > 0) {
+          statement.bind(cleanedParams);
+        }
+
+        while (statement.step()) {
+          results.push(statement.getAsObject() as T);
+        }
+
+        return {
+          success: true,
+          data: results,
+          rowsAffected: results.length,
+        };
+      } else {
+        const result = statement.run(cleanedParams);
+
+        // Save database after modification
+        if (
+          sql.trim().toLowerCase().startsWith("insert") ||
+          sql.trim().toLowerCase().startsWith("update") ||
+          sql.trim().toLowerCase().startsWith("delete")
+        ) {
+          await this.saveWebDatabase();
+        }
+
+        // Handle insertId properly
+        const insertId = result.lastInsertRowid;
+        const rowsModified = this.webDatabase.getRowsModified();
+
+        return {
+          success: true,
+          rowsAffected: rowsModified,
+          insertId: typeof insertId === "number" ? insertId : 0,
+        };
+      }
+    } finally {
+      statement.free();
     }
   }
 }
