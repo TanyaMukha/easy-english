@@ -5,7 +5,7 @@ import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { WordWithExamples } from "../../data/DataModels";
-import { WordService } from "../../services/words";
+import { wordService } from "../../services/database";
 import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 interface WordActionsModalProps {
@@ -93,7 +93,7 @@ const WordActionsModal: React.FC<WordActionsModalProps> = ({
     onClose();
 
     try {
-      const response = await WordService.updateProgress(word.id!, true);
+      const response = await wordService.updateWordProgress(word.id!, 5);
       if (response.success) {
         Alert.alert("Success", "Word marked as learned!", [{ text: "OK" }]);
       } else {
@@ -123,7 +123,7 @@ const WordActionsModal: React.FC<WordActionsModalProps> = ({
 
   const confirmDelete = async () => {
     try {
-      const response = await WordService.delete(word.id!);
+      const response = await wordService.deleteWord(word.id!);
 
       if (response.success) {
         onDelete(word);

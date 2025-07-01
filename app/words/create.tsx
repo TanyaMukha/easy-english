@@ -5,8 +5,9 @@ import { router, useLocalSearchParams } from "expo-router";
 import { UpdatedWordForm } from "../../components/forms";
 import { ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
-import { WordService } from "../../services/words";
+import { wordService } from "../../services/database";
 import { SharedStyles } from "../../styles/SharedStyles";
+import guid, { generateGuid } from "utils/guid";
 
 export default function CreateWordScreen() {
   const { dictionaryId } = useLocalSearchParams<{ dictionaryId?: string }>();
@@ -21,6 +22,7 @@ export default function CreateWordScreen() {
       // Convert WordWithExamples to CreateWordRequest format
       const createRequest = {
         word: wordData.word,
+        guid: generateGuid(),
         transcription: wordData.transcription ?? "",
         translation: wordData.translation || "",
         explanation: wordData.explanation ?? "",
@@ -31,17 +33,18 @@ export default function CreateWordScreen() {
         isIrregular: wordData.isIrregular,
         dictionaryId: targetDictionaryId,
         examples: wordData.examples?.map((ex) => ({
+          guid: ex.guid || generateGuid(),
           sentence: ex.sentence,
           translation: ex.translation ?? "",
         })),
       };
 
-      const response = await WordService.create(createRequest);
+      const response = await wordService.createWord(createRequest);
 
       if (response.success && response.data) {
         Alert.alert(
           "Success",
-          `Word "${response.data.word}" has been created successfully!`,
+          `Word "${response.data?.[0]?.word}" has been created successfully!`,
           [
             {
               text: "Add Another",
@@ -56,7 +59,7 @@ export default function CreateWordScreen() {
               text: "View Word",
               style: "default",
               onPress: () => {
-                router.replace(`/words/${response.data!.id}`);
+                router.replace(`/words/${response.data?.[0]?.id}`);
               },
             },
             {

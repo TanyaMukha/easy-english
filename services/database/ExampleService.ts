@@ -1,17 +1,17 @@
 // services/database/ExampleService.ts
 /**
  * Example Service - Manages example sentences for words
- * 
+ *
  * This service handles CRUD operations for word examples including:
  * - Creating new examples for words
  * - Updating existing examples
  * - Retrieving examples by various criteria
  * - Deleting examples
- * 
+ *
  * Follows SOLID principles and provides clean interface for example management
  */
 
-import { SQLiteUniversal, DatabaseResult } from './SQLiteUniversalService';
+import { DatabaseResult, SQLiteUniversal } from "./SQLiteUniversalService";
 
 export interface Example {
   id?: number;
@@ -56,13 +56,22 @@ export class ExampleService {
   /**
    * Create a new example for a word
    */
-  async createExample(request: ExampleCreateRequest): Promise<DatabaseResult<Example>> {
+  async createExample(
+    request: ExampleCreateRequest,
+  ): Promise<DatabaseResult<Example>> {
     const now = new Date().toISOString();
-    
+
     const result = await SQLiteUniversal.execute<Example>(
       `INSERT INTO examples (guid, sentence, translation, wordId, createdAt, updatedAt) 
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [request.guid, request.sentence, request.translation || null, request.wordId, now, now]
+      [
+        request.guid,
+        request.sentence,
+        request.translation || null,
+        request.wordId,
+        now,
+        now,
+      ],
     );
 
     if (!result.success) {
@@ -76,11 +85,14 @@ export class ExampleService {
   /**
    * Create multiple examples for a word in a transaction
    */
-  async createExamplesForWord(wordId: number, examples: Omit<ExampleCreateRequest, 'wordId'>[]): Promise<DatabaseResult<Example[]>> {
+  async createExamplesForWord(
+    wordId: number,
+    examples: Omit<ExampleCreateRequest, "wordId">[],
+  ): Promise<DatabaseResult<Example[]>> {
     if (examples.length === 0) {
       return {
         success: true,
-        data: []
+        data: [],
       };
     }
 
@@ -92,7 +104,14 @@ export class ExampleService {
         const result = await execute(
           `INSERT INTO examples (guid, sentence, translation, wordId, createdAt, updatedAt) 
            VALUES (?, ?, ?, ?, ?, ?)`,
-          [example.guid, example.sentence, example.translation || null, wordId, now, now]
+          [
+            example.guid,
+            example.sentence,
+            example.translation || null,
+            wordId,
+            now,
+            now,
+          ],
         );
 
         if (!result.success) {
@@ -101,11 +120,15 @@ export class ExampleService {
 
         // Get the created example
         const exampleResult = await execute(
-          'SELECT * FROM examples WHERE id = ?',
-          [result.insertId!]
+          "SELECT * FROM examples WHERE id = ?",
+          [result.insertId!],
         );
 
-        if (exampleResult.success && exampleResult.data && exampleResult.data.length > 0) {
+        if (
+          exampleResult.success &&
+          exampleResult.data &&
+          exampleResult.data.length > 0
+        ) {
           createdExamples.push(exampleResult.data[0]);
         }
       }
@@ -119,8 +142,8 @@ export class ExampleService {
    */
   async getExampleById(id: number): Promise<DatabaseResult<Example>> {
     return SQLiteUniversal.execute<Example>(
-      'SELECT * FROM examples WHERE id = ?',
-      [id]
+      "SELECT * FROM examples WHERE id = ?",
+      [id],
     );
   }
 
@@ -129,8 +152,8 @@ export class ExampleService {
    */
   async getExampleByGuid(guid: string): Promise<DatabaseResult<Example>> {
     return SQLiteUniversal.execute<Example>(
-      'SELECT * FROM examples WHERE guid = ?',
-      [guid]
+      "SELECT * FROM examples WHERE guid = ?",
+      [guid],
     );
   }
 
@@ -139,15 +162,19 @@ export class ExampleService {
    */
   async getExamplesByWordId(wordId: number): Promise<DatabaseResult<Example>> {
     return SQLiteUniversal.execute<Example>(
-      'SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt',
-      [wordId]
+      "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
+      [wordId],
     );
   }
 
   /**
    * Get examples with word information
    */
-  async getExamplesWithWord(wordId?: number, limit?: number, offset?: number): Promise<DatabaseResult<ExampleWithWord>> {
+  async getExamplesWithWord(
+    wordId?: number,
+    limit?: number,
+    offset?: number,
+  ): Promise<DatabaseResult<ExampleWithWord>> {
     let query = `
       SELECT 
         e.*,
@@ -160,18 +187,18 @@ export class ExampleService {
     const params: any[] = [];
 
     if (wordId !== undefined) {
-      query += ' WHERE e.wordId = ?';
+      query += " WHERE e.wordId = ?";
       params.push(wordId);
     }
 
-    query += ' ORDER BY e.createdAt DESC';
+    query += " ORDER BY e.createdAt DESC";
 
     if (limit !== undefined) {
-      query += ' LIMIT ?';
+      query += " LIMIT ?";
       params.push(limit);
-      
+
       if (offset !== undefined) {
-        query += ' OFFSET ?';
+        query += " OFFSET ?";
         params.push(offset);
       }
     }
@@ -182,7 +209,11 @@ export class ExampleService {
   /**
    * Search examples by text content
    */
-  async searchExamples(searchTerm: string, wordId?: number, limit?: number): Promise<DatabaseResult<ExampleWithWord>> {
+  async searchExamples(
+    searchTerm: string,
+    wordId?: number,
+    limit?: number,
+  ): Promise<DatabaseResult<ExampleWithWord>> {
     let query = `
       SELECT 
         e.*,
@@ -197,14 +228,14 @@ export class ExampleService {
     const params: any[] = [searchPattern, searchPattern];
 
     if (wordId !== undefined) {
-      query += ' AND e.wordId = ?';
+      query += " AND e.wordId = ?";
       params.push(wordId);
     }
 
-    query += ' ORDER BY e.createdAt DESC';
+    query += " ORDER BY e.createdAt DESC";
 
     if (limit !== undefined) {
-      query += ' LIMIT ?';
+      query += " LIMIT ?";
       params.push(limit);
     }
 
@@ -214,37 +245,40 @@ export class ExampleService {
   /**
    * Update example
    */
-  async updateExample(id: number, request: ExampleUpdateRequest): Promise<DatabaseResult<Example>> {
+  async updateExample(
+    id: number,
+    request: ExampleUpdateRequest,
+  ): Promise<DatabaseResult<Example>> {
     const fields: string[] = [];
     const params: any[] = [];
 
     if (request.sentence !== undefined) {
-      fields.push('sentence = ?');
+      fields.push("sentence = ?");
       params.push(request.sentence);
     }
 
     if (request.translation !== undefined) {
-      fields.push('translation = ?');
+      fields.push("translation = ?");
       params.push(request.translation);
     }
 
     if (fields.length === 0) {
       return {
         success: false,
-        error: 'No fields to update'
+        error: "No fields to update",
       };
     }
 
     // Add updatedAt timestamp
-    fields.push('updatedAt = ?');
+    fields.push("updatedAt = ?");
     params.push(new Date().toISOString());
 
     // Add ID to params
     params.push(id);
 
     const updateResult = await SQLiteUniversal.execute(
-      `UPDATE examples SET ${fields.join(', ')} WHERE id = ?`,
-      params
+      `UPDATE examples SET ${fields.join(", ")} WHERE id = ?`,
+      params,
     );
 
     if (!updateResult.success) {
@@ -261,27 +295,27 @@ export class ExampleService {
   async deleteExample(id: number): Promise<DatabaseResult> {
     // First check if example exists
     const existsResult = await this.getExampleById(id);
-    if (!existsResult.success || !existsResult.data || existsResult.data.length === 0) {
+    if (
+      !existsResult.success ||
+      !existsResult.data ||
+      existsResult.data.length === 0
+    ) {
       return {
         success: false,
-        error: 'Example not found'
+        error: "Example not found",
       };
     }
 
-    return SQLiteUniversal.execute(
-      'DELETE FROM examples WHERE id = ?',
-      [id]
-    );
+    return SQLiteUniversal.execute("DELETE FROM examples WHERE id = ?", [id]);
   }
 
   /**
    * Delete all examples for a word
    */
   async deleteExamplesByWordId(wordId: number): Promise<DatabaseResult> {
-    return SQLiteUniversal.execute(
-      'DELETE FROM examples WHERE wordId = ?',
-      [wordId]
-    );
+    return SQLiteUniversal.execute("DELETE FROM examples WHERE wordId = ?", [
+      wordId,
+    ]);
   }
 
   /**
@@ -289,8 +323,8 @@ export class ExampleService {
    */
   async getExamplesCount(wordId: number): Promise<number> {
     const result = await SQLiteUniversal.execute(
-      'SELECT COUNT(*) as count FROM examples WHERE wordId = ?',
-      [wordId]
+      "SELECT COUNT(*) as count FROM examples WHERE wordId = ?",
+      [wordId],
     );
 
     if (!result.success || !result.data || result.data.length === 0) {
@@ -303,7 +337,10 @@ export class ExampleService {
   /**
    * Get random examples from different words
    */
-  async getRandomExamples(count: number, dictionaryId?: number): Promise<DatabaseResult<ExampleWithWord>> {
+  async getRandomExamples(
+    count: number,
+    dictionaryId?: number,
+  ): Promise<DatabaseResult<ExampleWithWord>> {
     let query = `
       SELECT 
         e.*,
@@ -316,11 +353,11 @@ export class ExampleService {
     const params: any[] = [];
 
     if (dictionaryId !== undefined) {
-      query += ' WHERE w.dictionaryId = ?';
+      query += " WHERE w.dictionaryId = ?";
       params.push(dictionaryId);
     }
 
-    query += ' ORDER BY RANDOM() LIMIT ?';
+    query += " ORDER BY RANDOM() LIMIT ?";
     params.push(count);
 
     return SQLiteUniversal.execute<ExampleWithWord>(query, params);
@@ -331,8 +368,8 @@ export class ExampleService {
    */
   async exampleExists(guid: string): Promise<boolean> {
     const result = await SQLiteUniversal.execute(
-      'SELECT COUNT(*) as count FROM examples WHERE guid = ?',
-      [guid]
+      "SELECT COUNT(*) as count FROM examples WHERE guid = ?",
+      [guid],
     );
 
     if (!result.success || !result.data || result.data.length === 0) {
@@ -345,12 +382,20 @@ export class ExampleService {
   /**
    * Get examples statistics for a dictionary
    */
-  async getExamplesStats(dictionaryId?: number): Promise<DatabaseResult<{ totalExamples: number; wordsWithExamples: number; averageExamplesPerWord: number }>> {
-    let whereClause = '';
+  async getExamplesStats(
+    dictionaryId?: number,
+  ): Promise<
+    DatabaseResult<{
+      totalExamples: number;
+      wordsWithExamples: number;
+      averageExamplesPerWord: number;
+    }>
+  > {
+    let whereClause = "";
     const params: any[] = [];
 
     if (dictionaryId !== undefined) {
-      whereClause = 'WHERE w.dictionaryId = ?';
+      whereClause = "WHERE w.dictionaryId = ?";
       params.push(dictionaryId);
     }
 
@@ -362,10 +407,43 @@ export class ExampleService {
        FROM examples e
        JOIN words w ON e.wordId = w.id
        ${whereClause}`,
-      params
+      params,
     );
 
     return result;
+  }
+
+  /**
+   * Get all examples (for export/backup purposes)
+   * This method is needed by QueryService for data export functionality
+   */
+  async getAllExamples(
+    limit?: number,
+    offset?: number,
+  ): Promise<DatabaseResult<ExampleWithWord>> {
+    let query = `
+    SELECT 
+      e.*,
+      w.word,
+      w.translation as wordTranslation,
+      w.partOfSpeech
+    FROM examples e
+    JOIN words w ON e.wordId = w.id
+    ORDER BY e.createdAt DESC
+  `;
+    const params: any[] = [];
+
+    if (limit !== undefined) {
+      query += " LIMIT ?";
+      params.push(limit);
+
+      if (offset !== undefined) {
+        query += " OFFSET ?";
+        params.push(offset);
+      }
+    }
+
+    return SQLiteUniversal.execute<ExampleWithWord>(query, params);
   }
 }
 

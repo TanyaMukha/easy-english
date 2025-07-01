@@ -1,17 +1,17 @@
 // services/database/WordService.ts
 /**
  * Word Service - Manages word CRUD operations and learning features
- * 
+ *
  * This service handles all word-related database operations including:
  * - Basic CRUD operations
  * - Learning progress tracking
  * - Search and filtering
  * - Review scheduling
- * 
+ *
  * Follows SOLID principles and provides comprehensive word management functionality
  */
 
-import { SQLiteUniversal, DatabaseResult } from './SQLiteUniversalService';
+import { DatabaseResult, SQLiteUniversal } from "./SQLiteUniversalService";
 
 export enum PartOfSpeech {
   NOUN = "noun",
@@ -28,7 +28,6 @@ export enum PartOfSpeech {
   SLANG = "slang",
   ABBREVIATION = "abbreviation",
   FIXED_EXPRESSION = "fixed_expression",
-  IRREGULAR = "irregular",
 }
 
 export interface Word {
@@ -77,7 +76,9 @@ export interface WordCreateRequest {
   level?: string | undefined;
   isIrregular?: boolean | undefined;
   dictionaryId: number;
-  examples?: Omit<Example, 'id' | 'wordId' | 'createdAt' | 'updatedAt'>[] | undefined;
+  examples?:
+    | Omit<Example, "id" | "wordId" | "createdAt" | "updatedAt">[]
+    | undefined;
 }
 
 export interface WordUpdateRequest {
@@ -102,6 +103,8 @@ export interface WordSearchFilter {
   minRate?: number | undefined;
   maxRate?: number | undefined;
   needsReview?: boolean | undefined;
+  maxReviewCount?: number | undefined; // Optional filter for max review count
+  lastReviewAfter?: string | undefined; // Optional filter for last review date
 }
 
 export interface WordStats {
@@ -128,9 +131,11 @@ export class WordService {
   /**
    * Create a new word with optional examples
    */
-  async createWord(request: WordCreateRequest): Promise<DatabaseResult<WordWithExamples>> {
+  async createWord(
+    request: WordCreateRequest,
+  ): Promise<DatabaseResult<WordWithExamples>> {
     const now = new Date().toISOString();
-    
+
     // Start transaction for word creation
     return SQLiteUniversal.executeTransaction(async (execute) => {
       // Create word
@@ -148,19 +153,19 @@ export class WordService {
           request.explanation || null,
           request.definition || null,
           request.partOfSpeech,
-          request.language || 'en',
+          request.language || "en",
           request.level || null,
           request.isIrregular ? 1 : 0,
           request.dictionaryId,
           0, // reviewCount
           0, // rate
           now,
-          now
-        ]
+          now,
+        ],
       );
 
       if (!wordResult.success) {
-        throw new Error(wordResult.error || 'Failed to create word');
+        throw new Error(wordResult.error || "Failed to create word");
       }
 
       const wordId = wordResult.insertId!;
@@ -171,7 +176,14 @@ export class WordService {
           const exampleResult = await execute(
             `INSERT INTO examples (guid, sentence, translation, wordId, createdAt, updatedAt)
              VALUES (?, ?, ?, ?, ?, ?)`,
-            [example.guid, example.sentence, example.translation || null, wordId, now, now]
+            [
+              example.guid,
+              example.sentence,
+              example.translation || null,
+              wordId,
+              now,
+              now,
+            ],
           );
 
           if (!exampleResult.success) {
@@ -183,7 +195,7 @@ export class WordService {
       // Return created word with examples
       const result = await this.getWordWithExamples(wordId);
       if (!result.success) {
-        throw new Error('Failed to retrieve created word');
+        throw new Error("Failed to retrieve created word");
       }
 
       return result.data![0] as WordWithExamples;
@@ -193,13 +205,19 @@ export class WordService {
   /**
    * Get word by ID with examples
    */
-  async getWordWithExamples(id: number): Promise<DatabaseResult<WordWithExamples>> {
+  async getWordWithExamples(
+    id: number,
+  ): Promise<DatabaseResult<WordWithExamples>> {
     const wordResult = await SQLiteUniversal.execute<Word>(
-      'SELECT * FROM words WHERE id = ?',
-      [id]
+      "SELECT * FROM words WHERE id = ?",
+      [id],
     );
 
-    if (!wordResult.success || !wordResult.data || wordResult.data.length === 0) {
+    if (
+      !wordResult.success ||
+      !wordResult.data ||
+      wordResult.data.length === 0
+    ) {
       return wordResult as DatabaseResult<WordWithExamples>;
     }
 
@@ -207,43 +225,108 @@ export class WordService {
 
     // Get examples for this word
     const examplesResult = await SQLiteUniversal.execute<Example>(
-      'SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt',
-      [id]
+      "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
+      [id],
     );
 
-    const examples = examplesResult.success ? (examplesResult.data || []) : [];
+    const examples = examplesResult.success ? examplesResult.data || [] : [];
 
     const wordWithExamples: WordWithExamples = {
       ...word,
-      examples
+      examples,
     } as WordWithExamples;
 
     return {
       success: true,
-      data: [wordWithExamples]
+      data: [wordWithExamples],
     };
   }
 
   /**
-   * Get word by GUID
+   * Get word by ID with examples
    */
-  async getWordByGuid(guid: string): Promise<DatabaseResult<WordWithExamples>> {
+  async getWordById(id: number): Promise<DatabaseResult<WordWithExamples>> {
     const wordResult = await SQLiteUniversal.execute<Word>(
-      'SELECT * FROM words WHERE guid = ?',
-      [guid]
+      "SELECT * FROM words WHERE id = ?",
+      [id],
     );
 
-    if (!wordResult.success || !wordResult.data || wordResult.data.length === 0) {
-      return wordResult as DatabaseResult<WordWithExamples>;
+    if (
+      !wordResult.success ||
+      !wordResult.data ||
+      wordResult.data.length === 0
+    ) {
+      return {
+        success: false,
+        error: "Word not found",
+      };
     }
 
-    return this.getWordWithExamples(wordResult.data[0]?.id!);
+    const word = wordResult.data[0];
+
+    // Get examples for this word
+    const examplesResult = await SQLiteUniversal.execute<Example>(
+      "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt ASC",
+      [id],
+    );
+
+    const wordWithExamples: WordWithExamples = {
+      ...word,
+      examples: examplesResult.success ? examplesResult.data || [] : [],
+    } as WordWithExamples;
+
+    return {
+      success: true,
+      data: [wordWithExamples],
+    };
   }
 
   /**
+   * Get word by GUID with examples
+   */
+  async getWordByGuid(guid: string): Promise<DatabaseResult<WordWithExamples>> {
+    const wordResult = await SQLiteUniversal.execute<Word>(
+      "SELECT * FROM words WHERE guid = ?",
+      [guid],
+    );
+
+    if (
+      !wordResult.success ||
+      !wordResult.data ||
+      wordResult.data.length === 0
+    ) {
+      return {
+        success: false,
+        error: "Word not found",
+      };
+    }
+
+    const word = wordResult.data[0];
+
+    // Get examples for this word
+    const examplesResult = await SQLiteUniversal.execute<Example>(
+      "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt ASC",
+      [word?.id!],
+    );
+
+    const wordWithExamples: WordWithExamples = {
+      ...word,
+      examples: examplesResult.success ? examplesResult.data || [] : [],
+    } as WordWithExamples;
+
+    return {
+      success: true,
+      data: [wordWithExamples],
+    };
+  }
+  /**
    * Search and filter words
    */
-  async searchWords(filter: WordSearchFilter, limit?: number, offset?: number): Promise<DatabaseResult<WordWithExamples>> {
+  async searchWords(
+    filter: WordSearchFilter,
+    limit?: number,
+    offset?: number,
+  ): Promise<DatabaseResult<WordWithExamples>> {
     let query = `
       SELECT w.* FROM words w
       JOIN dictionaries d ON w.dictionaryId = d.id
@@ -253,61 +336,64 @@ export class WordService {
 
     // Apply filters
     if (filter.dictionaryId !== undefined) {
-      query += ' AND w.dictionaryId = ?';
+      query += " AND w.dictionaryId = ?";
       params.push(filter.dictionaryId);
     }
 
     if (filter.partOfSpeech !== undefined) {
-      query += ' AND w.partOfSpeech = ?';
+      query += " AND w.partOfSpeech = ?";
       params.push(filter.partOfSpeech);
     }
 
     if (filter.level !== undefined) {
-      query += ' AND w.level = ?';
+      query += " AND w.level = ?";
       params.push(filter.level);
     }
 
     if (filter.language !== undefined) {
-      query += ' AND w.language = ?';
+      query += " AND w.language = ?";
       params.push(filter.language);
     }
 
     if (filter.isIrregular !== undefined) {
-      query += ' AND w.isIrregular = ?';
+      query += " AND w.isIrregular = ?";
       params.push(filter.isIrregular ? 1 : 0);
     }
 
     if (filter.searchTerm) {
-      query += ' AND (w.word LIKE ? OR w.translation LIKE ? OR w.definition LIKE ?)';
+      query +=
+        " AND (w.word LIKE ? OR w.translation LIKE ? OR w.definition LIKE ?)";
       const searchPattern = `%${filter.searchTerm}%`;
       params.push(searchPattern, searchPattern, searchPattern);
     }
 
     if (filter.minRate !== undefined) {
-      query += ' AND w.rate >= ?';
+      query += " AND w.rate >= ?";
       params.push(filter.minRate);
     }
 
     if (filter.maxRate !== undefined) {
-      query += ' AND w.rate <= ?';
+      query += " AND w.rate <= ?";
       params.push(filter.maxRate);
     }
 
     if (filter.needsReview) {
       // Words that need review: never reviewed or last review was more than 1 day ago
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      query += ' AND (w.lastReviewDate IS NULL OR w.lastReviewDate < ?)';
+      const oneDayAgo = new Date(
+        Date.now() - 24 * 60 * 60 * 1000,
+      ).toISOString();
+      query += " AND (w.lastReviewDate IS NULL OR w.lastReviewDate < ?)";
       params.push(oneDayAgo);
     }
 
-    query += ' ORDER BY w.createdAt DESC';
+    query += " ORDER BY w.createdAt DESC";
 
     if (limit !== undefined) {
-      query += ' LIMIT ?';
+      query += " LIMIT ?";
       params.push(limit);
-      
+
       if (offset !== undefined) {
-        query += ' OFFSET ?';
+        query += " OFFSET ?";
         params.push(offset);
       }
     }
@@ -320,40 +406,43 @@ export class WordService {
 
     // Get examples for each word
     const wordsWithExamples: WordWithExamples[] = [];
-    
+
     for (const word of wordsResult.data || []) {
       const examplesResult = await SQLiteUniversal.execute<Example>(
-        'SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt',
-        [word.id!]
+        "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
+        [word.id!],
       );
 
-      const examples = examplesResult.success ? (examplesResult.data || []) : [];
+      const examples = examplesResult.success ? examplesResult.data || [] : [];
 
       wordsWithExamples.push({
         ...word,
-        examples
+        examples,
       });
     }
 
     return {
       success: true,
-      data: wordsWithExamples
+      data: wordsWithExamples,
     };
   }
 
   /**
    * Get random words for study
    */
-  async getRandomWords(count: number, dictionaryId?: number): Promise<DatabaseResult<WordWithExamples>> {
-    let query = 'SELECT * FROM words';
+  async getRandomWords(
+    count: number,
+    dictionaryId?: number,
+  ): Promise<DatabaseResult<WordWithExamples>> {
+    let query = "SELECT * FROM words";
     const params: any[] = [];
 
     if (dictionaryId !== undefined) {
-      query += ' WHERE dictionaryId = ?';
+      query += " WHERE dictionaryId = ?";
       params.push(dictionaryId);
     }
 
-    query += ' ORDER BY RANDOM() LIMIT ?';
+    query += " ORDER BY RANDOM() LIMIT ?";
     params.push(count);
 
     const wordsResult = await SQLiteUniversal.execute<Word>(query, params);
@@ -364,38 +453,41 @@ export class WordService {
 
     // Get examples for each word
     const wordsWithExamples: WordWithExamples[] = [];
-    
+
     for (const word of wordsResult.data || []) {
       const examplesResult = await SQLiteUniversal.execute<Example>(
-        'SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt',
-        [word.id!]
+        "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
+        [word.id!],
       );
 
-      const examples = examplesResult.success ? (examplesResult.data || []) : [];
+      const examples = examplesResult.success ? examplesResult.data || [] : [];
 
       wordsWithExamples.push({
         ...word,
-        examples
+        examples,
       });
     }
 
     return {
       success: true,
-      data: wordsWithExamples
+      data: wordsWithExamples,
     };
   }
 
   /**
    * Update word
    */
-  async updateWord(id: number, request: WordUpdateRequest): Promise<DatabaseResult<WordWithExamples>> {
+  async updateWord(
+    id: number,
+    request: WordUpdateRequest,
+  ): Promise<DatabaseResult<WordWithExamples>> {
     const fields: string[] = [];
     const params: any[] = [];
 
     // Build dynamic update query
     Object.entries(request).forEach(([key, value]) => {
       if (value !== undefined) {
-        if (key === 'isIrregular') {
+        if (key === "isIrregular") {
           fields.push(`${key} = ?`);
           params.push(value ? 1 : 0);
         } else {
@@ -408,20 +500,20 @@ export class WordService {
     if (fields.length === 0) {
       return {
         success: false,
-        error: 'No fields to update'
+        error: "No fields to update",
       };
     }
 
     // Add updatedAt timestamp
-    fields.push('updatedAt = ?');
+    fields.push("updatedAt = ?");
     params.push(new Date().toISOString());
 
     // Add ID to params
     params.push(id);
 
     const updateResult = await SQLiteUniversal.execute(
-      `UPDATE words SET ${fields.join(', ')} WHERE id = ?`,
-      params
+      `UPDATE words SET ${fields.join(", ")} WHERE id = ?`,
+      params,
     );
 
     if (!updateResult.success) {
@@ -437,12 +529,12 @@ export class WordService {
    */
   async updateWordProgress(id: number, rate: number): Promise<DatabaseResult> {
     const now = new Date().toISOString();
-    
+
     return SQLiteUniversal.execute(
       `UPDATE words 
        SET rate = ?, lastReviewDate = ?, reviewCount = reviewCount + 1, updatedAt = ?
        WHERE id = ?`,
-      [rate, now, now, id]
+      [rate, now, now, id],
     );
   }
 
@@ -451,21 +543,20 @@ export class WordService {
    */
   async deleteWord(id: number): Promise<DatabaseResult> {
     // Examples will be deleted by CASCADE constraint
-    return SQLiteUniversal.execute(
-      'DELETE FROM words WHERE id = ?',
-      [id]
-    );
+    return SQLiteUniversal.execute("DELETE FROM words WHERE id = ?", [id]);
   }
 
   /**
    * Get words statistics
    */
-  async getWordsStats(dictionaryId?: number): Promise<DatabaseResult<WordStats>> {
-    let whereClause = '';
+  async getWordsStats(
+    dictionaryId?: number,
+  ): Promise<DatabaseResult<WordStats>> {
+    let whereClause = "";
     const params: any[] = [];
 
     if (dictionaryId !== undefined) {
-      whereClause = 'WHERE dictionaryId = ?';
+      whereClause = "WHERE dictionaryId = ?";
       params.push(dictionaryId);
     }
 
@@ -475,7 +566,7 @@ export class WordService {
         COUNT(CASE WHEN reviewCount > 0 THEN 1 END) as studiedWords,
         ROUND(AVG(CASE WHEN rate > 0 THEN rate END), 2) as averageRate
        FROM words ${whereClause}`,
-      params
+      params,
     );
 
     if (!statsResult.success) {
@@ -487,7 +578,7 @@ export class WordService {
       `SELECT partOfSpeech, COUNT(*) as count 
        FROM words ${whereClause}
        GROUP BY partOfSpeech`,
-      params
+      params,
     );
 
     // Get stats by level
@@ -495,18 +586,19 @@ export class WordService {
       `SELECT level, COUNT(*) as count 
        FROM words ${whereClause}
        GROUP BY level`,
-      params
+      params,
     );
 
     // Count words that need review
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const reviewParams = dictionaryId !== undefined ? [oneDayAgo, dictionaryId] : [oneDayAgo];
+    const reviewParams =
+      dictionaryId !== undefined ? [oneDayAgo, dictionaryId] : [oneDayAgo];
     const reviewCountResult = await SQLiteUniversal.execute(
       `SELECT COUNT(*) as reviewsDue 
        FROM words 
        WHERE (lastReviewDate IS NULL OR lastReviewDate < ?) 
-       ${dictionaryId !== undefined ? 'AND dictionaryId = ?' : ''}`,
-      reviewParams
+       ${dictionaryId !== undefined ? "AND dictionaryId = ?" : ""}`,
+      reviewParams,
     );
 
     // Build response
@@ -524,7 +616,9 @@ export class WordService {
       }
     });
 
-    const reviewsDue = reviewCountResult.success ? (reviewCountResult.data![0] as any).reviewsDue : 0;
+    const reviewsDue = reviewCountResult.success
+      ? (reviewCountResult.data![0] as any).reviewsDue
+      : 0;
 
     const stats: WordStats = {
       totalWords: baseStats.totalWords || 0,
@@ -532,21 +626,24 @@ export class WordService {
       averageRate: baseStats.averageRate || 0,
       byPartOfSpeech,
       byLevel,
-      reviewsDue
+      reviewsDue,
     };
 
     return {
       success: true,
-      data: [stats]
+      data: [stats],
     };
   }
 
   /**
    * Get words due for review
    */
-  async getWordsForReview(limit?: number, dictionaryId?: number): Promise<DatabaseResult<WordWithExamples>> {
+  async getWordsForReview(
+    limit?: number,
+    dictionaryId?: number,
+  ): Promise<DatabaseResult<WordWithExamples>> {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    
+
     let query = `
       SELECT * FROM words 
       WHERE (lastReviewDate IS NULL OR lastReviewDate < ?)
@@ -554,14 +651,14 @@ export class WordService {
     const params: any[] = [oneDayAgo];
 
     if (dictionaryId !== undefined) {
-      query += ' AND dictionaryId = ?';
+      query += " AND dictionaryId = ?";
       params.push(dictionaryId);
     }
 
-    query += ' ORDER BY lastReviewDate ASC NULLS FIRST';
+    query += " ORDER BY lastReviewDate ASC NULLS FIRST";
 
     if (limit !== undefined) {
-      query += ' LIMIT ?';
+      query += " LIMIT ?";
       params.push(limit);
     }
 
@@ -573,8 +670,8 @@ export class WordService {
    */
   async wordExists(guid: string): Promise<boolean> {
     const result = await SQLiteUniversal.execute(
-      'SELECT COUNT(*) as count FROM words WHERE guid = ?',
-      [guid]
+      "SELECT COUNT(*) as count FROM words WHERE guid = ?",
+      [guid],
     );
 
     if (!result.success || !result.data || result.data.length === 0) {

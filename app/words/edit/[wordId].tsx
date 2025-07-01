@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { UpdatedWordForm } from "../../../components/forms";
 import { ErrorState, LoadingState, ScreenHeader } from "../../../components/ui";
 import { WordWithExamples } from "../../../data/DataModels";
-import { WordService } from "../../../services/words";
+import { wordService } from "../../../services/database";
 import { SharedStyles } from "../../../styles/SharedStyles";
 
 export default function EditWordScreen() {
@@ -20,10 +20,10 @@ export default function EditWordScreen() {
   const loadWordData = async () => {
     try {
       setError(null);
-      const response = await WordService.getById(wordIdNumber);
+      const response = await wordService.getWordById(wordIdNumber);
 
       if (response.success && response.data) {
-        setWord(response.data);
+        setWord((response.data?.[0] || null) as WordWithExamples);
       } else {
         setError(response.error || "Word not found");
       }
@@ -58,18 +58,18 @@ export default function EditWordScreen() {
         })),
       };
 
-      const response = await WordService.update(word.id!, updateRequest);
+      const response = await wordService.updateWord(word.id!, updateRequest);
 
       if (response.success && response.data) {
         Alert.alert(
           "Success",
-          `Word "${response.data.word}" has been updated successfully!`,
+          `Word "${response.data?.[0]}" has been updated successfully!`,
           [
             {
               text: "View Word",
               style: "default",
               onPress: () => {
-                router.replace(`/words/${response.data!.id}`);
+                router.replace(`/words/${response.data?.[0]?.id ?? 0}`);
               },
             },
             {

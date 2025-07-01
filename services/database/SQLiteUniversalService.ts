@@ -13,6 +13,8 @@
 
 import { Platform } from "react-native";
 
+import { WebDatabasePersistence } from "./WebDatabasePersistence";
+
 // Conditional imports for platform-specific modules
 let ExpoSQLite: any = null;
 let initSqlJs: any = null;
@@ -67,6 +69,7 @@ enum InitializationState {
 
 export class SQLiteUniversalService {
   private static instance: SQLiteUniversalService | null = null;
+  private autoSaveController: any = null; // For stopping auto-save
 
   // Platform-specific database instances
   private nativeDatabase: any = null;
@@ -195,32 +198,32 @@ export class SQLiteUniversalService {
    * Set up web SQLite database using SQL.js
    * This method handles WebAssembly loading and database creation
    */
-  private async setupWebDatabase(): Promise<void> {
-    if (!initSqlJs) {
-      throw new Error(
-        "SQL.js not available. Install with: npm install sql.js @types/sql.js",
-      );
-    }
+  // private async setupWebDatabase(): Promise<void> {
+  //   if (!initSqlJs) {
+  //     throw new Error(
+  //       "SQL.js not available. Install with: npm install sql.js @types/sql.js",
+  //     );
+  //   }
 
-    console.log("🌐 Setting up web SQLite (SQL.js)...");
+  //   console.log("🌐 Setting up web SQLite (SQL.js)...");
 
-    // Initialize SQL.js with WebAssembly
-    this.webSqlJs = await initSqlJs({
-      locateFile: (filename: string) => {
-        if (filename.endsWith(".wasm")) {
-          const wasmPath = `/sql-wasm.wasm`;
-          console.log(`📥 Loading WebAssembly from: ${wasmPath}`);
-          return wasmPath;
-        }
-        return filename;
-      },
-    });
+  //   // Initialize SQL.js with WebAssembly
+  //   this.webSqlJs = await initSqlJs({
+  //     locateFile: (filename: string) => {
+  //       if (filename.endsWith(".wasm")) {
+  //         const wasmPath = `/sql-wasm.wasm`;
+  //         console.log(`📥 Loading WebAssembly from: ${wasmPath}`);
+  //         return wasmPath;
+  //       }
+  //       return filename;
+  //     },
+  //   });
 
-    // Load or create database
-    await this.loadOrCreateWebDatabase();
+  //   // Load or create database
+  //   await this.loadOrCreateWebDatabase();
 
-    console.log("✅ Web SQLite database ready");
-  }
+  //   console.log("✅ Web SQLite database ready");
+  // }
 
   /**
    * Load existing database from localStorage or create new one
@@ -493,20 +496,20 @@ export class SQLiteUniversalService {
     });
   }
 
-  /**
-   * Save web database to localStorage
-   */
-  private async saveWebDatabase(): Promise<void> {
-    if (Platform.OS === "web" && this.webDatabase) {
-      try {
-        const data = this.webDatabase.export();
-        const jsonString = JSON.stringify(Array.from(data));
-        localStorage.setItem(`${this.databaseName}_backup`, jsonString);
-      } catch (error) {
-        console.error("⚠️ Failed to save database:", error);
-      }
-    }
-  }
+  // /**
+  //  * Save web database to localStorage
+  //  */
+  // private async saveWebDatabase(): Promise<void> {
+  //   if (Platform.OS === "web" && this.webDatabase) {
+  //     try {
+  //       const data = this.webDatabase.export();
+  //       const jsonString = JSON.stringify(Array.from(data));
+  //       localStorage.setItem(`${this.databaseName}_backup`, jsonString);
+  //     } catch (error) {
+  //       console.error("⚠️ Failed to save database:", error);
+  //     }
+  //   }
+  // }
 
   /**
    * Get current initialization state for debugging
@@ -706,57 +709,294 @@ export class SQLiteUniversalService {
   /**
    * Complete executeWebSQL method with proper insertId handling
    */
-  private async executeWebSQL<T>(
-    sql: string,
-    params: any[],
-  ): Promise<DatabaseResult<T>> {
-    const cleanedParams = this.cleanSQLParameters(params);
-    const statement = this.webDatabase.prepare(sql);
+  // private async executeWebSQL<T>(
+  //   sql: string,
+  //   params: any[],
+  // ): Promise<DatabaseResult<T>> {
+  //   const cleanedParams = this.cleanSQLParameters(params);
+  //   const statement = this.webDatabase.prepare(sql);
+
+  //   try {
+  //     if (sql.trim().toLowerCase().startsWith("select")) {
+  //       const results: T[] = [];
+
+  //       if (cleanedParams.length > 0) {
+  //         statement.bind(cleanedParams);
+  //       }
+
+  //       while (statement.step()) {
+  //         results.push(statement.getAsObject() as T);
+  //       }
+
+  //       return {
+  //         success: true,
+  //         data: results,
+  //         rowsAffected: results.length,
+  //       };
+  //     } else {
+  //       const result = statement.run(cleanedParams);
+
+  //       // Save database after modification
+  //       if (
+  //         sql.trim().toLowerCase().startsWith("insert") ||
+  //         sql.trim().toLowerCase().startsWith("update") ||
+  //         sql.trim().toLowerCase().startsWith("delete")
+  //       ) {
+  //         await this.saveWebDatabase();
+  //       }
+
+  //       // Handle insertId properly
+  //       const insertId = result.lastInsertRowid;
+  //       const rowsModified = this.webDatabase.getRowsModified();
+
+  //       return {
+  //         success: true,
+  //         rowsAffected: rowsModified,
+  //         insertId: typeof insertId === "number" ? insertId : 0,
+  //       };
+  //     }
+  //   } finally {
+  //     statement.free();
+  //   }
+  // }
+
+  /**
+   * Set up web SQLite database using SQL.js with persistence
+   */
+  private async setupWebDatabase(): Promise<void> {
+    if (!initSqlJs) {
+      throw new Error("SQL.js not available. Install with: npm install sql.js");
+    }
+
+    console.log("🌐 Setting up web SQLite database with persistence...");
+
+    // Initialize SQL.js
+    this.webSqlJs = await initSqlJs({
+      locateFile: (file: string) => {
+        return `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`;
+      },
+    });
+
+    // Try to load existing database
+    const existingDb = await WebDatabasePersistence.loadExistingDatabase();
+
+    if (existingDb) {
+      // Load existing database
+      this.webDatabase = new this.webSqlJs.Database(existingDb);
+      console.log("✅ Existing database loaded from storage");
+    } else {
+      // Create new database
+      this.webDatabase = new this.webSqlJs.Database();
+      console.log("✅ New database created");
+    }
+
+    // Start auto-save (every 10 seconds)
+    this.autoSaveController = WebDatabasePersistence.startAutoSave(
+      this.webDatabase,
+      10000, // 10 seconds
+    );
+
+    console.log("✅ Web SQLite database configured with auto-save");
+  }
+
+  /**
+   * Save web database to persistent storage
+   */
+  private async saveWebDatabase(): Promise<void> {
+    if (!this.webDatabase) return;
 
     try {
-      if (sql.trim().toLowerCase().startsWith("select")) {
-        const results: T[] = [];
+      const dbBinary = this.webDatabase.export();
+      await WebDatabasePersistence.saveToIndexedDB(dbBinary);
+      WebDatabasePersistence.saveToLocalStorage(dbBinary);
+    } catch (error) {
+      console.error("❌ Failed to save web database:", error);
+    }
+  }
 
-        if (cleanedParams.length > 0) {
-          statement.bind(cleanedParams);
-        }
+  /**
+   * Enhanced executeWebSQL with auto-save trigger
+   */
+  private async executeWebSQL<T = any>(
+    sql: string,
+    params: any[] = [],
+  ): Promise<DatabaseResult<T>> {
+    if (!this.webDatabase) {
+      throw new Error("Web database not initialized");
+    }
 
-        while (statement.step()) {
-          results.push(statement.getAsObject() as T);
-        }
+    try {
+      const isWriteOperation =
+        /^\s*(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER)/i.test(sql);
 
-        return {
-          success: true,
-          data: results,
-          rowsAffected: results.length,
-        };
-      } else {
-        const result = statement.run(cleanedParams);
+      if (isWriteOperation) {
+        // Use prepared statement for write operations
+        const stmt = this.webDatabase.prepare(sql);
+        try {
+          stmt.run(params);
+          const changes = this.webDatabase.getRowsModified();
 
-        // Save database after modification
-        if (
-          sql.trim().toLowerCase().startsWith("insert") ||
-          sql.trim().toLowerCase().startsWith("update") ||
-          sql.trim().toLowerCase().startsWith("delete")
-        ) {
+          // Save after write operations
           await this.saveWebDatabase();
+
+          return {
+            success: true,
+            data: [],
+            rowsAffected: changes,
+            insertId: sql.toLowerCase().includes("insert")
+              ? (this.webDatabase.exec("SELECT last_insert_rowid()")[0]
+                  ?.values[0]?.[0] as number)
+              : 0,
+          };
+        } finally {
+          stmt.free();
+        }
+      } else {
+        // Use exec for read operations
+        const results = this.webDatabase.exec(sql, params);
+
+        if (results.length === 0) {
+          return { success: true, data: [] };
         }
 
-        // Handle insertId properly
-        const insertId = result.lastInsertRowid;
-        const rowsModified = this.webDatabase.getRowsModified();
+        const result = results[0];
+        const data = result.values.map((row: any) => {
+          const obj: any = {};
+          result.columns.forEach((col: any, index: any) => {
+            obj[col] = row[index];
+          });
+          return obj;
+        });
 
-        return {
-          success: true,
-          rowsAffected: rowsModified,
-          insertId: typeof insertId === "number" ? insertId : 0,
-        };
+        return { success: true, data };
       }
-    } finally {
-      statement.free();
+    } catch (error) {
+      console.error("❌ Web SQL execution failed:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
+
+  /**
+   * Enhanced cleanup method
+   */
+  async cleanup(): Promise<void> {
+    console.log("🧹 Cleaning up database connections...");
+
+    if (Platform.OS === "web") {
+      // Stop auto-save
+      if (this.autoSaveController) {
+        this.autoSaveController.stop();
+        this.autoSaveController = null;
+      }
+
+      // Final save before cleanup
+      await this.saveWebDatabase();
+
+      if (this.webDatabase) {
+        this.webDatabase.close();
+        this.webDatabase = null;
+      }
+    } else {
+      if (this.nativeDatabase) {
+        await this.nativeDatabase.closeAsync();
+        this.nativeDatabase = null;
+      }
+    }
+
+    this.initState = InitializationState.NOT_STARTED;
+    this.initializationPromise = null;
+
+    console.log("✅ Database cleanup completed");
+  }
+
+  /**
+   * Manual save trigger
+   */
+  async saveNow(): Promise<boolean> {
+    if (Platform.OS === "web" && this.webDatabase) {
+      try {
+        await this.saveWebDatabase();
+        console.log("💾 Database manually saved");
+        return true;
+      } catch (error) {
+        console.error("❌ Manual save failed:", error);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Export database for download
+   */
+  exportDatabase(): boolean {
+    if (Platform.OS === "web" && this.webDatabase) {
+      WebDatabasePersistence.exportDatabaseFile(this.webDatabase);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Reset database (clear all data and storage)
+   */
+  async resetDatabase(): Promise<boolean> {
+    try {
+      if (Platform.OS === "web") {
+        // Stop auto-save
+        if (this.autoSaveController) {
+          this.autoSaveController.stop();
+          this.autoSaveController = null;
+        }
+
+        // Clear persistent storage
+        await WebDatabasePersistence.clearStoredDatabase();
+
+        // Create new database
+        if (this.webSqlJs) {
+          this.webDatabase = new this.webSqlJs.Database();
+
+          // Recreate schema
+          await this.createSchemaDirectly();
+
+          // Restart auto-save
+          this.autoSaveController = WebDatabasePersistence.startAutoSave(
+            this.webDatabase,
+            10000,
+          );
+        }
+      }
+
+      console.log("🔄 Database reset completed");
+      return true;
+    } catch (error) {
+      console.error("❌ Database reset failed:", error);
+      return false;
     }
   }
 }
 
-// Export singleton instance
+// Export both class and singleton instance
 export const SQLiteUniversal = SQLiteUniversalService.getInstance();
+
+// Make database utilities available globally in development
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  (window as any).SQLiteUniversal = SQLiteUniversal;
+  (window as any).WebDatabasePersistence = WebDatabasePersistence;
+
+  console.log(`
+🔧 Database utilities available in console:
+
+// Manual operations:
+SQLiteUniversal.saveNow()           // Force save
+SQLiteUniversal.exportDatabase()    // Download .db file
+SQLiteUniversal.resetDatabase()     // Clear everything
+
+// Persistence utilities:
+WebDatabasePersistence.exportDatabaseFile(db)
+WebDatabasePersistence.clearStoredDatabase()
+  `);
+}

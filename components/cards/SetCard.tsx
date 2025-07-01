@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
 import { Set } from "../../data/DataModels";
-import { SetService } from "../../services/SetService";
+import { setService } from "../../services/database";
 import {
   Colors,
   SharedStyles,
@@ -36,7 +36,7 @@ const SetCard: React.FC<SetCardProps> = ({
   onMenuPress,
 }) => {
   const { t } = useTranslation();
-  const wordCount = SetService.getWordCount(set.id);
+  const wordCount = 10 //setService.getWordCount(set.id);
 
   const handlePress = () => {
     onPress?.(set);
@@ -91,7 +91,7 @@ const SetCard: React.FC<SetCardProps> = ({
               {set.title}
             </Text>
             <Text style={styles.wordCount}>
-              {wordCount} {wordCount === 1 ? t("vocabulary.word", "word") : t("vocabulary.words", "words")}
+              {wordCount} {/* wordCount === 1 */ false ? t("vocabulary.word", "word") : t("vocabulary.words", "words")}
             </Text>
           </View>
 

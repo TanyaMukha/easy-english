@@ -15,7 +15,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { router } from "expo-router";
 
 import { ScreenHeader } from "../../components/ui";
-import { SetService } from "../../services/SetService";
+import { SetCreateRequest, setService } from "../../services/database";
 import {
   BorderRadius,
   Colors,
@@ -62,10 +62,10 @@ export default function CreateSetScreen() {
     setIsSubmitting(true);
 
     try {
-      const response = await SetService.create({
+      const response = await setService.createSet({
         title: title.trim(),
         description: description.trim() || undefined,
-      });
+      } as SetCreateRequest);
 
       if (response.success) {
         Alert.alert("Success", "Set created successfully!", [

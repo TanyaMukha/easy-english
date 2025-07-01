@@ -1,7 +1,7 @@
-// hooks/useHomeData.ts - Updated to use new database services
+// hooks/useHomeData.ts - Enhanced to use SetService and updated QueryService
 import { useState, useEffect } from 'react';
 import { queryService } from '../services/database';
-import type { WordWithExamples, DashboardData } from '../services/database';
+import type { WordWithExamples, DashboardData, LearningProgress } from '../services/database';
 import { getQuoteOfDay, Quote } from '../constants/MotivationalQuotes';
 
 interface HomeDataState {
@@ -9,47 +9,62 @@ interface HomeDataState {
   refreshing: boolean;
   error: string | null;
   dailyWords: WordWithExamples[];
-  userStats: any | null; // Will be replaced with proper UserStatistics type
+  userStats: LearningProgress | null;
   todayProgress: number;
   quoteOfDay: Quote;
   dashboardData: DashboardData | null;
+  studyRecommendations: {
+    reviewWords: WordWithExamples[];
+    newWords: WordWithExamples[];
+    reviewSets: any[];
+    dailyGoalProgress: number;
+  } | null;
 }
 
 interface HomeDataActions {
   loadData: () => Promise<void>;
   onRefresh: () => Promise<void>;
+  loadStudyRecommendations: () => Promise<void>;
+  markWordAsStudied: (wordId: number, isCorrect: boolean, setId?: number) => Promise<void>;
 }
 
 /**
- * Enhanced home data hook using new QueryService
+ * Enhanced home data hook using updated database services
  * 
- * This hook leverages the new QueryService to provide comprehensive
- * dashboard data in a single call, improving performance and data consistency.
+ * This hook leverages the enhanced QueryService to provide comprehensive
+ * dashboard data including sets, learning recommendations, and progress tracking.
  * 
  * Key improvements:
- * - Uses QueryService for aggregated data
- * - Better error handling
- * - More efficient data loading
- * - Consistent state management
+ * - Includes set statistics and recommendations
+ * - Enhanced learning progress tracking
+ * - Study recommendations based on user behavior
+ * - Better error handling and loading states
+ * - Optimized data loading with fewer service calls
  */
 export const useHomeData = (): HomeDataState & HomeDataActions => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dailyWords, setDailyWords] = useState<WordWithExamples[]>([]);
-  const [userStats, setUserStats] = useState<any | null>(null);
+  const [userStats, setUserStats] = useState<LearningProgress | null>(null);
   const [todayProgress, setTodayProgress] = useState(0);
   const [quoteOfDay, setQuoteOfDay] = useState<Quote>(getQuoteOfDay());
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [studyRecommendations, setStudyRecommendations] = useState<{
+    reviewWords: WordWithExamples[];
+    newWords: WordWithExamples[];
+    reviewSets: any[];
+    dailyGoalProgress: number;
+  } | null>(null);
 
   /**
-   * Load all home screen data using QueryService
+   * Load all home screen data using enhanced QueryService
    */
   const loadData = async () => {
     try {
       setError(null);
       
-      // Get comprehensive dashboard data
+      // Get comprehensive dashboard data (includes sets now)
       const dashboardResult = await queryService.getDashboardData();
       
       if (!dashboardResult.success) {
@@ -59,23 +74,19 @@ export const useHomeData = (): HomeDataState & HomeDataActions => {
       const dashboard = dashboardResult.data?.[0];
       if (dashboard) {
         setDashboardData(dashboard);
-        setDailyWords(dashboard.recentWords);
-        
-        // Create user stats from dashboard data
-        const stats = {
-          totalWords: dashboard.totalWords,
-          studiedWords: dashboard.studiedWords,
-          averageRate: dashboard.averageRate,
-          reviewsDue: dashboard.reviewsDue,
-          totalDictionaries: dashboard.totalDictionaries,
-          dailyProgress: [] // This would need to be enhanced with actual daily tracking
-        };
-        setUserStats(stats);
-        setTodayProgress(dashboard.studiedWords); // Simplified for now
+        setTodayProgress(dashboard.studiedWords);
       }
 
-      // Get daily words for practice (separate from recent words)
-      const dailyWordsResult = await queryService.getDailyWords(5);
+      // Get learning statistics
+      const statsResult = await queryService.getLearningStats();
+      if (statsResult.success && statsResult.data?.[0]) {
+        const stats = statsResult.data[0];
+        setUserStats(stats);
+        setTodayProgress(stats.wordsStudiedToday);
+      }
+
+      // Get daily words for practice
+      const dailyWordsResult = await queryService.getDailyWords(8);
       if (dailyWordsResult.success && dailyWordsResult.data) {
         setDailyWords(dailyWordsResult.data);
       }
@@ -91,11 +102,67 @@ export const useHomeData = (): HomeDataState & HomeDataActions => {
   };
 
   /**
+   * Load study recommendations separately for better performance
+   */
+  const loadStudyRecommendations = async () => {
+    try {
+      const recommendationsResult = await queryService.getStudyRecommendations();
+      
+      if (recommendationsResult.success && recommendationsResult.data?.[0]) {
+        setStudyRecommendations(recommendationsResult.data[0]);
+      }
+    } catch (err) {
+      console.warn('Failed to load study recommendations:', err);
+      // Don't set error state as this is not critical data
+    }
+  };
+
+  /**
+   * Mark a word as studied and update progress
+   */
+  const markWordAsStudied = async (wordId: number, isCorrect: boolean, setId?: number) => {
+    try {
+      // Update learning progress
+      const result = await queryService.updateLearningProgress(
+        wordId, 
+        isCorrect, 
+        isCorrect ? 1 : 3, // difficulty based on correctness
+        setId
+      );
+
+      if (result.success) {
+        // Update local state to reflect the change
+        setTodayProgress(prev => prev + 1);
+        
+        // Update user stats if available
+        if (userStats) {
+          setUserStats(prev => prev ? {
+            ...prev,
+            wordsStudiedToday: prev.wordsStudiedToday + 1,
+            totalWordsLearned: isCorrect ? prev.totalWordsLearned + 1 : prev.totalWordsLearned
+          } : null);
+        }
+
+        // Remove the word from daily words if it was there
+        setDailyWords(prev => prev.filter(word => word.id !== wordId));
+      }
+    } catch (err) {
+      console.error('Failed to mark word as studied:', err);
+    }
+  };
+
+  /**
    * Refresh data (for pull-to-refresh)
    */
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadData();
+    
+    // Load both main data and recommendations in parallel
+    await Promise.all([
+      loadData(),
+      loadStudyRecommendations()
+    ]);
+    
     setRefreshing(false);
   };
 
@@ -105,11 +172,45 @@ export const useHomeData = (): HomeDataState & HomeDataActions => {
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
+      
+      // Load main data first
       await loadData();
+      
+      // Load recommendations in background
+      loadStudyRecommendations();
+      
       setLoading(false);
     };
 
     initializeData();
+  }, []);
+
+  /**
+   * Update quote daily
+   */
+  useEffect(() => {
+    const updateQuote = () => {
+      setQuoteOfDay(getQuoteOfDay());
+    };
+
+    // Update quote at midnight
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    
+    const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+    
+    const timeout = setTimeout(() => {
+      updateQuote();
+      
+      // Set up daily interval
+      const interval = setInterval(updateQuote, 24 * 60 * 60 * 1000);
+      
+      return () => clearInterval(interval);
+    }, timeUntilMidnight);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return {
@@ -122,9 +223,12 @@ export const useHomeData = (): HomeDataState & HomeDataActions => {
     todayProgress,
     quoteOfDay,
     dashboardData,
+    studyRecommendations,
     
     // Actions
     loadData,
     onRefresh,
+    loadStudyRecommendations,
+    markWordAsStudied,
   };
 };

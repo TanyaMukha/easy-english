@@ -1,0 +1,280 @@
+// services/database/WebDatabasePersistence.ts
+/**
+ * Web Database Persistence
+ * 
+ * Handles automatic saving and loading of SQLite database for web platform
+ * Saves database to IndexedDB and localStorage for persistence across sessions
+ */
+
+export class WebDatabasePersistence {
+  private static readonly DB_NAME = 'EasyEnglishDB';
+  private static readonly STORE_NAME = 'database';
+  private static readonly LOCAL_STORAGE_KEY = 'easy_english_db_backup';
+  
+  /**
+   * Save database to IndexedDB (primary storage)
+   */
+  static async saveToIndexedDB(dbBinary: Uint8Array): Promise<boolean> {
+    try {
+      const request = indexedDB.open(this.DB_NAME, 1);
+      
+      return new Promise((resolve, reject) => {
+        request.onerror = () => reject(request.error);
+        
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+            db.createObjectStore(this.STORE_NAME);
+          }
+        };
+        
+        request.onsuccess = () => {
+          const db = request.result;
+          const transaction = db.transaction([this.STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(this.STORE_NAME);
+          
+          store.put(dbBinary, 'database');
+          
+          transaction.oncomplete = () => {
+            console.log('✅ Database saved to IndexedDB');
+            resolve(true);
+          };
+          
+          transaction.onerror = () => {
+            console.error('❌ Failed to save to IndexedDB:', transaction.error);
+            reject(transaction.error);
+          };
+        };
+      });
+    } catch (error) {
+      console.error('❌ IndexedDB save error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Load database from IndexedDB
+   */
+  static async loadFromIndexedDB(): Promise<Uint8Array | null> {
+    try {
+      const request = indexedDB.open(this.DB_NAME, 1);
+      
+      return new Promise((resolve, reject) => {
+        request.onerror = () => {
+          console.log('📁 No existing database in IndexedDB');
+          resolve(null);
+        };
+        
+        request.onsuccess = () => {
+          const db = request.result;
+          
+          if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+            console.log('📁 No database store found');
+            resolve(null);
+            return;
+          }
+          
+          const transaction = db.transaction([this.STORE_NAME], 'readonly');
+          const store = transaction.objectStore(this.STORE_NAME);
+          const getRequest = store.get('database');
+          
+          getRequest.onsuccess = () => {
+            if (getRequest.result) {
+              console.log('✅ Database loaded from IndexedDB');
+              resolve(getRequest.result);
+            } else {
+              console.log('📁 No database found in IndexedDB');
+              resolve(null);
+            }
+          };
+          
+          getRequest.onerror = () => {
+            console.error('❌ Failed to load from IndexedDB:', getRequest.error);
+            resolve(null);
+          };
+        };
+      });
+    } catch (error) {
+      console.error('❌ IndexedDB load error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save database to localStorage (backup storage)
+   */
+  static saveToLocalStorage(dbBinary: Uint8Array): boolean {
+    try {
+      // Convert to base64 for localStorage
+      const base64 = btoa(String.fromCharCode(...dbBinary));
+      localStorage.setItem(this.LOCAL_STORAGE_KEY, base64);
+      console.log('✅ Database backup saved to localStorage');
+      return true;
+    } catch (error) {
+      console.error('❌ localStorage save error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Load database from localStorage
+   */
+  static loadFromLocalStorage(): Uint8Array | null {
+    try {
+      const base64 = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+      if (!base64) {
+        console.log('📁 No database backup in localStorage');
+        return null;
+      }
+      
+      // Convert from base64
+      const binaryString = atob(base64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      console.log('✅ Database backup loaded from localStorage');
+      return bytes;
+    } catch (error) {
+      console.error('❌ localStorage load error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Auto-save database periodically
+   */
+  static startAutoSave(webDatabase: any, intervalMs: number = 10000) {
+    if (typeof window === 'undefined') return null;
+
+    console.log(`🔄 Starting auto-save every ${intervalMs / 1000} seconds`);
+    
+    const saveDatabase = async () => {
+      try {
+        if (webDatabase) {
+          const dbBinary = webDatabase.export();
+          await this.saveToIndexedDB(dbBinary);
+          this.saveToLocalStorage(dbBinary);
+        }
+      } catch (error) {
+        console.error('❌ Auto-save failed:', error);
+      }
+    };
+
+    // Save immediately
+    saveDatabase();
+
+    // Set up interval
+    const intervalId = setInterval(saveDatabase, intervalMs);
+
+    // Save on page unload
+    const handleUnload = () => {
+      try {
+        if (webDatabase) {
+          const dbBinary = webDatabase.export();
+          this.saveToLocalStorage(dbBinary); // Sync operation for unload
+        }
+      } catch (error) {
+        console.error('❌ Unload save failed:', error);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return {
+      stop: () => {
+        clearInterval(intervalId);
+        window.removeEventListener('beforeunload', handleUnload);
+        window.removeEventListener('pagehide', handleUnload);
+        console.log('🛑 Auto-save stopped');
+      }
+    };
+  }
+
+  /**
+   * Try to load existing database or return null for new database
+   */
+  static async loadExistingDatabase(): Promise<Uint8Array | null> {
+    console.log('🔍 Looking for existing database...');
+    
+    // Try IndexedDB first (primary storage)
+    let dbBinary = await this.loadFromIndexedDB();
+    
+    if (!dbBinary) {
+      // Fallback to localStorage
+      dbBinary = this.loadFromLocalStorage();
+    }
+    
+    if (dbBinary) {
+      console.log('🎉 Found existing database, restoring...');
+      return dbBinary;
+    } else {
+      console.log('🆕 No existing database found, will create new one');
+      return null;
+    }
+  }
+
+  /**
+   * Clear all stored databases (for development/reset)
+   */
+  static async clearStoredDatabase(): Promise<void> {
+    try {
+      // Clear IndexedDB
+      const request = indexedDB.deleteDatabase(this.DB_NAME);
+      await new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      });
+
+      // Clear localStorage
+      localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+      
+      console.log('🗑️ All stored databases cleared');
+    } catch (error) {
+      console.error('❌ Failed to clear databases:', error);
+    }
+  }
+
+  /**
+   * Export database file for download
+   */
+  static exportDatabaseFile(webDatabase: any): void {
+    try {
+      const dbBinary = webDatabase.export();
+      const blob = new Blob([dbBinary], { type: 'application/x-sqlite3' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `easy-english-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.db`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url);
+      console.log('💾 Database exported successfully');
+    } catch (error) {
+      console.error('❌ Export failed:', error);
+    }
+  }
+
+  /**
+   * Import database file
+   */
+  static importDatabaseFile(file: File): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const dbBinary = new Uint8Array(arrayBuffer);
+        resolve(dbBinary);
+      };
+      
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+}

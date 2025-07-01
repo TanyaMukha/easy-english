@@ -3,7 +3,7 @@ import { Modal, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
-import { DictionaryService } from '../../services/DictionaryService';
+import { dictionaryService } from '../../services/database';
 
 interface DictionaryActionsModalProps {
   visible: boolean;
@@ -98,7 +98,7 @@ const DictionaryActionsModal: React.FC<DictionaryActionsModalProps> = ({
 
   const confirmDelete = async () => {
     try {
-      const response = await DictionaryService.delete(dictionary.id);
+      const response = await dictionaryService.deleteDictionary(dictionary.id);
       
       if (response.success) {
         onDelete(dictionary);

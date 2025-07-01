@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { DictionaryService } from "../../services/DictionaryService";
+import { dictionaryService } from "../../services/database";
 import { Dictionary } from "../../data/DataModels";
 import { Utils } from "../../data/DataUtils";
 import {
@@ -39,7 +39,7 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
   };
 
   // Get word count from service (safe for empty dictionaries)
-  const wordCount = DictionaryService.getWordCount(dictionary.id);
+  const wordCount = 10; //dictionaryService.getWordCount(dictionary.id);
   const lastStudied = dictionary.updatedAt
     ? Utils.DateUtils.formatDate(dictionary.updatedAt)
     : "Never";
@@ -47,7 +47,7 @@ const DictionaryCard: React.FC<DictionaryCardProps> = ({
   const isRecentlyUpdated =
     dictionary.updatedAt && Utils.DateUtils.daysAgo(dictionary.updatedAt) <= 7;
 
-  const isNewDictionary = wordCount === 0;
+  const isNewDictionary = false //wordCount === 0;
 
   return (
     <TouchableOpacity

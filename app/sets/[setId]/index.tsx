@@ -21,8 +21,7 @@ import {
   SearchBar,
 } from "../../../components/ui";
 import { Set, WordWithExamples } from "../../../data/DataModels";
-import { MockDataService } from "../../../data/MockData";
-import { SetService } from "../../../services/SetService";
+import { setService, SetUpdateRequest, wordService } from "../../../services/database";
 import {
   Colors,
   SharedStyles,
@@ -63,18 +62,18 @@ export default function SetDetailsScreen() {
       setError(null);
 
       // Load set details
-      const setResponse = await SetService.getById(setIdNumber);
+      const setResponse = await setService.getSetById(setIdNumber);
       if (!setResponse.success || !setResponse.data) {
         setError(setResponse.error || "Set not found");
         return;
       }
 
-      setSet(setResponse.data);
+      setSet(setResponse.data?.[0] as Set);
 
       // Load words for this set - using mock data for now
       // In real implementation, this would fetch words associated with the set
-      const wordsData = await MockDataService.getWords({ limit: 100 });
-      setWords(wordsData.words.slice(0, 15)); // Mock: take first 15 words
+      const wordsData = await wordService.searchWords({});
+      setWords(((wordsData.data || []) as WordWithExamples[]).slice(0, 15)); // Mock: take first 15 words
     } catch (err) {
       setError("Failed to load set. Please try again.");
       console.error("Error loading set:", err);
@@ -126,7 +125,7 @@ export default function SetDetailsScreen() {
   const handleDeleteSet = async () => {
     if (!set) return;
 
-    const response = await SetService.delete(set.id);
+    const response = await setService.deleteSet(set.id);
     if (response.success) {
       router.back();
     } else {
@@ -148,13 +147,13 @@ export default function SetDetailsScreen() {
   };
 
   const handleEditSave = async (updatedSet: Set) => {
-    const response = await SetService.update(updatedSet.id, {
+    const response = await setService.updateSet(updatedSet.id, {
       title: updatedSet.title,
       description: updatedSet.description,
-    });
+    } as SetUpdateRequest);
 
     if (response.success) {
-      setSet(response.data!);
+      setSet((response.data?.[0] || null) as Set);
       setShowEditModal(false);
       return true;
     } else {
@@ -222,8 +221,8 @@ export default function SetDetailsScreen() {
       icon="list"
       title="No Words in Set"
       message="Add words to this set to start learning"
-      actionText="Add Words"
-      onAction={handleAddWordsPress}
+      buttonText="Add Words"
+      onButtonPress={handleAddWordsPress}
     />
   );
 
@@ -252,9 +251,9 @@ export default function SetDetailsScreen() {
         <EmptyState
           icon="search"
           title="No Words Found"
-        //   description={`No words match "${searchQuery}"`}
-          actionText="Clear Search"
-        //   onActionPress={() => setSearchQuery("")}
+          message={`No words match "${searchQuery}"`}
+          buttonText="Clear Search"
+          onButtonPress={() => setSearchQuery("")}
         />
       );
     }

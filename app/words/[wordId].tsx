@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import { ErrorState, LoadingState, ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
-import { WordService } from "../../services/words";
+import { wordService } from "../../services/database";
 import {
   Colors,
   getLevelColor,
@@ -29,10 +29,10 @@ export default function WordDetailsScreen() {
   const loadWordData = async () => {
     try {
       setError(null);
-      const response = await WordService.getById(wordIdNumber);
+      const response = await wordService.getWordById(wordIdNumber);
 
       if (response.success && response.data) {
-        setWord(response.data);
+        setWord(response.data?.[0] as WordWithExamples);
       } else {
         setError(response.error || "Word not found");
       }
@@ -69,7 +69,7 @@ export default function WordDetailsScreen() {
     if (!word) return;
 
     try {
-      const response = await WordService.delete(word.id!);
+      const response = await wordService.deleteWord(word.id!);
 
       if (response.success) {
         Alert.alert("Success", "Word deleted successfully!", [

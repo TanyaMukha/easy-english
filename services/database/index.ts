@@ -10,6 +10,7 @@ import { dictionaryService } from './DictionaryService';
 import { exampleService } from './ExampleService';
 import { migrationService } from './MigrationService';
 import { queryService } from './QueryService';
+import { setService } from './SetService';
 import { SQLiteUniversal } from './SQLiteUniversalService';
 import { wordService } from './WordService';
 
@@ -45,6 +46,16 @@ export type {
   ExampleWithWord 
 } from './ExampleService';
 
+export { SetService, setService } from './SetService';
+export type { 
+  Set, 
+  SetWithWords, 
+  SetCreateRequest, 
+  SetUpdateRequest, 
+  SetStats, 
+  SetSearchFilter 
+} from './SetService';
+
 // High-level query service
 export { QueryService, queryService } from './QueryService';
 export type { 
@@ -68,6 +79,7 @@ export const DatabaseServices = {
   dictionary: dictionaryService,
   word: wordService,
   example: exampleService,
+  set: setService,
   query: queryService,
   migration: migrationService,
   universal: SQLiteUniversal,
@@ -77,3 +89,4 @@ export const DatabaseServices = {
 export type { Example as ExampleModel } from './ExampleService';
 export type { Word as WordModel, WordWithExamples as WordWithExamplesModel } from './WordService';
 export type { Dictionary as DictionaryModel } from './DictionaryService';
+export type { Set as SetModel, SetWithWords as SetWithWordsModel } from './SetService';

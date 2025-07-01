@@ -19,8 +19,7 @@ import {
   SearchBar,
 } from "../../../components/ui";
 import { WordWithExamples } from "../../../data/DataModels";
-import { MockDataService } from "../../../data/MockData";
-import { SetService } from "../../../services/SetService";
+import { setService, wordService } from "../../../services/database";
 import {
   BorderRadius,
   Colors,
@@ -61,8 +60,9 @@ export default function AddWordsToSetScreen() {
 
       // Load available words - in real implementation, this would exclude
       // words already in the set
-      const wordsData = await MockDataService.getWords({ limit: 100 });
-      setWords(wordsData.words);
+      const wordsData = await wordService.searchWords({});
+      // Ensure the data matches the shared WordWithExamples type
+      setWords((wordsData.data || []) as WordWithExamples[]);
     } catch (err) {
       setError("Failed to load words. Please try again.");
       console.error("Error loading words:", err);
@@ -91,7 +91,7 @@ export default function AddWordsToSetScreen() {
     try {
       // Add each selected word to the set
       const promises = Array.from(selectedWords).map((wordId) =>
-        SetService.addWordToSet({ setId: setIdNumber, wordId }),
+        setService.addWordToSet(setIdNumber, wordId),
       );
 
       const results = await Promise.all(promises);
@@ -245,11 +245,16 @@ export default function AddWordsToSetScreen() {
         subtitle={`${selectedWords.size} words selected`}
         showBackButton={true}
         onBackPress={handleBackPress}
-        rightText={selectedWords.size > 0 ? "Add" : undefined}
+        // rightText={selectedWords.size > 0 ? "Add" : undefined}
         onRightPress={
-          selectedWords.size > 0 ? handleAddSelectedWords : undefined
+          selectedWords.size > 0
+            ? () => {
+                // Call the async function but don't return a promise
+                handleAddSelectedWords();
+              }
+            : () => {}
         }
-        rightDisabled={isAdding}
+        // rightDisabled={isAdding}
       />
 
       {/* Search */}

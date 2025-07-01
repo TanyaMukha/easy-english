@@ -11,7 +11,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 import { Set } from "../../data/DataModels";
-import { SetService } from "../../services/SetService";
+import { setService } from "../../services/database";
 import {
   BorderRadius,
   Colors,
@@ -54,7 +54,7 @@ const SetActionsModal: React.FC<SetActionsModalProps> = ({
 }) => {
   if (!set) return null;
 
-  const wordCount = SetService.getWordCount(set.id);
+  const wordCount = 10 //setService.getWordCount(set.id);
 
   const handleDelete = () => {
     Alert.alert(
@@ -210,7 +210,7 @@ const SetActionsModal: React.FC<SetActionsModalProps> = ({
                 {set.title}
               </Text>
               <Text style={styles.setSubtitle}>
-                {wordCount} {wordCount === 1 ? "word" : "words"}
+                {wordCount} {/* wordCount === 1 */ false ? "word" : "words"}
               </Text>
             </View>
 

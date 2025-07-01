@@ -3,7 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import { SharedStyles, Colors, Spacing, Typography } from '../../styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
-import { DictionaryService, CreateDictionaryRequest, UpdateDictionaryRequest } from '../../services/DictionaryService';
+import { DictionaryCreateRequest, dictionaryService, DictionaryUpdateRequest } from '../../services/database';
+import { generateGuid } from 'utils/guid';
 
 interface DictionaryFormProps {
   dictionary?: Dictionary; // If provided, form is in edit mode
@@ -60,20 +61,21 @@ const DictionaryForm: React.FC<DictionaryFormProps> = ({
 
       if (isEditMode && dictionary) {
         // Update existing dictionary
-        const updateRequest: UpdateDictionaryRequest = {
+        const updateRequest: DictionaryUpdateRequest = {
           title: title.trim(),
         };
-        response = await DictionaryService.update(dictionary.id, updateRequest);
+        response = await dictionaryService.updateDictionary(dictionary.id, updateRequest);
       } else {
         // Create new dictionary
-        const createRequest: CreateDictionaryRequest = {
+        const createRequest: DictionaryCreateRequest = {
           title: title.trim(),
+          guid: generateGuid(),
         };
-        response = await DictionaryService.create(createRequest);
+        response = await dictionaryService.createDictionary(createRequest);
       }
 
       if (response.success && response.data) {
-        onSave(response.data);
+        onSave(response.data?.[0] as Dictionary);
       } else {
         Alert.alert(
           'Error',
