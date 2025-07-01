@@ -308,6 +308,32 @@ export const getCardColor = (partOfSpeech: string): string => {
   return colorMap[partOfSpeech] || Colors.primary;
 };
 
+// Updated shadow function for web compatibility
+const createShadow = (elevation: number) => {
+  if (Platform.OS === 'web') {
+    // Use boxShadow for web
+    const opacity = Math.min(elevation * 0.03, 0.3);
+    const radius = elevation * 0.5;
+    const offset = elevation * 0.25;
+    
+    return {
+      boxShadow: `0px ${offset}px ${radius}px rgba(0, 0, 0, ${opacity})`,
+    };
+  } else {
+    // Use elevation for native platforms
+    return {
+      elevation,
+      shadowColor: Colors.secondary,
+      shadowOffset: {
+        width: 0,
+        height: elevation * 0.25,
+      },
+      shadowOpacity: Math.min(elevation * 0.03, 0.3),
+      shadowRadius: elevation * 0.5,
+    };
+  }
+};
+
 // Main shared styles
 export const SharedStyles = StyleSheet.create({
   // Layout
@@ -1038,4 +1064,11 @@ export const getLevelBadgeStyle = (level: string) => {
     backgroundColor: getLevelColor(level),
   };
   return [baseStyle, colorStyle];
+};
+
+export const Shadow = {
+  small: () => createShadow(2),
+  medium: () => createShadow(4),
+  large: () => createShadow(8),
+  custom: (elevation: number) => createShadow(elevation),
 };

@@ -13,21 +13,23 @@
  * - Offer convenience methods for UI components
  */
 
-import {
-  dictionaryService,
-  exampleService,
-  setService,
-  wordService,
-} from "./index";
-import type {
-  DatabaseResult,
-  DictionaryStats,
-  SetStats,
-  SetWithWords,
-  WordSearchFilter,
-  WordStats,
-  WordWithExamples,
-} from "./index";
+// Import services directly instead of through index
+import { DictionaryService } from './DictionaryService';
+import { WordService } from './WordService';
+import { ExampleService } from './ExampleService';
+import { SetService } from './SetService';
+
+// Import types directly
+import type { DatabaseResult } from './SQLiteUniversalService';
+import type { WordWithExamples, WordSearchFilter, WordStats } from './WordService';
+import type { DictionaryStats } from './DictionaryService';
+import type { SetStats, SetWithWords } from './SetService';
+
+// Get service instances
+const dictionaryService = DictionaryService.getInstance();
+const wordService = WordService.getInstance();
+const exampleService = ExampleService.getInstance();
+const setService = SetService.getInstance();
 
 export interface DashboardData {
   totalDictionaries: number;

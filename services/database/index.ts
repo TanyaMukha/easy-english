@@ -1,25 +1,16 @@
-// services/database/index.ts
+// services/database/index.ts - Fixed to avoid require cycles
 /**
- * Database Services Export Index
+ * Database Services Export Index - Fixed circular dependencies
  * 
- * Central export point for all database services following clean architecture principles.
- * This file provides a single import point for all database-related functionality.
+ * Restructured to avoid require cycles between services
  */
 
-import { dictionaryService } from './DictionaryService';
-import { exampleService } from './ExampleService';
-import { migrationService } from './MigrationService';
-import { queryService } from './QueryService';
-import { setService } from './SetService';
-import { SQLiteUniversal } from './SQLiteUniversalService';
-import { wordService } from './WordService';
-
-// Core database service
+// Core database service (no dependencies)
 export { SQLiteUniversal, SQLiteUniversalService } from './SQLiteUniversalService';
 export type { DatabaseResult, TransactionCallback } from './SQLiteUniversalService';
 
-// Domain-specific services
-export { DictionaryService, dictionaryService } from './DictionaryService';
+// Domain-specific services (import each other directly, not through index)
+export { DictionaryService } from './DictionaryService';
 export type { 
   Dictionary, 
   DictionaryCreateRequest, 
@@ -27,7 +18,7 @@ export type {
   DictionaryStats 
 } from './DictionaryService';
 
-export { WordService, wordService } from './WordService';
+export { WordService } from './WordService';
 export type { 
   Word, 
   WordWithExamples, 
@@ -38,7 +29,7 @@ export type {
   PartOfSpeech 
 } from './WordService';
 
-export { ExampleService, exampleService } from './ExampleService';
+export { ExampleService } from './ExampleService';
 export type { 
   Example, 
   ExampleCreateRequest, 
@@ -46,7 +37,7 @@ export type {
   ExampleWithWord 
 } from './ExampleService';
 
-export { SetService, setService } from './SetService';
+export { SetService } from './SetService';
 export type { 
   Set, 
   SetWithWords, 
@@ -56,23 +47,39 @@ export type {
   SetSearchFilter 
 } from './SetService';
 
-// High-level query service
-export { QueryService, queryService } from './QueryService';
+// High-level services (depend on domain services)
+export { QueryService } from './QueryService';
 export type { 
   DashboardData, 
   StudySession, 
   LearningProgress 
 } from './QueryService';
 
-// Migration and setup service
-export { MigrationService, migrationService } from './MigrationService';
+export { MigrationService } from './MigrationService';
 export type { 
   MigrationResult, 
   SeedDataOptions 
 } from './MigrationService';
 
 // Testing utilities
-export { DatabaseTester, databaseTester } from './DatabaseTester';
+export { DatabaseTester } from './DatabaseTester';
+
+// Create service instances after all classes are defined
+import { DictionaryService } from './DictionaryService';
+import { WordService } from './WordService';
+import { ExampleService } from './ExampleService';
+import { SetService } from './SetService';
+import { QueryService } from './QueryService';
+import { MigrationService } from './MigrationService';
+import { SQLiteUniversal } from './SQLiteUniversalService';
+
+// Export singleton instances
+export const dictionaryService = DictionaryService.getInstance();
+export const wordService = WordService.getInstance();
+export const exampleService = ExampleService.getInstance();
+export const setService = SetService.getInstance();
+export const queryService = QueryService.getInstance();
+export const migrationService = MigrationService.getInstance();
 
 // Convenience exports for common operations
 export const DatabaseServices = {

@@ -11,8 +11,18 @@
  * Ensures database consistency across app updates and fresh installations
  */
 
-import { SQLiteUniversal, DatabaseResult } from './SQLiteUniversalService';
-import { dictionaryService, wordService, exampleService } from './index';
+// Import services directly instead of through index
+import { SQLiteUniversal } from './SQLiteUniversalService';
+import { DictionaryService } from './DictionaryService';
+import { WordService } from './WordService';
+
+// Import types directly
+import type { DatabaseResult } from './SQLiteUniversalService';
+
+// Get service instances when needed (lazy initialization)
+const dictionaryService = DictionaryService.getInstance();
+const wordService = WordService.getInstance();
+
 import { PartOfSpeech } from './WordService';
 
 export interface MigrationResult {

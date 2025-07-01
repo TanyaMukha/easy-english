@@ -763,40 +763,126 @@ export class SQLiteUniversalService {
   /**
    * Set up web SQLite database using SQL.js with persistence
    */
+  // private async setupWebDatabase(): Promise<void> {
+  //   if (!initSqlJs) {
+  //     throw new Error("SQL.js not available. Install with: npm install sql.js");
+  //   }
+
+  //   console.log("🌐 Setting up web SQLite database with persistence...");
+
+  //   // Initialize SQL.js
+  //   this.webSqlJs = await initSqlJs({
+  //     locateFile: (file: string) => {
+  //       return `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`;
+  //     },
+  //   });
+
+  //   // Try to load existing database
+  //   const existingDb = await WebDatabasePersistence.loadExistingDatabase();
+
+  //   if (existingDb) {
+  //     // Load existing database
+  //     this.webDatabase = new this.webSqlJs.Database(existingDb);
+  //     console.log("✅ Existing database loaded from storage");
+  //   } else {
+  //     // Create new database
+  //     this.webDatabase = new this.webSqlJs.Database();
+  //     console.log("✅ New database created");
+  //   }
+
+  //   // Start auto-save (every 10 seconds)
+  //   this.autoSaveController = WebDatabasePersistence.startAutoSave(
+  //     this.webDatabase,
+  //     10000, // 10 seconds
+  //   );
+
+  //   console.log("✅ Web SQLite database configured with auto-save");
+  // }
+
+  /**
+   * Fixed setupWebDatabase method
+   * Resolves SQL.js WebAssembly initialization issues
+   */
+
   private async setupWebDatabase(): Promise<void> {
     if (!initSqlJs) {
-      throw new Error("SQL.js not available. Install with: npm install sql.js");
+      throw new Error(
+        "SQL.js not available. Install with: npm install sql.js @types/sql.js",
+      );
     }
 
     console.log("🌐 Setting up web SQLite database with persistence...");
 
-    // Initialize SQL.js
-    this.webSqlJs = await initSqlJs({
-      locateFile: (file: string) => {
-        return `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`;
-      },
-    });
+    try {
+      // Initialize SQL.js with proper WASM configuration
+      this.webSqlJs = await initSqlJs({
+        // Use local WASM file or CDN as fallback
+        locateFile: (file: string) => {
+          // Try local first (if you have the files in public folder)
+          if (file.endsWith(".wasm")) {
+            // Option 1: Use CDN (most reliable)
+            return `https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/${file}`;
 
-    // Try to load existing database
-    const existingDb = await WebDatabasePersistence.loadExistingDatabase();
+            // Option 2: Use local files (uncomment if you have them in public/)
+            // return `/sql.js/${file}`;
+          }
+          return file;
+        },
+      });
 
-    if (existingDb) {
-      // Load existing database
-      this.webDatabase = new this.webSqlJs.Database(existingDb);
-      console.log("✅ Existing database loaded from storage");
-    } else {
-      // Create new database
-      this.webDatabase = new this.webSqlJs.Database();
-      console.log("✅ New database created");
+      console.log("✅ SQL.js WebAssembly module loaded successfully");
+
+      // Try to load existing database
+      let existingDb: Uint8Array | null = null;
+
+      try {
+        existingDb = await WebDatabasePersistence.loadExistingDatabase();
+      } catch (error) {
+        console.warn(
+          "⚠️ Could not load existing database, will create new one:",
+          error,
+        );
+      }
+
+      if (existingDb) {
+        // Load existing database
+        this.webDatabase = new this.webSqlJs.Database(existingDb);
+        console.log("✅ Existing database loaded from storage");
+      } else {
+        // Create new database
+        this.webDatabase = new this.webSqlJs.Database();
+        console.log("✅ New database created");
+      }
+
+      // Start auto-save (every 15 seconds for better performance)
+      this.autoSaveController = WebDatabasePersistence.startAutoSave(
+        this.webDatabase,
+        15000, // 15 seconds
+      );
+
+      console.log("✅ Web SQLite database configured with auto-save");
+    } catch (error) {
+      console.error("❌ Failed to setup web database:", error);
+
+      // Fallback: try without persistence
+      try {
+        console.log("🔄 Trying fallback initialization without persistence...");
+
+        this.webSqlJs = await initSqlJs({
+          locateFile: (file: string) => {
+            return `https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/${file}`;
+          },
+        });
+
+        this.webDatabase = new this.webSqlJs.Database();
+        console.log("✅ Fallback database created (no persistence)");
+      } catch (fallbackError) {
+        console.error("❌ Fallback initialization also failed:", fallbackError);
+        throw new Error(
+          `Failed to initialize web database: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+      }
     }
-
-    // Start auto-save (every 10 seconds)
-    this.autoSaveController = WebDatabasePersistence.startAutoSave(
-      this.webDatabase,
-      10000, // 10 seconds
-    );
-
-    console.log("✅ Web SQLite database configured with auto-save");
   }
 
   /**
