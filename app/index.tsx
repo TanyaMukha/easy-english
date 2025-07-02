@@ -18,6 +18,8 @@ import { useHomeData } from "../hooks/useHomeData";
 import { useWords } from "../hooks/useWords";
 import { databaseTester } from "../services/database/DatabaseTester";
 import { Colors, SharedStyles, Spacing } from "../styles/SharedStyles";
+import { DatabaseManager } from "components/DatabaseManager";
+import { SQLiteUniversal as databaseService } from "../services/database/SQLiteUniversalService";
 
 export default function HomeScreen() {
   const {
@@ -309,6 +311,8 @@ export default function HomeScreen() {
           </View>
 
           <QuickShortcutsSection shortcuts={shortcuts} />
+
+          <DatabaseManager databaseService={databaseService} />
         </ScrollView>
       )}
     </View>

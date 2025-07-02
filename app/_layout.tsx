@@ -11,7 +11,6 @@ import LoadingState from "../components/ui/feedback/LoadingState";
 import i18n from "../i18n/config";
 import { SharedStyles } from "../styles/SharedStyles";
 import { initializeDatabaseWithCompatibilityCheck } from '../utils/databaseReset';
-
 /**
  * Root layout component that wraps the entire application
  * Handles initialization, providers, and platform-specific setup

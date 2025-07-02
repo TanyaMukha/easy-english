@@ -1,6 +1,11 @@
 // services/database/SQLiteUniversalService.ts - Complete implementation with all methods
 import { Platform } from "react-native";
-import { WebDatabasePersistence, AutoSaveController } from "./WebDatabasePersistence";
+
+import { WebDatabaseManager } from "./WebDatabaseManager";
+import {
+  AutoSaveController,
+  WebDatabasePersistence,
+} from "./WebDatabasePersistence";
 
 // Conditional imports for platform-specific modules
 let ExpoSQLite: any = null;
@@ -44,6 +49,7 @@ enum InitializationState {
   SCHEMA_CREATED = "SCHEMA_CREATED",
   FULLY_INITIALIZED = "FULLY_INITIALIZED",
   FAILED = "FAILED",
+  PARTIALLY_INITIALIZED = "PARTIALLY_INITIALIZED",
 }
 
 export class SQLiteUniversalService {
@@ -119,91 +125,159 @@ export class SQLiteUniversalService {
   }
 
   /**
-   * Fixed web database setup with proper WebAssembly configuration
+   * Set up web SQLite database with public file support
    */
   private async setupWebDatabase(): Promise<void> {
     if (!initSqlJs) {
-      throw new Error("SQL.js not available. Install with: npm install sql.js @types/sql.js");
+      throw new Error(
+        "SQL.js not available. Install with: npm install sql.js @types/sql.js",
+      );
     }
 
-    console.log("🌐 Setting up web SQLite database with persistence...");
+    console.log(
+      "🌐 Setting up web SQLite database with public file support...",
+    );
 
     try {
-      // Try multiple WebAssembly loading strategies
+      // Initialize SQL.js WebAssembly module
       let sqlJsConfig: any = {};
 
-      // Strategy 1: Try local WASM file first (if exists)
+      // Try multiple WebAssembly loading strategies
       try {
-        const wasmResponse = await fetch('/sql-wasm.wasm');
+        const wasmResponse = await fetch("/sql-wasm.wasm");
         if (wasmResponse.ok) {
           console.log("📁 Using local WASM file");
           sqlJsConfig = {
             locateFile: (file: string) => {
-              if (file.endsWith('.wasm')) {
-                return '/sql-wasm.wasm';
+              if (file.endsWith(".wasm")) {
+                return "/sql-wasm.wasm";
               }
               return file;
-            }
+            },
           };
         } else {
-          throw new Error('Local WASM not found');
+          throw new Error("Local WASM not found");
         }
       } catch (localError) {
         console.log("📡 Local WASM not available, using CDN...");
-        
-        // Strategy 2: Use reliable CDN
         sqlJsConfig = {
           locateFile: (file: string) => {
-            if (file.endsWith('.wasm')) {
+            if (file.endsWith(".wasm")) {
               return `https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/${file}`;
             }
             return file;
-          }
+          },
         };
       }
 
-      // Initialize SQL.js with the chosen configuration
+      // Initialize SQL.js
       this.webSqlJs = await initSqlJs(sqlJsConfig);
       console.log("✅ SQL.js WebAssembly module loaded successfully");
 
-      // Try to load existing database
-      let existingDb: Uint8Array | null = null;
-      try {
-        existingDb = await WebDatabasePersistence.loadExistingDatabase();
-      } catch (error) {
-        console.warn("⚠️ Could not load existing database, will create new one:", error);
-      }
-
-      if (existingDb) {
-        this.webDatabase = new this.webSqlJs.Database(existingDb);
-        console.log("✅ Existing database loaded from storage");
-      } else {
-        this.webDatabase = new this.webSqlJs.Database();
-        console.log("✅ New database created");
-      }
-
-      // Start auto-save
-      this.autoSaveController = WebDatabasePersistence.startAutoSave(
-        this.webDatabase,
-        15000, // 15 seconds
+      // Load database using WebDatabaseManager (public folder -> storage -> new)
+      this.webDatabase = await WebDatabaseManager.loadOrCreateDatabase(
+        this.webSqlJs,
       );
 
-      console.log("✅ Web SQLite database configured with auto-save");
+      // Start auto-save to browser storage
+      this.startAutoSave();
+
+      console.log("✅ Web SQLite database configured with public file support");
     } catch (error) {
       console.error("❌ Failed to setup web database:", error);
-      
-      // Final fallback: Try with minimal configuration
+      throw new Error(
+        `Failed to initialize web database: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
+  /**
+   * Start auto-save for web database
+   */
+  private startAutoSave(): void {
+    if (Platform.OS !== "web" || !this.webDatabase) {
+      return;
+    }
+
+    // Save every 30 seconds
+    setInterval(async () => {
       try {
-        console.log("🔄 Trying minimal WebAssembly configuration...");
-        
-        this.webSqlJs = await initSqlJs();
-        this.webDatabase = new this.webSqlJs.Database();
-        
-        console.log("✅ Minimal database created (no persistence)");
-      } catch (fallbackError) {
-        console.error("❌ All WebAssembly loading strategies failed:", fallbackError);
-        throw new Error(`Failed to initialize SQL.js: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        await WebDatabaseManager.saveToStorage(this.webDatabase);
+      } catch (error) {
+        console.warn("⚠️ Auto-save failed:", error);
       }
+    }, 30000);
+
+    // Save on page unload
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", () => {
+        try {
+          WebDatabaseManager.saveToStorage(this.webDatabase);
+        } catch (error) {
+          console.warn("⚠️ Save on unload failed:", error);
+        }
+      });
+    }
+  }
+
+  /**
+   * Manual save to browser storage (web only)
+   */
+  async saveToStorage(): Promise<void> {
+    if (Platform.OS !== "web" || !this.webDatabase) {
+      throw new Error("saveToStorage is only available on web platform");
+    }
+
+    await WebDatabaseManager.saveToStorage(this.webDatabase);
+  }
+
+  /**
+   * Download database file (web only)
+   */
+  async downloadDatabase(filename?: string): Promise<void> {
+    if (Platform.OS !== "web" || !this.webDatabase) {
+      throw new Error("downloadDatabase is only available on web platform");
+    }
+
+    await WebDatabaseManager.downloadDatabase(this.webDatabase, filename);
+  }
+
+  /**
+   * Upload and replace current database (web only)
+   */
+  async uploadDatabase(file: File): Promise<void> {
+    if (Platform.OS !== "web" || !this.webSqlJs) {
+      throw new Error("uploadDatabase is only available on web platform");
+    }
+
+    this.webDatabase = await WebDatabaseManager.uploadDatabase(
+      this.webSqlJs,
+      file,
+    );
+
+    // Reinitialize database state
+    this.initState = InitializationState.PARTIALLY_INITIALIZED;
+    await this.createSchemaDirectly();
+    this.initState = InitializationState.FULLY_INITIALIZED;
+  }
+
+  /**
+   * Get database storage info (web only)
+   */
+  getStorageInfo(): { hasStoredData: boolean; storageSize?: number } {
+    if (Platform.OS !== "web") {
+      return { hasStoredData: false };
+    }
+
+    return WebDatabaseManager.getStorageInfo();
+  }
+
+  /**
+   * Clear browser storage (web only)
+   */
+  clearStorage(): void {
+    if (Platform.OS === "web") {
+      WebDatabaseManager.clearStorage();
     }
   }
 
@@ -212,14 +286,19 @@ export class SQLiteUniversalService {
    */
   private async setupNativeDatabase(): Promise<void> {
     if (!ExpoSQLite) {
-      throw new Error("Expo SQLite not available. Ensure you are running on a native platform.");
+      throw new Error(
+        "Expo SQLite not available. Ensure you are running on a native platform.",
+      );
     }
 
     console.log("📱 Setting up native SQLite database...");
 
-    this.nativeDatabase = await ExpoSQLite.openDatabaseAsync(this.databaseName, {
-      enableChangeListener: true,
-    });
+    this.nativeDatabase = await ExpoSQLite.openDatabaseAsync(
+      this.databaseName,
+      {
+        enableChangeListener: true,
+      },
+    );
 
     // Configure SQLite settings
     await this.nativeDatabase.execAsync(`
@@ -249,7 +328,7 @@ export class SQLiteUniversalService {
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
       )`,
-      
+
       // Words table (main vocabulary table)
       `CREATE TABLE IF NOT EXISTS words (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -272,7 +351,7 @@ export class SQLiteUniversalService {
         dictionaryId INTEGER,
         FOREIGN KEY (dictionaryId) REFERENCES dictionaries (id) ON DELETE CASCADE
       )`,
-      
+
       // Examples table
       `CREATE TABLE IF NOT EXISTS examples (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -284,7 +363,7 @@ export class SQLiteUniversalService {
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
       )`,
-      
+
       // Sets table (word collections)
       `CREATE TABLE IF NOT EXISTS sets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -296,7 +375,7 @@ export class SQLiteUniversalService {
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
       )`,
-      
+
       // Set-word relationships
       `CREATE TABLE IF NOT EXISTS set_words (
         setId INTEGER NOT NULL,
@@ -306,7 +385,7 @@ export class SQLiteUniversalService {
         FOREIGN KEY (setId) REFERENCES sets (id) ON DELETE CASCADE,
         FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
       )`,
-      
+
       // Tags table
       `CREATE TABLE IF NOT EXISTS tags (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -314,7 +393,7 @@ export class SQLiteUniversalService {
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
       )`,
-      
+
       // Word-tag relationships
       `CREATE TABLE IF NOT EXISTS word_tags (
         wordId INTEGER NOT NULL,
@@ -323,7 +402,7 @@ export class SQLiteUniversalService {
         FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE,
         FOREIGN KEY (tagId) REFERENCES tags (id) ON DELETE CASCADE
       )`,
-      
+
       // Irregular forms (for verbs)
       `CREATE TABLE IF NOT EXISTS irregular_forms (
         firstFormId INTEGER NOT NULL,
@@ -334,7 +413,7 @@ export class SQLiteUniversalService {
         FOREIGN KEY (secondFormId) REFERENCES words (id) ON DELETE CASCADE,
         FOREIGN KEY (thirdFormId) REFERENCES words (id) ON DELETE CASCADE
       )`,
-      
+
       // Study cards
       `CREATE TABLE IF NOT EXISTS study_cards (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -349,7 +428,7 @@ export class SQLiteUniversalService {
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
         unitId INTEGER
       )`,
-      
+
       // Study card items (words in cards)
       `CREATE TABLE IF NOT EXISTS study_card_items (
         cardId INTEGER NOT NULL,
@@ -358,7 +437,7 @@ export class SQLiteUniversalService {
         FOREIGN KEY (cardId) REFERENCES study_cards (id) ON DELETE CASCADE,
         FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
       )`,
-      
+
       // Units (learning units)
       `CREATE TABLE IF NOT EXISTS units (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -370,7 +449,7 @@ export class SQLiteUniversalService {
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
       )`,
-      
+
       // Learning progress tracking
       `CREATE TABLE IF NOT EXISTS word_progress (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -386,7 +465,7 @@ export class SQLiteUniversalService {
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
       )`,
-      
+
       // Indexes for performance
       `CREATE INDEX IF NOT EXISTS idx_words_dictionary_id ON words (dictionaryId)`,
       `CREATE INDEX IF NOT EXISTS idx_words_word ON words (word)`,
@@ -398,7 +477,7 @@ export class SQLiteUniversalService {
       `CREATE INDEX IF NOT EXISTS idx_word_tags_word_id ON word_tags (wordId)`,
       `CREATE INDEX IF NOT EXISTS idx_word_tags_tag_id ON word_tags (tagId)`,
       `CREATE INDEX IF NOT EXISTS idx_word_progress_word_id ON word_progress (wordId)`,
-      `CREATE INDEX IF NOT EXISTS idx_word_progress_next_review ON word_progress (nextReview)`
+      `CREATE INDEX IF NOT EXISTS idx_word_progress_next_review ON word_progress (nextReview)`,
     ];
 
     if (Platform.OS === "web" && this.webDatabase) {
@@ -429,10 +508,7 @@ export class SQLiteUniversalService {
   /**
    * Execute SQL query with universal platform support
    */
-  async execute(
-    sql: string,
-    params: any[] = []
-  ): Promise<DatabaseResult> {
+  async execute(sql: string, params: any[] = []): Promise<DatabaseResult> {
     if (this.initState !== InitializationState.FULLY_INITIALIZED) {
       await this.initialize();
     }
@@ -451,7 +527,8 @@ export class SQLiteUniversalService {
       console.error("❌ Database execution error:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown database error",
+        error:
+          error instanceof Error ? error.message : "Unknown database error",
       };
     }
   }
@@ -489,8 +566,10 @@ export class SQLiteUniversalService {
       }
 
       // Get affected rows and insert ID for INSERT/UPDATE/DELETE
-      if (sql.trim().toUpperCase().startsWith('INSERT')) {
-        result.insertId = this.webDatabase.exec("SELECT last_insert_rowid()")[0]?.values[0]?.[0] || 0;
+      if (sql.trim().toUpperCase().startsWith("INSERT")) {
+        result.insertId =
+          this.webDatabase.exec("SELECT last_insert_rowid()")[0]
+            ?.values[0]?.[0] || 0;
       }
 
       statement.free();
@@ -507,7 +586,10 @@ export class SQLiteUniversalService {
   /**
    * Execute query on native platform (Expo SQLite)
    */
-  private async executeNativeQuery(sql: string, params: any[]): Promise<DatabaseResult> {
+  private async executeNativeQuery(
+    sql: string,
+    params: any[],
+  ): Promise<DatabaseResult> {
     try {
       const result = await this.nativeDatabase.runAsync(sql, params);
       return {
@@ -575,7 +657,9 @@ export class SQLiteUniversalService {
   /**
    * Execute multiple queries in a transaction
    */
-  async executeTransaction<T>(callback: TransactionCallback<T>): Promise<DatabaseResult<T>> {
+  async executeTransaction<T>(
+    callback: TransactionCallback<T>,
+  ): Promise<DatabaseResult<T>> {
     try {
       const result = await this.transaction(callback);
       return {
@@ -615,7 +699,8 @@ export class SQLiteUniversalService {
     totalRecords: number;
   }> {
     const baseInfo = {
-      platform: Platform.OS === "web" ? "Web (SQL.js)" : `Native (${Platform.OS})`,
+      platform:
+        Platform.OS === "web" ? "Web (SQL.js)" : `Native (${Platform.OS})`,
       state: this.initState,
       ready: this.isReady(),
       tableCount: 0,
@@ -628,7 +713,7 @@ export class SQLiteUniversalService {
 
     try {
       const tablesResult = await this.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
       );
 
       const tables = tablesResult.data || [];
@@ -637,13 +722,16 @@ export class SQLiteUniversalService {
       for (const table of tables) {
         try {
           const countResult = await this.execute(
-            `SELECT COUNT(*) as count FROM "${(table as any).name}"`
+            `SELECT COUNT(*) as count FROM "${(table as any).name}"`,
           );
           if (countResult.success && countResult.data?.[0]) {
             totalRecords += (countResult.data[0] as any).count || 0;
           }
         } catch (error) {
-          console.warn(`Could not count records in table ${(table as any).name}:`, error);
+          console.warn(
+            `Could not count records in table ${(table as any).name}:`,
+            error,
+          );
         }
       }
 
