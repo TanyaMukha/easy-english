@@ -15,8 +15,8 @@
  * - Dependency Inversion: Depends on SQLiteUniversal abstraction
  */
 
+import { WordWithExamples } from 'data/DataModels';
 import { SQLiteUniversal, DatabaseResult } from './SQLiteUniversalService';
-import type { WordWithExamples } from './WordService';
 
 export interface Set {
   id?: number | undefined;
@@ -82,7 +82,7 @@ export class SetService {
   async createSet(request: SetCreateRequest): Promise<DatabaseResult<Set>> {
     const now = new Date().toISOString();
     
-    const result = await SQLiteUniversal.execute<Set>(
+    const result = await SQLiteUniversal.execute(
       `INSERT INTO sets (guid, title, description, reviewCount, createdAt, updatedAt) 
        VALUES (?, ?, ?, ?, ?, ?)`,
       [request.guid, request.title, request.description || null, 0, now, now]
@@ -100,7 +100,7 @@ export class SetService {
    * Get set by ID
    */
   async getSetById(id: number): Promise<DatabaseResult<Set>> {
-    return SQLiteUniversal.execute<Set>(
+    return SQLiteUniversal.execute(
       'SELECT * FROM sets WHERE id = ?',
       [id]
     );
@@ -110,7 +110,7 @@ export class SetService {
    * Get set by GUID
    */
   async getSetByGuid(guid: string): Promise<DatabaseResult<Set>> {
-    return SQLiteUniversal.execute<Set>(
+    return SQLiteUniversal.execute(
       'SELECT * FROM sets WHERE guid = ?',
       [guid]
     );
@@ -159,7 +159,7 @@ export class SetService {
       }
     }
 
-    return SQLiteUniversal.execute<Set>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 
   /**
@@ -182,7 +182,7 @@ export class SetService {
       ORDER BY s.createdAt DESC
     `;
 
-    return SQLiteUniversal.execute<SetStats>(query);
+    return SQLiteUniversal.execute(query);
   }
 
   /**
@@ -296,7 +296,7 @@ export class SetService {
       ${limitClause}
     `;
 
-    return SQLiteUniversal.execute<SetStats>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 
   /**
@@ -315,7 +315,7 @@ export class SetService {
       ORDER BY w.word ASC
     `;
 
-    const wordsResult = await SQLiteUniversal.execute<WordWithExamples>(query, [setId]);
+    const wordsResult = await SQLiteUniversal.execute(query, [setId]);
     
     if (!wordsResult.success || !wordsResult.data) {
       return wordsResult;
@@ -436,7 +436,7 @@ export class SetService {
       GROUP BY s.id, s.title, s.lastReviewDate, s.reviewCount
     `;
 
-    return SQLiteUniversal.execute<SetStats>(query, [setId]);
+    return SQLiteUniversal.execute(query, [setId]);
   }
 
   /**
@@ -462,7 +462,7 @@ export class SetService {
       ORDER BY s.title ASC
     `;
 
-    return SQLiteUniversal.execute<Set>(query, [wordId]);
+    return SQLiteUniversal.execute(query, [wordId]);
   }
 
   /**
@@ -494,7 +494,7 @@ export class SetService {
       ${limitClause}
     `;
 
-    return SQLiteUniversal.execute<SetStats>(query, [reviewDateStr]);
+    return SQLiteUniversal.execute(query, [reviewDateStr]);
   }
 
   /**
@@ -540,7 +540,7 @@ export class SetService {
       LIMIT ?
     `;
 
-    const wordsResult = await SQLiteUniversal.execute<WordWithExamples>(query, [setId, count]);
+    const wordsResult = await SQLiteUniversal.execute(query, [setId, count]);
     
     if (!wordsResult.success || !wordsResult.data) {
       return wordsResult;

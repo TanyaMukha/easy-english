@@ -57,7 +57,7 @@ export class DictionaryService {
   async createDictionary(request: DictionaryCreateRequest): Promise<DatabaseResult<Dictionary>> {
     const now = new Date().toISOString();
     
-    const result = await SQLiteUniversal.execute<Dictionary>(
+    const result = await SQLiteUniversal.execute(
       `INSERT INTO dictionaries (guid, title, description, createdAt, updatedAt) 
        VALUES (?, ?, ?, ?, ?)`,
       [request.guid, request.title, request.description || null, now, now]
@@ -75,7 +75,7 @@ export class DictionaryService {
    * Get dictionary by ID
    */
   async getDictionaryById(id: number): Promise<DatabaseResult<Dictionary>> {
-    return SQLiteUniversal.execute<Dictionary>(
+    return SQLiteUniversal.execute(
       'SELECT * FROM dictionaries WHERE id = ?',
       [id]
     );
@@ -85,7 +85,7 @@ export class DictionaryService {
    * Get dictionary by GUID
    */
   async getDictionaryByGuid(guid: string): Promise<DatabaseResult<Dictionary>> {
-    return SQLiteUniversal.execute<Dictionary>(
+    return SQLiteUniversal.execute(
       'SELECT * FROM dictionaries WHERE guid = ?',
       [guid]
     );
@@ -108,7 +108,7 @@ export class DictionaryService {
       }
     }
 
-    return SQLiteUniversal.execute<Dictionary>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 
   /**
@@ -179,7 +179,7 @@ export class DictionaryService {
    * Get dictionary statistics
    */
   async getDictionaryStats(id: number): Promise<DatabaseResult<DictionaryStats>> {
-    const result = await SQLiteUniversal.execute<DictionaryStats>(
+    const result = await SQLiteUniversal.execute(
       `SELECT 
         d.id,
         d.title,
@@ -200,7 +200,7 @@ export class DictionaryService {
    * Get all dictionaries with their statistics
    */
   async getAllDictionariesWithStats(): Promise<DatabaseResult<DictionaryStats>> {
-    return SQLiteUniversal.execute<DictionaryStats>(
+    return SQLiteUniversal.execute(
       `SELECT 
         d.id,
         d.title,
@@ -218,7 +218,7 @@ export class DictionaryService {
    * Search dictionaries by title
    */
   async searchDictionaries(searchTerm: string): Promise<DatabaseResult<Dictionary>> {
-    return SQLiteUniversal.execute<Dictionary>(
+    return SQLiteUniversal.execute(
       `SELECT * FROM dictionaries 
        WHERE title LIKE ? OR description LIKE ?
        ORDER BY title`,

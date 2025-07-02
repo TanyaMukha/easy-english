@@ -216,7 +216,16 @@ export class QueryService {
             );
 
             if (setWordsResult.success) {
-              words = setWordsResult.data || [];
+              words = (setWordsResult.data || []).map((word: any) => ({
+                ...word,
+                examples: (word.examples || []).map((ex: any) => ({
+                  ...ex,
+                  translation: ex.translation ?? "",
+                  sentence: ex.sentence ?? "",
+                  createdAt: ex.createdAt ?? "",
+                  updatedAt: ex.updatedAt ?? "",
+                })),
+              }));
             }
           }
           break;

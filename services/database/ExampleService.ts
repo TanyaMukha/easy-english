@@ -61,7 +61,7 @@ export class ExampleService {
   ): Promise<DatabaseResult<Example>> {
     const now = new Date().toISOString();
 
-    const result = await SQLiteUniversal.execute<Example>(
+    const result = await SQLiteUniversal.execute(
       `INSERT INTO examples (guid, sentence, translation, wordId, createdAt, updatedAt) 
        VALUES (?, ?, ?, ?, ?, ?)`,
       [
@@ -141,7 +141,7 @@ export class ExampleService {
    * Get example by ID
    */
   async getExampleById(id: number): Promise<DatabaseResult<Example>> {
-    return SQLiteUniversal.execute<Example>(
+    return SQLiteUniversal.execute(
       "SELECT * FROM examples WHERE id = ?",
       [id],
     );
@@ -151,7 +151,7 @@ export class ExampleService {
    * Get example by GUID
    */
   async getExampleByGuid(guid: string): Promise<DatabaseResult<Example>> {
-    return SQLiteUniversal.execute<Example>(
+    return SQLiteUniversal.execute(
       "SELECT * FROM examples WHERE guid = ?",
       [guid],
     );
@@ -161,7 +161,7 @@ export class ExampleService {
    * Get all examples for a specific word
    */
   async getExamplesByWordId(wordId: number): Promise<DatabaseResult<Example>> {
-    return SQLiteUniversal.execute<Example>(
+    return SQLiteUniversal.execute(
       "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
       [wordId],
     );
@@ -203,7 +203,7 @@ export class ExampleService {
       }
     }
 
-    return SQLiteUniversal.execute<ExampleWithWord>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 
   /**
@@ -239,7 +239,7 @@ export class ExampleService {
       params.push(limit);
     }
 
-    return SQLiteUniversal.execute<ExampleWithWord>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 
   /**
@@ -360,7 +360,7 @@ export class ExampleService {
     query += " ORDER BY RANDOM() LIMIT ?";
     params.push(count);
 
-    return SQLiteUniversal.execute<ExampleWithWord>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 
   /**
@@ -443,7 +443,7 @@ export class ExampleService {
       }
     }
 
-    return SQLiteUniversal.execute<ExampleWithWord>(query, params);
+    return SQLiteUniversal.execute(query, params);
   }
 }
 

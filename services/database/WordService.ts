@@ -208,7 +208,7 @@ export class WordService {
   async getWordWithExamples(
     id: number,
   ): Promise<DatabaseResult<WordWithExamples>> {
-    const wordResult = await SQLiteUniversal.execute<Word>(
+    const wordResult = await SQLiteUniversal.execute(
       "SELECT * FROM words WHERE id = ?",
       [id],
     );
@@ -224,7 +224,7 @@ export class WordService {
     const word = wordResult.data[0];
 
     // Get examples for this word
-    const examplesResult = await SQLiteUniversal.execute<Example>(
+    const examplesResult = await SQLiteUniversal.execute(
       "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
       [id],
     );
@@ -246,7 +246,7 @@ export class WordService {
    * Get word by ID with examples
    */
   async getWordById(id: number): Promise<DatabaseResult<WordWithExamples>> {
-    const wordResult = await SQLiteUniversal.execute<Word>(
+    const wordResult = await SQLiteUniversal.execute(
       "SELECT * FROM words WHERE id = ?",
       [id],
     );
@@ -265,7 +265,7 @@ export class WordService {
     const word = wordResult.data[0];
 
     // Get examples for this word
-    const examplesResult = await SQLiteUniversal.execute<Example>(
+    const examplesResult = await SQLiteUniversal.execute(
       "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt ASC",
       [id],
     );
@@ -285,7 +285,7 @@ export class WordService {
    * Get word by GUID with examples
    */
   async getWordByGuid(guid: string): Promise<DatabaseResult<WordWithExamples>> {
-    const wordResult = await SQLiteUniversal.execute<Word>(
+    const wordResult = await SQLiteUniversal.execute(
       "SELECT * FROM words WHERE guid = ?",
       [guid],
     );
@@ -304,7 +304,7 @@ export class WordService {
     const word = wordResult.data[0];
 
     // Get examples for this word
-    const examplesResult = await SQLiteUniversal.execute<Example>(
+    const examplesResult = await SQLiteUniversal.execute(
       "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt ASC",
       [word?.id!],
     );
@@ -398,7 +398,7 @@ export class WordService {
       }
     }
 
-    const wordsResult = await SQLiteUniversal.execute<Word>(query, params);
+    const wordsResult = await SQLiteUniversal.execute(query, params);
 
     if (!wordsResult.success) {
       return wordsResult as DatabaseResult<WordWithExamples>;
@@ -408,7 +408,7 @@ export class WordService {
     const wordsWithExamples: WordWithExamples[] = [];
 
     for (const word of wordsResult.data || []) {
-      const examplesResult = await SQLiteUniversal.execute<Example>(
+      const examplesResult = await SQLiteUniversal.execute(
         "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
         [word.id!],
       );
@@ -445,7 +445,7 @@ export class WordService {
     query += " ORDER BY RANDOM() LIMIT ?";
     params.push(count);
 
-    const wordsResult = await SQLiteUniversal.execute<Word>(query, params);
+    const wordsResult = await SQLiteUniversal.execute(query, params);
 
     if (!wordsResult.success) {
       return wordsResult as DatabaseResult<WordWithExamples>;
@@ -455,7 +455,7 @@ export class WordService {
     const wordsWithExamples: WordWithExamples[] = [];
 
     for (const word of wordsResult.data || []) {
-      const examplesResult = await SQLiteUniversal.execute<Example>(
+      const examplesResult = await SQLiteUniversal.execute(
         "SELECT * FROM examples WHERE wordId = ? ORDER BY createdAt",
         [word.id!],
       );

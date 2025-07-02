@@ -1,4 +1,4 @@
-// services/database/WebDatabasePersistence.ts
+// services/database/WebDatabasePersistence.ts - Fixed with stopAutoSave method
 /**
  * Web Database Persistence
  * 
@@ -6,9 +6,13 @@
  * Saves database to IndexedDB and localStorage for persistence across sessions
  */
 
+export interface AutoSaveController {
+  stop: () => void;
+}
+
 export class WebDatabasePersistence {
   private static readonly DB_NAME = 'EasyEnglishDB';
-  private static readonly STORE_NAME = 'database';
+  private static readonly STORE_NAME = 'database_storage';
   private static readonly LOCAL_STORAGE_KEY = 'easy_english_db_backup';
   
   /**
@@ -105,13 +109,33 @@ export class WebDatabasePersistence {
    */
   static saveToLocalStorage(dbBinary: Uint8Array): boolean {
     try {
-      // Convert to base64 for localStorage
-      const base64 = btoa(String.fromCharCode(...dbBinary));
+      // Skip localStorage if database is too large (> 2MB)
+      if (dbBinary.length > 2 * 1024 * 1024) {
+        console.log('📁 Database too large for localStorage, skipping backup');
+        return false;
+      }
+
+      // Convert to base64 in chunks to avoid stack overflow
+      let base64 = '';
+      const chunkSize = 8192; // Process in smaller chunks
+      
+      for (let i = 0; i < dbBinary.length; i += chunkSize) {
+        const chunk = dbBinary.slice(i, i + chunkSize);
+        const chunkString = String.fromCharCode(...Array.from(chunk));
+        base64 += btoa(chunkString);
+      }
+      
       localStorage.setItem(this.LOCAL_STORAGE_KEY, base64);
       console.log('✅ Database backup saved to localStorage');
       return true;
     } catch (error) {
       console.error('❌ localStorage save error:', error);
+      // Try to clear the item if it failed
+      try {
+        localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+      } catch (clearError) {
+        console.error('Failed to clear localStorage item:', clearError);
+      }
       return false;
     }
   }
@@ -138,6 +162,13 @@ export class WebDatabasePersistence {
       return bytes;
     } catch (error) {
       console.error('❌ localStorage load error:', error);
+      // Clear corrupted data
+      try {
+        localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+        console.log('🗑️ Cleared corrupted localStorage backup');
+      } catch (clearError) {
+        console.error('Failed to clear localStorage:', clearError);
+      }
       return null;
     }
   }
@@ -145,8 +176,11 @@ export class WebDatabasePersistence {
   /**
    * Auto-save database periodically
    */
-  static startAutoSave(webDatabase: any, intervalMs: number = 10000) {
-    if (typeof window === 'undefined') return null;
+  static startAutoSave(webDatabase: any, intervalMs: number = 10000): AutoSaveController {
+    if (typeof window === 'undefined') {
+      // Return a dummy controller for non-browser environments
+      return { stop: () => {} };
+    }
 
     console.log(`🔄 Starting auto-save every ${intervalMs / 1000} seconds`);
     
@@ -183,6 +217,7 @@ export class WebDatabasePersistence {
     window.addEventListener('beforeunload', handleUnload);
     window.addEventListener('pagehide', handleUnload);
 
+    // Return controller object
     return {
       stop: () => {
         clearInterval(intervalId);
@@ -191,6 +226,15 @@ export class WebDatabasePersistence {
         console.log('🛑 Auto-save stopped');
       }
     };
+  }
+
+  /**
+   * Stop auto-save using controller
+   */
+  static stopAutoSave(controller: AutoSaveController | null): void {
+    if (controller && typeof controller.stop === 'function') {
+      controller.stop();
+    }
   }
 
   /**
@@ -276,5 +320,43 @@ export class WebDatabasePersistence {
       reader.onerror = () => reject(reader.error);
       reader.readAsArrayBuffer(file);
     });
+  }
+
+  /**
+   * Get database storage statistics
+   */
+  static async getStorageStats(): Promise<{
+    indexedDbSize: number;
+    localStorageSize: number;
+    totalSize: number;
+  }> {
+    let indexedDbSize = 0;
+    let localStorageSize = 0;
+
+    try {
+      // Check IndexedDB size
+      const dbBinary = await this.loadFromIndexedDB();
+      if (dbBinary) {
+        indexedDbSize = dbBinary.length;
+      }
+    } catch (error) {
+      console.warn('Could not get IndexedDB size:', error);
+    }
+
+    try {
+      // Check localStorage size
+      const base64 = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+      if (base64) {
+        localStorageSize = base64.length;
+      }
+    } catch (error) {
+      console.warn('Could not get localStorage size:', error);
+    }
+
+    return {
+      indexedDbSize,
+      localStorageSize,
+      totalSize: indexedDbSize + localStorageSize
+    };
   }
 }

@@ -1,6 +1,6 @@
-// services/database/SQLiteUniversalService.ts - Fixed version with proper WebAssembly loading
+// services/database/SQLiteUniversalService.ts - Complete implementation with all methods
 import { Platform } from "react-native";
-import { WebDatabasePersistence } from "./WebDatabasePersistence";
+import { WebDatabasePersistence, AutoSaveController } from "./WebDatabasePersistence";
 
 // Conditional imports for platform-specific modules
 let ExpoSQLite: any = null;
@@ -48,7 +48,7 @@ enum InitializationState {
 
 export class SQLiteUniversalService {
   private static instance: SQLiteUniversalService | null = null;
-  private autoSaveController: any = null;
+  private autoSaveController: AutoSaveController | null = null;
 
   // Platform-specific database instances
   private nativeDatabase: any = null;
@@ -240,52 +240,165 @@ export class SQLiteUniversalService {
     console.log("🏗️ Creating database schema directly...");
 
     const schemaQueries = [
+      // Dictionaries table
       `CREATE TABLE IF NOT EXISTS dictionaries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
         description TEXT,
-        language_code TEXT NOT NULL DEFAULT 'en',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        is_active BOOLEAN DEFAULT 1,
-        sort_order INTEGER DEFAULT 0
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
       )`,
       
-      `CREATE TABLE IF NOT EXISTS cards (
+      // Words table (main vocabulary table)
+      `CREATE TABLE IF NOT EXISTS words (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        dictionary_id INTEGER NOT NULL,
-        english_word TEXT NOT NULL,
-        ukrainian_translation TEXT NOT NULL,
-        part_of_speech TEXT,
-        pronunciation TEXT,
+        guid TEXT NOT NULL UNIQUE,
+        word TEXT NOT NULL,
+        transcription TEXT,
+        translation TEXT,
+        explanation TEXT,
         definition TEXT,
-        example_sentence TEXT,
-        example_translation TEXT,
-        difficulty_level INTEGER DEFAULT 1,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        is_active BOOLEAN DEFAULT 1,
-        FOREIGN KEY (dictionary_id) REFERENCES dictionaries (id) ON DELETE CASCADE
+        partOfSpeech TEXT NOT NULL,
+        language TEXT NOT NULL DEFAULT 'en',
+        level TEXT NOT NULL DEFAULT 'A1',
+        isIrregular BOOLEAN DEFAULT 0,
+        pronunciation BLOB,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        rate INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        dictionaryId INTEGER,
+        FOREIGN KEY (dictionaryId) REFERENCES dictionaries (id) ON DELETE CASCADE
       )`,
       
-      `CREATE TABLE IF NOT EXISTS learning_progress (
+      // Examples table
+      `CREATE TABLE IF NOT EXISTS examples (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        card_id INTEGER NOT NULL,
-        correct_answers INTEGER DEFAULT 0,
-        incorrect_answers INTEGER DEFAULT 0,
-        last_reviewed DATETIME,
-        next_review DATETIME,
-        review_interval INTEGER DEFAULT 1,
-        ease_factor REAL DEFAULT 2.5,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (card_id) REFERENCES cards (id) ON DELETE CASCADE
+        guid TEXT NOT NULL UNIQUE,
+        sentence TEXT NOT NULL,
+        translation TEXT,
+        wordId INTEGER NOT NULL,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
       )`,
       
-      `CREATE INDEX IF NOT EXISTS idx_cards_dictionary_id ON cards (dictionary_id)`,
-      `CREATE INDEX IF NOT EXISTS idx_cards_english_word ON cards (english_word)`,
-      `CREATE INDEX IF NOT EXISTS idx_learning_progress_card_id ON learning_progress (card_id)`,
-      `CREATE INDEX IF NOT EXISTS idx_learning_progress_next_review ON learning_progress (next_review)`
+      // Sets table (word collections)
+      `CREATE TABLE IF NOT EXISTS sets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      // Set-word relationships
+      `CREATE TABLE IF NOT EXISTS set_words (
+        setId INTEGER NOT NULL,
+        wordId INTEGER NOT NULL,
+        addedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (setId, wordId),
+        FOREIGN KEY (setId) REFERENCES sets (id) ON DELETE CASCADE,
+        FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
+      )`,
+      
+      // Tags table
+      `CREATE TABLE IF NOT EXISTS tags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL UNIQUE,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      // Word-tag relationships
+      `CREATE TABLE IF NOT EXISTS word_tags (
+        wordId INTEGER NOT NULL,
+        tagId INTEGER NOT NULL,
+        PRIMARY KEY (wordId, tagId),
+        FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE,
+        FOREIGN KEY (tagId) REFERENCES tags (id) ON DELETE CASCADE
+      )`,
+      
+      // Irregular forms (for verbs)
+      `CREATE TABLE IF NOT EXISTS irregular_forms (
+        firstFormId INTEGER NOT NULL,
+        secondFormId INTEGER NOT NULL,
+        thirdFormId INTEGER,
+        PRIMARY KEY (firstFormId, secondFormId),
+        FOREIGN KEY (firstFormId) REFERENCES words (id) ON DELETE CASCADE,
+        FOREIGN KEY (secondFormId) REFERENCES words (id) ON DELETE CASCADE,
+        FOREIGN KEY (thirdFormId) REFERENCES words (id) ON DELETE CASCADE
+      )`,
+      
+      // Study cards
+      `CREATE TABLE IF NOT EXISTS study_cards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        dialogue TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        rate INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        unitId INTEGER
+      )`,
+      
+      // Study card items (words in cards)
+      `CREATE TABLE IF NOT EXISTS study_card_items (
+        cardId INTEGER NOT NULL,
+        wordId INTEGER NOT NULL,
+        PRIMARY KEY (cardId, wordId),
+        FOREIGN KEY (cardId) REFERENCES study_cards (id) ON DELETE CASCADE,
+        FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
+      )`,
+      
+      // Units (learning units)
+      `CREATE TABLE IF NOT EXISTS units (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guid TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        description TEXT,
+        lastReviewDate TEXT,
+        reviewCount INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      // Learning progress tracking
+      `CREATE TABLE IF NOT EXISTS word_progress (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        wordId INTEGER NOT NULL UNIQUE,
+        correctAnswers INTEGER DEFAULT 0,
+        incorrectAnswers INTEGER DEFAULT 0,
+        lastReviewed TEXT,
+        nextReview TEXT,
+        reviewInterval INTEGER DEFAULT 1,
+        easeFactor REAL DEFAULT 2.5,
+        averageRate REAL DEFAULT 0,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (wordId) REFERENCES words (id) ON DELETE CASCADE
+      )`,
+      
+      // Indexes for performance
+      `CREATE INDEX IF NOT EXISTS idx_words_dictionary_id ON words (dictionaryId)`,
+      `CREATE INDEX IF NOT EXISTS idx_words_word ON words (word)`,
+      `CREATE INDEX IF NOT EXISTS idx_words_part_of_speech ON words (partOfSpeech)`,
+      `CREATE INDEX IF NOT EXISTS idx_words_level ON words (level)`,
+      `CREATE INDEX IF NOT EXISTS idx_examples_word_id ON examples (wordId)`,
+      `CREATE INDEX IF NOT EXISTS idx_set_words_set_id ON set_words (setId)`,
+      `CREATE INDEX IF NOT EXISTS idx_set_words_word_id ON set_words (wordId)`,
+      `CREATE INDEX IF NOT EXISTS idx_word_tags_word_id ON word_tags (wordId)`,
+      `CREATE INDEX IF NOT EXISTS idx_word_tags_tag_id ON word_tags (tagId)`,
+      `CREATE INDEX IF NOT EXISTS idx_word_progress_word_id ON word_progress (wordId)`,
+      `CREATE INDEX IF NOT EXISTS idx_word_progress_next_review ON word_progress (nextReview)`
     ];
 
     if (Platform.OS === "web" && this.webDatabase) {
@@ -460,6 +573,24 @@ export class SQLiteUniversalService {
   }
 
   /**
+   * Execute multiple queries in a transaction
+   */
+  async executeTransaction<T>(callback: TransactionCallback<T>): Promise<DatabaseResult<T>> {
+    try {
+      const result = await this.transaction(callback);
+      return {
+        success: true,
+        data: [result] as any,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Transaction failed",
+      };
+    }
+  }
+
+  /**
    * Get initialization state
    */
   getInitializationState(): string {
@@ -555,3 +686,9 @@ export class SQLiteUniversalService {
     }
   }
 }
+
+// Export singleton instance for easy access
+export default SQLiteUniversalService.getInstance();
+
+// Create a convenient alias for the singleton
+export const SQLiteUniversal = SQLiteUniversalService.getInstance();
