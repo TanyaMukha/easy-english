@@ -8,7 +8,7 @@ import {
   Colors,
   SharedStyles,
   Spacing,
-} from "../../../styles/SharedStyles";
+} from "../../../services/database/styles/SharedStyles";
 
 interface PhoneticKeyboardProps {
   visible: boolean;

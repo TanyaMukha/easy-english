@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
-import { SharedStyles, Colors } from '../../styles/SharedStyles';
+import { SharedStyles, Colors } from '../../services/database/styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
 
 // Components

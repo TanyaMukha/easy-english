@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, Typography } from '../../styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, Typography } from '../../services/database/styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
 import { DictionaryCreateRequest, dictionaryService, DictionaryUpdateRequest } from '../../services/database';
 import { generateGuid } from 'utils/guid';

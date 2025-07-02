@@ -15,7 +15,7 @@ import {
 } from "../../components/ui";
 import { Dictionary } from "../../data/DataModels";
 import { useDictionaries } from "../../hooks/useDictionaries";
-import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
+import { Colors, SharedStyles, Spacing } from "../../services/database/styles/SharedStyles";
 
 export default function DictionariesScreen() {
   const {

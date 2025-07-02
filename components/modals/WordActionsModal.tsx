@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { WordWithExamples } from "../../data/DataModels";
 import { wordService } from "../../services/database";
-import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
+import { Colors, SharedStyles, Spacing } from "../../services/database/styles/SharedStyles";
 
 interface WordActionsModalProps {
   visible: boolean;

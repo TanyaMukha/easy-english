@@ -17,7 +17,7 @@ import { WordWithExamples } from "../data/DataModels";
 import { useHomeData } from "../hooks/useHomeData";
 import { useWords } from "../hooks/useWords";
 import { databaseTester } from "../services/database/DatabaseTester";
-import { Colors, SharedStyles, Spacing } from "../styles/SharedStyles";
+import { Colors, SharedStyles, Spacing } from "../services/database/styles/SharedStyles";
 
 export default function HomeScreen() {
   const {

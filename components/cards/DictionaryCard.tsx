@@ -10,7 +10,7 @@ import {
   DeviceUtils,
   SharedStyles,
   Spacing,
-} from "../../styles/SharedStyles";
+} from "../../services/database/styles/SharedStyles";
 
 interface DictionaryCardProps {
   dictionary: Dictionary;

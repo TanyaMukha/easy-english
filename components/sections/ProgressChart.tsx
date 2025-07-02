@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../services/database/styles/SharedStyles';
 import { DailyProgress } from '../../data/DataModels';
 
 interface ProgressChartProps {

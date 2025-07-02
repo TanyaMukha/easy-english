@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
+import { SharedStyles, Colors, Spacing } from '../../services/database/styles/SharedStyles';
 import QuickActionButton from '../ui/buttons/QuickActionButton';
 
 interface ShortcutItem {

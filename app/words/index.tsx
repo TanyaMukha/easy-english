@@ -15,7 +15,7 @@ import {
 import { WordWithExamples } from "../../data/DataModels";
 // Custom hooks
 import { useWords } from "../../hooks/useWords";
-import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
+import { Colors, SharedStyles, Spacing } from "../../services/database/styles/SharedStyles";
 
 /**
  * All Words Screen with full CRUD support

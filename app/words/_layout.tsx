@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { Colors } from '../../styles/SharedStyles';
+import { Colors } from '../../services/database/styles/SharedStyles';
 
 export default function WordsLayout() {
   return (

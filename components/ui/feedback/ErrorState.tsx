@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { SharedStyles, Spacing } from '../../../styles/SharedStyles';
+import { SharedStyles, Spacing } from '../../../services/database/styles/SharedStyles';
 
 interface ErrorStateProps {
   title?: string;

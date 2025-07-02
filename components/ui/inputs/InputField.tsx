@@ -7,7 +7,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from "../../../styles/SharedStyles";
+} from "../../../services/database/styles/SharedStyles";
 
 interface InputFieldProps extends TextInputProps {
   label: string;

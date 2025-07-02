@@ -26,7 +26,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from "../../../styles/SharedStyles";
+} from "../../../services/database/styles/SharedStyles";
 
 /**
  * Add Words to Set Screen

@@ -9,7 +9,7 @@ import {
   Spacing,
   SharedStyles,
   getLevelColor,
-} from "../../styles/SharedStyles";
+} from "../../services/database/styles/SharedStyles";
 
 interface DailyWordCardProps {
   word: WordWithExamples;

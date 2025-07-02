@@ -10,7 +10,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from '../../styles/SharedStyles';
+} from '../../services/database/styles/SharedStyles';
 
 interface DailyWordsSectionProps {
   words: WordWithExamples[];

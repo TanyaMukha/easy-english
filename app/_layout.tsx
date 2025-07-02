@@ -1,3 +1,4 @@
+// app/_layout.tsx - Fixed root layout with proper i18n initialization
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { Platform, StatusBar } from "react-native";
@@ -8,7 +9,7 @@ import { Slot } from "expo-router";
 import ErrorState from "../components/ui/feedback/ErrorState";
 import LoadingState from "../components/ui/feedback/LoadingState";
 import i18n from "../i18n/config";
-import { SharedStyles } from "../styles/SharedStyles";
+import { SharedStyles } from "../services/database/styles/SharedStyles";
 
 /**
  * Root layout component that wraps the entire application
@@ -24,14 +25,28 @@ export default function RootLayout() {
 
   const initializeApp = async () => {
     try {
-      // Initialize i18n
-      await i18n.init();
+      // Wait for i18n to be fully initialized
+      if (!i18n.isInitialized) {
+        await new Promise((resolve) => {
+          if (i18n.isInitialized) {
+            resolve(void 0);
+            return;
+          }
+          
+          const onInitialized = () => {
+            i18n.off('initialized', onInitialized);
+            resolve(void 0);
+          };
+          
+          i18n.on('initialized', onInitialized);
+        });
+      }
 
       // Add any other initialization logic here
       // e.g., database setup, user authentication check, etc.
 
-      // Simulate brief loading time for better UX
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Brief delay for better UX (optional)
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       setIsAppReady(true);
     } catch (error) {
@@ -55,7 +70,7 @@ export default function RootLayout() {
           title="Failed to start application"
           message={initError}
           onRetry={handleRetry}
-          // retryText="Restart App"
+          buttonText="Restart App"
         />
       )}
 

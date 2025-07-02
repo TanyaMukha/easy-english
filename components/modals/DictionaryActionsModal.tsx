@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
+import { SharedStyles, Colors, Spacing } from '../../services/database/styles/SharedStyles';
 import { Dictionary } from '../../data/DataModels';
 import { dictionaryService } from '../../services/database';
 

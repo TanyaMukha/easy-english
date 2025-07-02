@@ -20,7 +20,7 @@ import {
   Colors,
   Spacing,
   Typography,
-} from "../../styles/SharedStyles";
+} from "../../services/database/styles/SharedStyles";
 
 interface EditSetModalProps {
   visible: boolean;

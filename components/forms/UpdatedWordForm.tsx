@@ -32,7 +32,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from "../../styles/SharedStyles";
+} from "../../services/database/styles/SharedStyles";
 
 interface IrregularForms {
   base?: string;

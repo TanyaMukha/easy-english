@@ -13,7 +13,7 @@ import {
 } from "../../components/ui";
 import { Set } from "../../data/DataModels";
 import { useSets } from "../../hooks/useSets";
-import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
+import { Colors, SharedStyles, Spacing } from "../../services/database/styles/SharedStyles";
 import { SetCreateRequest, SetStats, SetUpdateRequest } from "services/database";
 import { generateGuid } from "utils/guid";
 

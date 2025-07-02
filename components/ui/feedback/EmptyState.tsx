@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../../styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../../../services/database/styles/SharedStyles';
 
 interface EmptyStateProps {
   title: string;

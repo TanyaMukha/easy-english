@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, BorderRadius } from '../../../styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, BorderRadius } from '../../../services/database/styles/SharedStyles';
 
 interface IrregularToggleProps {
   label: string;
