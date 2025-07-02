@@ -7,7 +7,7 @@ import {
   type SetStats,
   type DatabaseResult 
 } from '../services/database';
-import { Colors } from '../services/database/styles/SharedStyles';
+import { Colors } from '../styles/SharedStyles';
 
 interface CollectionItem {
   id: string;

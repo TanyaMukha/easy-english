@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, DeviceUtils, getLevelColor } from '../../services/database/styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils, getLevelColor } from '../../styles/SharedStyles';
 import { WordWithExamples } from '../../data/DataModels';
 import { Utils } from '../../data/DataUtils';
 

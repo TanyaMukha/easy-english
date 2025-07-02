@@ -13,7 +13,7 @@ import {
 } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
 import { MockDataService } from "../../data/MockData";
-import { Colors, SharedStyles, Spacing } from "../../services/database/styles/SharedStyles";
+import { Colors, SharedStyles, Spacing } from "../../styles/SharedStyles";
 
 export default function DictionaryScreen() {
   const { dictionaryId } = useLocalSearchParams<{ dictionaryId: string }>();

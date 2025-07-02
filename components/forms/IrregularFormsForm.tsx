@@ -9,7 +9,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from "../../services/database/styles/SharedStyles";
+} from "../../styles/SharedStyles";
 
 interface IrregularForms {
   // For verbs: base, past, pastParticiple

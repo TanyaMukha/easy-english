@@ -22,7 +22,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from "../../services/database/styles/SharedStyles";
+} from "../../styles/SharedStyles";
 
 /**
  * Create Set Screen

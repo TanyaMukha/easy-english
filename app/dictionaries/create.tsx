@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { DictionaryForm } from "../../components/forms";
 import { ScreenHeader } from "../../components/ui";
 import { Dictionary } from "../../data/DataModels";
-import { SharedStyles } from "../../services/database/styles/SharedStyles";
+import { SharedStyles } from "../../styles/SharedStyles";
 
 /**
  * Screen for creating new dictionaries

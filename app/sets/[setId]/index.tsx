@@ -27,7 +27,7 @@ import {
   SharedStyles,
   Spacing,
   Typography,
-} from "../../../services/database/styles/SharedStyles";
+} from "../../../styles/SharedStyles";
 
 /**
  * Set Details Screen - shows words in a specific set

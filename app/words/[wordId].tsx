@@ -12,7 +12,7 @@ import {
   getLevelColor,
   SharedStyles,
   Spacing,
-} from "../../services/database/styles/SharedStyles";
+} from "../../styles/SharedStyles";
 
 /**
  * Word Details Screen

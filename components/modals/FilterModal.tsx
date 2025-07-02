@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, Shadows } from '../../services/database/styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, Shadows } from '../../styles/SharedStyles';
 import { PartOfSpeech, Level, WordFilters } from '../../data/DataModels';
 
 interface FilterModalProps {

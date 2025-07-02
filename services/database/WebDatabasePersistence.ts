@@ -23,31 +23,51 @@ export class WebDatabasePersistence {
       const request = indexedDB.open(this.DB_NAME, 1);
       
       return new Promise((resolve, reject) => {
-        request.onerror = () => reject(request.error);
+        request.onerror = () => {
+          console.error('❌ IndexedDB open failed:', request.error);
+          reject(request.error);
+        };
         
         request.onupgradeneeded = () => {
           const db = request.result;
+          console.log('🔧 Creating IndexedDB object store:', this.STORE_NAME);
           if (!db.objectStoreNames.contains(this.STORE_NAME)) {
             db.createObjectStore(this.STORE_NAME);
           }
         };
         
         request.onsuccess = () => {
-          const db = request.result;
-          const transaction = db.transaction([this.STORE_NAME], 'readwrite');
-          const store = transaction.objectStore(this.STORE_NAME);
-          
-          store.put(dbBinary, 'database');
-          
-          transaction.oncomplete = () => {
-            console.log('✅ Database saved to IndexedDB');
-            resolve(true);
-          };
-          
-          transaction.onerror = () => {
-            console.error('❌ Failed to save to IndexedDB:', transaction.error);
-            reject(transaction.error);
-          };
+          try {
+            const db = request.result;
+            
+            // Check if store exists before creating transaction
+            if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+              console.error('❌ ObjectStore not found:', this.STORE_NAME);
+              console.log('Available stores:', db.objectStoreNames);
+              reject(new Error(`ObjectStore '${this.STORE_NAME}' not found`));
+              return;
+            }
+            
+            const transaction = db.transaction([this.STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(this.STORE_NAME);
+            
+            store.put(dbBinary, 'database');
+            
+            transaction.oncomplete = () => {
+              console.log('✅ Database saved to IndexedDB');
+              db.close();
+              resolve(true);
+            };
+            
+            transaction.onerror = () => {
+              console.error('❌ Failed to save to IndexedDB:', transaction.error);
+              db.close();
+              reject(transaction.error);
+            };
+          } catch (error) {
+            console.error('❌ Transaction creation failed:', error);
+            reject(error);
+          }
         };
       });
     } catch (error) {
@@ -69,33 +89,50 @@ export class WebDatabasePersistence {
           resolve(null);
         };
         
-        request.onsuccess = () => {
+        request.onupgradeneeded = () => {
           const db = request.result;
-          
+          console.log('🔧 Creating IndexedDB object store during load:', this.STORE_NAME);
           if (!db.objectStoreNames.contains(this.STORE_NAME)) {
-            console.log('📁 No database store found');
-            resolve(null);
-            return;
+            db.createObjectStore(this.STORE_NAME);
           }
-          
-          const transaction = db.transaction([this.STORE_NAME], 'readonly');
-          const store = transaction.objectStore(this.STORE_NAME);
-          const getRequest = store.get('database');
-          
-          getRequest.onsuccess = () => {
-            if (getRequest.result) {
-              console.log('✅ Database loaded from IndexedDB');
-              resolve(getRequest.result);
-            } else {
-              console.log('📁 No database found in IndexedDB');
+        };
+        
+        request.onsuccess = () => {
+          try {
+            const db = request.result;
+            
+            if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+              console.log('📁 No database store found');
+              db.close();
               resolve(null);
+              return;
             }
-          };
-          
-          getRequest.onerror = () => {
-            console.error('❌ Failed to load from IndexedDB:', getRequest.error);
+            
+            const transaction = db.transaction([this.STORE_NAME], 'readonly');
+            const store = transaction.objectStore(this.STORE_NAME);
+            const getRequest = store.get('database');
+            
+            getRequest.onsuccess = () => {
+              if (getRequest.result) {
+                console.log('✅ Database loaded from IndexedDB');
+                db.close();
+                resolve(getRequest.result);
+              } else {
+                console.log('📁 No database found in IndexedDB');
+                db.close();
+                resolve(null);
+              }
+            };
+            
+            getRequest.onerror = () => {
+              console.error('❌ Failed to load from IndexedDB:', getRequest.error);
+              db.close();
+              resolve(null);
+            };
+          } catch (error) {
+            console.error('❌ Load transaction failed:', error);
             resolve(null);
-          };
+          }
         };
       });
     } catch (error) {

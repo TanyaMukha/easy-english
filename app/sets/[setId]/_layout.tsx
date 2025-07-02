@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { Colors } from '../../../services/database/styles/SharedStyles';
+import { Colors } from '../../../styles/SharedStyles';
 
 export default function DictionariesLayout() {
   return (

@@ -6,7 +6,7 @@ import { UpdatedWordForm } from "../../components/forms";
 import { ScreenHeader } from "../../components/ui";
 import { WordWithExamples } from "../../data/DataModels";
 import { wordService } from "../../services/database";
-import { SharedStyles } from "../../services/database/styles/SharedStyles";
+import { SharedStyles } from "../../styles/SharedStyles";
 import guid, { generateGuid } from "utils/guid";
 
 export default function CreateWordScreen() {

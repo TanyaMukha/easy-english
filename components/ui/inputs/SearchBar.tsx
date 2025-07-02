@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, Typography } from '../../../services/database/styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, Typography } from '../../../styles/SharedStyles';
 
 interface SearchBarProps {
   value: string;

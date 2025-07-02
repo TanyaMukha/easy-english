@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { SharedStyles, Colors, Spacing } from '../../../services/database/styles/SharedStyles';
+import { SharedStyles, Colors, Spacing } from '../../../styles/SharedStyles';
 
 interface LoadingStateProps {
   message?: string;

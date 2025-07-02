@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing, DeviceUtils } from '../services/database/styles/SharedStyles';
+import { SharedStyles, Colors, Spacing, DeviceUtils } from '../styles/SharedStyles';
 
 export default function NotFoundScreen() {
   return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SharedStyles, Colors, Spacing } from '../../services/database/styles/SharedStyles';
+import { SharedStyles, Colors, Spacing } from '../../styles/SharedStyles';
 
 interface LearningGoalsProps {
   currentStreak: number;

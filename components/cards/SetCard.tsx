@@ -13,7 +13,7 @@ import {
   Typography,
   BorderRadius,
   Shadows,
-} from "../../services/database/styles/SharedStyles";
+} from "../../styles/SharedStyles";
 
 interface SetCardProps {
   set: Set;

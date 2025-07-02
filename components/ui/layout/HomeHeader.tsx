@@ -11,7 +11,7 @@ import {
   Typography,
   DeviceUtils,
   isTablet,
-} from '../../../services/database/styles/SharedStyles';
+} from '../../../styles/SharedStyles';
 
 interface HomeHeaderProps {
   userName?: string;
