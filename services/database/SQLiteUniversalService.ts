@@ -1,30 +1,34 @@
 // services/database/SQLiteUniversalService.ts - Complete implementation with all methods
 import { Platform } from "react-native";
 
-import { WebDatabaseManager } from "./WebDatabaseManager";
+import { WebDatabaseManager } from "./WebDatabaseManager.web";
 import {
   AutoSaveController,
   WebDatabasePersistence,
-} from "./WebDatabasePersistence";
+} from "./WebDatabasePersistence.web";
 
 // Conditional imports for platform-specific modules
 let ExpoSQLite: any = null;
 let initSqlJs: any = null;
 
-if (Platform.OS !== "web") {
-  try {
-    ExpoSQLite = require("expo-sqlite");
-    console.log("✅ Expo SQLite loaded for native platform");
-  } catch (error) {
-    console.warn("⚠️ Could not load Expo SQLite:", error);
-  }
-} else {
+// FIXED: Only import SQL.js on web platform to avoid Node.js module errors
+if (Platform.OS === "web") {
   try {
     const sqlJs = require("sql.js");
     initSqlJs = sqlJs.default || sqlJs;
     console.log("✅ SQL.js loaded for web platform");
   } catch (error) {
     console.warn("⚠️ Could not load SQL.js:", error);
+  }
+}
+
+// FIXED: Only import Expo SQLite on native platforms
+if (Platform.OS !== "web") {
+  try {
+    ExpoSQLite = require("expo-sqlite");
+    console.log("✅ Expo SQLite loaded for native platform");  
+  } catch (error) {
+    console.warn("⚠️ Could not load Expo SQLite:", error);
   }
 }
 

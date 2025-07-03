@@ -1,5 +1,5 @@
 // utils/databaseReset.ts - Utility for resetting incompatible database
-import { WebDatabasePersistence } from '../services/database/WebDatabasePersistence';
+import { WebDatabasePersistence } from '../services/database/WebDatabasePersistence.web';
 import { SQLiteUniversal } from '../services/database/SQLiteUniversalService';
 
 /**
